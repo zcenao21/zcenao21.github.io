@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark绪论 | Will&#39;s BigData Field</title>
+  <meta name="author" content="Will">
+  
+  <meta name="description" content="前言
+为什么会有spark
+现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Spark绪论"/>
+  <meta property="og:site_name" content="Will&#39;s BigData Field"/>
+
+  
+    <meta property="og:image" content=""/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Will&#39;s BigData Field" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Will&#39;s BigData Field</a></h1>
+  <h2><a href="/">hello world!</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-spark" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2019-10-24T08:33:13.000Z"><a href="/2019/10/24/spark/">2019-10-24</a></time>
+      
+      
+  
+    <h1 class="p-name title" itemprop="headline name">Spark绪论</h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
+<li><p>为什么会有spark</p>
+<p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算<a id="more"></a> 机“Summit”浮点运算速度峰值可达20亿亿次/秒，这相当快了吧！确实很快，但是它的使用和维护费用都很高呀，一般人或者说公司根本负担不起。所以聪明的人类就发明了大数据工具。虽然单台机器的计算性能可能并不是很好，但是如果多台机器联合起来一起做计算，那么不就可以实现相对廉价的机器实现超大数据规模的计算吗？所以诞生了大数据工具Hadoop。Hadoop基于HDFS和Map-Reduce奠定了大数据领域的霸主地位。随后各种工具层出不穷。Spark针对Hadoop计算中慢的缺点，即每次计算结果都要读写到磁盘导致速度变慢的设计，作了如下改进：</p>
+<ol>
+<li>计算中间结果保存在内存中。Hadoop每次的计算结果都会放回HDFS，这种设计严重影响了计算速度。spark基于内存的设计则改进了这一点。</li>
+<li>惰性计算。Spark使用有向无环图（DAG）调度机制，遇到action操作算子才进行实际计算，所有就有了优化空间。</li>
+</ol>
+<blockquote>
+<p>可参考对比：<a href="https://www.zhihu.com/question/26568496" target="_blank" rel="noopener">https://www.zhihu.com/question/26568496</a></p>
+</blockquote>
+</li>
+<li><p>Spark是什么</p>
+<p>官方定义：<strong>Apache Spark™</strong> is a unified analytics engine for large-scale data processing。翻译过来就是：用于大规模数据处理的分析引擎。再直白一点就是说：spark是用于快速处理大量数据的工具。</p>
+<img src="https://ericfu.me/images/2018/06/spark-banner.png" width="700" hegiht="113" align=center />
+
+
+
+</li>
+</ul>
+<h1 id="和其他工具对比"><a href="#和其他工具对比" class="headerlink" title="和其他工具对比"></a>和其他工具对比</h1><blockquote>
+<p>引用自：<a href="https://www.boxuegu.com/news/458.html" target="_blank" rel="noopener">https://www.boxuegu.com/news/458.html</a></p>
+</blockquote>
+<ul>
+<li><p><strong>Hadoop框架</strong></p>
+<p>提起大数据，第一个想起的肯定是Hadoop，因为Hadoop是目前世界上应用最广泛的大数据工具，它凭借极高的容错率和极低的硬件价格，在大数据市场上风生水起。Hadoop还是第一个在开源社区上引发高度关注的批处理框架，他提出的Map和Reduce的计算模式简洁而优雅。迄今为止，Hadoop已经成为了一个广阔的生态圈，实现了大量算法和组件。由于Hadoop的计算任务需要在集群的多个节点上多次读写，因此在速度上会稍显劣势，但是其吞吐量也同样是其他框架所不能匹敌的。</p>
+</li>
+</ul>
+<ul>
+<li><strong>Storm框架</strong><br>与Hadoop的批处理模式不同，Storm采用的是流计算框架，由Twitter开源并且托管在GitHub上。与Hadoop类似的是，Storm也提出了两个计算角色，分别为Spout和Bolt。如果说Hadoop是水桶，只能一桶一桶的去井里扛，那么Storm就是水龙头，只要打开就可以源源不断的出水。Storm支持的语言也比较多，Java、Ruby、Python等语言都能很好的支持。由于Storm是流计算框架，因此使用的是内存，延迟上有极大的优势，但是Storm不会持久化数据。</li>
+</ul>
+<ul>
+<li><strong>Samza框架</strong><br>Smaza也是一种流计算框架，但他目前只支持JVM语言，灵活度上略显不足，并且Samza必须和Kafka共同使用。但是响应的，其也继承了Kafka的低延时、分区、避免回压等优势。对于已经有Hadoop+Kafka工作环境的团队来说，Samza是一个不错的选择，并且Samza在多个团队使用的时候能体现良好的性能。</li>
+</ul>
+<ul>
+<li><strong>Spark框架</strong><br>Spark属于前两种框架形式的集合体，是一种混合式的计算框架。它既有自带的实时流处理工具，也可以和Hadoop集成，代替其中的MapReduce，甚至Spark还可以单独拿出来部署集群，但是还得借助HDFS等分布式存储系统。Spark的强大之处在于其运算速度，与Storm类似，Spark也是基于内存的，并且在内存满负载的时候，硬盘也能运算，运算结果表示，Spark的速度大约为Hadoop的一百倍，并且其成本可能比Hadoop更低。但是Spark目前还没有像Hadoop哪有拥有上万级别的集群，因此现阶段的Spark和Hadoop搭配起来使用更加合适。</li>
+</ul>
+<ul>
+<li><strong>Flink框架</strong><br>Flink也是一种混合式的计算框架，但是在设计初始，Fink的侧重点在于处理流式数据，这与Spark的设计初衷恰恰相反，而在市场需求的驱使下，两者都在朝着更多的兼容性发展。Flink目前不是很成熟，更多情况下Flink还是起到一个借鉴的作用。</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Spark/">Spark</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Spark/">Spark</a>, <a href="/tags/High-Performance-Spark/">High Performance Spark</a>, <a href="/tags/大数据工具/">大数据工具</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+      <div id="fb-root"></div>
+<script>
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=123456789012345";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<div class="fb-comments" data-href="http://yoursite.com/2019/10/24/spark/index.html" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
+      
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="as_sitesearch" value="yoursite.com">
+  </form>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Linux/">Linux</a><small>1</small></li>
+  
+    <li><a href="/categories/Spark/">Spark</a><small>3</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/categories/目录/">目录</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/High-Performance-Spark/">High Performance Spark</a><small>3</small></li>
+  
+    <li><a href="/tags/Linux/">Linux</a><small>1</small></li>
+  
+    <li><a href="/tags/RDD/">RDD</a><small>1</small></li>
+  
+    <li><a href="/tags/Spark/">Spark</a><small>3</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop安装/">hadoop安装</a><small>1</small></li>
+  
+    <li><a href="/tags/linux目录/">linux目录</a><small>1</small></li>
+  
+    <li><a href="/tags/spark架构/">spark架构</a><small>1</small></li>
+  
+    <li><a href="/tags/spark目录/">spark目录</a><small>1</small></li>
+  
+    <li><a href="/tags/windows-10/">windows 10</a><small>1</small></li>
+  
+    <li><a href="/tags/基础知识/">基础知识</a><small>1</small></li>
+  
+    <li><a href="/tags/大数据工具/">大数据工具</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Will
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
