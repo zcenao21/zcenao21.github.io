@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hive源码</title>
+    <url>/2020/02/21/hive-source-modification/</url>
+    <content><![CDATA[<p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。</p>
+<p>hive依赖hadoop，看hive启动脚本，最终是调用hadoop启动，而hadoop最终还是执行的java -jar xxx.jar形式，所以决定先从hive java源码入口看。先试一试改动源码打印个信息。</p>
+<p>首先在hive的main函数入口增加一行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(&quot;Will&#39;s first hive source code modification: test err print info&quot;);</span><br></pre></td></tr></table></figure>
+
+<img src="https://i.loli.net/2020/02/21/bQOyidqXgsMR3Ca.png" alt="启动" style="zoom:80%;" />
+
+
+
+<p>然后运行hive</p>
+<p><img src="https://i.loli.net/2020/02/21/LZ16gVt4rfdXqyu.png" alt="选区_001.png"></p>
+<p>好啦，正式开启与hive源码的斗争！</p>
+]]></content>
+      <categories>
+        <category>Hive</category>
+      </categories>
+      <tags>
+        <tag>hive</tag>
+        <tag>源码</tag>
+        <tag>开发</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hadoop在windows 10下安装步骤</title>
     <url>/2020/02/15/hadoop-hadoop%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>首先劝大家在有条件情况下能用mac就用mac，再不行用linux系统，在windows上运行hadoop不是一个好主意！真的好麻烦。。。</p>
