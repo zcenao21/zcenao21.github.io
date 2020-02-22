@@ -133,6 +133,44 @@
 
 
 
+  <article id="post-hive-udf" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2020-02-21T10:20:21.000Z"><a href="/2020/02/21/hive-udf/">2020-02-21</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2020/02/21/hive-udf/">hive udf&amp;udaf</a></h1>
+  
+
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <p>hive自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)使用
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2020/02/21/hive-udf/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
   <article id="post-hive-source-modification" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
   <div class="post-content">
@@ -143,30 +181,22 @@
       
       
   
-    <h1 class="title"><a href="/2020/02/21/hive-source-modification/">hive源码</a></h1>
+    <h1 class="title"><a href="/2020/02/21/hive-source-modification/">hive源码调试入门</a></h1>
   
 
 
     </header>
     <div class="e-content entry" itemprop="articleBody">
       
-        <p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。</p>
-<p>hive依赖hadoop，看hive启动脚本，最终是调用hadoop启动，而hadoop最终还是执行的java -jar xxx.jar形式，所以决定先从hive java源码入口看。先试一试改动源码打印个信息。</p>
-<p>首先在hive的main函数入口增加一行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(&quot;Will&#39;s first hive source code modification: test err print info&quot;);</span><br></pre></td></tr></table></figure>
-
-<img src="https://i.loli.net/2020/02/21/bQOyidqXgsMR3Ca.png" alt="启动" style="zoom:80%;" />
-
-
-
-<p>然后运行hive</p>
-<p><img src="https://i.loli.net/2020/02/21/LZ16gVt4rfdXqyu.png" alt="选区_001.png"></p>
-<p>好啦，正式开启与hive源码的斗争！</p>
-
+        <p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。
       
     </div>
     <footer>
       
+        
+          <div class="alignleft">
+            <a href="/2020/02/21/hive-source-modification/#more" class="more-link">Read More</a>
+          </div>
         
         
       
@@ -217,46 +247,6 @@
 
 
 
-  <article id="post-linux-基础知识" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time class="dt-published" datetime="2020-02-11T16:21:21.000Z"><a href="/2020/02/12/linux-基础知识/">2020-02-12</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2020/02/12/linux-基础知识/">基础知识</a></h1>
-  
-
-
-    </header>
-    <div class="e-content entry" itemprop="articleBody">
-      
-        <h1 id="计算机"><a href="#计算机" class="headerlink" title="计算机"></a>计算机</h1><h3 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a>组成部分</h3><ul>
-<li>输入单元</li>
-<li>CPU
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2020/02/12/linux-基础知识/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
 
 <nav id="pagination">
   
@@ -279,7 +269,7 @@
   <h3 class="title">Categories</h3>
   <ul class="entry">
   
-    <li><a href="/categories/Hive/">Hive</a><small>1</small></li>
+    <li><a href="/categories/Hive/">Hive</a><small>2</small></li>
   
     <li><a href="/categories/Linux/">Linux</a><small>1</small></li>
   
@@ -310,13 +300,17 @@
   
     <li><a href="/tags/hadoop安装/">hadoop安装</a><small>1</small></li>
   
-    <li><a href="/tags/hive/">hive</a><small>1</small></li>
+    <li><a href="/tags/hive/">hive</a><small>2</small></li>
   
     <li><a href="/tags/linux目录/">linux目录</a><small>1</small></li>
   
     <li><a href="/tags/spark架构/">spark架构</a><small>1</small></li>
   
     <li><a href="/tags/spark目录/">spark目录</a><small>1</small></li>
+  
+    <li><a href="/tags/udaf/">udaf</a><small>1</small></li>
+  
+    <li><a href="/tags/udf/">udf</a><small>1</small></li>
   
     <li><a href="/tags/windows-10/">windows 10</a><small>1</small></li>
   

@@ -3,17 +3,15 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Spark绪论 | Will&#39;s BigData Field</title>
+  <title>hive udf&amp;udaf | Will&#39;s BigData Field</title>
   <meta name="author" content="Will">
   
-  <meta name="description" content="前言
-为什么会有spark
-现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算">
+  <meta name="description" content="hive自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)使用">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Spark绪论"/>
+  <meta property="og:title" content="hive udf&amp;udaf"/>
   <meta property="og:site_name" content="Will&#39;s BigData Field"/>
 
   
@@ -47,62 +45,49 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-spark" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-hive-udf" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
   <div class="post-content">
     <header>
       
         <div class="icon"></div>
-        <time class="dt-published" datetime="2019-10-24T08:33:13.000Z"><a href="/2019/10/24/spark/">2019-10-24</a></time>
+        <time class="dt-published" datetime="2020-02-21T10:20:21.000Z"><a href="/2020/02/21/hive-udf/">2020-02-21</a></time>
       
       
   
-    <h1 class="p-name title" itemprop="headline name">Spark绪论</h1>
+    <h1 class="p-name title" itemprop="headline name">hive udf&amp;udaf</h1>
   
 
 
     </header>
     <div class="e-content entry" itemprop="articleBody">
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
-<li><p>为什么会有spark</p>
-<p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算<a id="more"></a> 机“Summit”浮点运算速度峰值可达20亿亿次/秒，这相当快了吧！确实很快，但是它的使用和维护费用都很高呀，一般人或者说公司根本负担不起。所以聪明的人类就发明了大数据工具。虽然单台机器的计算性能可能并不是很好，但是如果多台机器联合起来一起做计算，那么不就可以实现相对廉价的机器实现超大数据规模的计算吗？所以诞生了大数据工具Hadoop。Hadoop基于HDFS和Map-Reduce奠定了大数据领域的霸主地位。随后各种工具层出不穷。Spark针对Hadoop计算中慢的缺点，即每次计算结果都要读写到磁盘导致速度变慢的设计，作了如下改进：</p>
-<ol>
-<li>计算中间结果保存在内存中。Hadoop每次的计算结果都会放回HDFS，这种设计严重影响了计算速度。spark基于内存的设计则改进了这一点。</li>
-<li>惰性计算。Spark使用有向无环图（DAG）调度机制，遇到action操作算子才进行实际计算，所有就有了优化空间。</li>
-</ol>
+        <p>hive自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)使用<a id="more"></a></p>
+<h1 id="hive-udf"><a href="#hive-udf" class="headerlink" title="hive udf"></a>hive udf</h1><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>查找array中是否包含被查询值</p>
+<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul>
+<li><p>测试数据准备</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zhangsan        beijing,shanghai,tianjin,hangzhou</span><br><span class="line">lisi    changchu,chengdu,wuhan</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>hive建表与导入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Create table users(name string, worklocations array&lt;string&gt; ) row format delimited fields terminated by &#39;\t&#39; collection items terminated by &#39;,&#39;; </span><br><span class="line"></span><br><span class="line">load data local inpath &#39;&#x2F;root&#x2F;person.txt &#39; OVERWRITE INTO TABLE users;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>udf包生成与导入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">package com.will;</span><br><span class="line"></span><br><span class="line">import org.apache.hadoop.hive.ql.exec.UDF;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line"></span><br><span class="line">public class FindInArray extends UDF &#123;</span><br><span class="line">    public ArrayList&lt;String&gt; evaluate(String keywords, ArrayList&lt;String&gt; column)&#123;</span><br><span class="line">        &#x2F;&#x2F;参数类型使用arraylist&lt;String&gt;对应hive中的array&lt;string&gt;,而不是String[]</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return column;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public String evaluate(String keywords,ArrayList&lt;String&gt; column,String name)&#123;</span><br><span class="line">        &#x2F;&#x2F;重载evaluate，另一种查询方式，返回name值</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return name;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用mvn 打包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>导入hive</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add jar &#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar;</span><br><span class="line">create temporary function find_in_array as &#39;com.will.FindInArray&#39;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select find_in_array(&#39;beijing&#39;,worklocations) from users;</span><br><span class="line">OK</span><br><span class="line">[&quot;beijing&quot;,&quot;shanghai&quot;,&quot;tianjin&quot;,&quot;hangzhou&quot;]</span><br><span class="line">NULL</span><br><span class="line">Time taken: 0.424 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
 <blockquote>
-<p>可参考对比：<a href="https://www.zhihu.com/question/26568496" target="_blank" rel="noopener">https://www.zhihu.com/question/26568496</a></p>
+<p>参考：<a href="https://blog.csdn.net/Nougats/article/details/71158318" target="_blank" rel="noopener">https://blog.csdn.net/Nougats/article/details/71158318</a></p>
 </blockquote>
-</li>
-<li><p>Spark是什么</p>
-<p>官方定义：<strong>Apache Spark™</strong> is a unified analytics engine for large-scale data processing。翻译过来就是：用于大规模数据处理的分析引擎。再直白一点就是说：spark是用于快速处理大量数据的工具。</p>
-<img src="https://ericfu.me/images/2018/06/spark-banner.png" width="700" hegiht="113" align=center />
-
-
-
-</li>
-</ul>
-<h1 id="和其他工具对比"><a href="#和其他工具对比" class="headerlink" title="和其他工具对比"></a>和其他工具对比</h1><blockquote>
-<p>引用自：<a href="https://www.boxuegu.com/news/458.html" target="_blank" rel="noopener">https://www.boxuegu.com/news/458.html</a></p>
-</blockquote>
-<ul>
-<li><p><strong>Hadoop框架</strong></p>
-<p>提起大数据，第一个想起的肯定是Hadoop，因为Hadoop是目前世界上应用最广泛的大数据工具，它凭借极高的容错率和极低的硬件价格，在大数据市场上风生水起。Hadoop还是第一个在开源社区上引发高度关注的批处理框架，他提出的Map和Reduce的计算模式简洁而优雅。迄今为止，Hadoop已经成为了一个广阔的生态圈，实现了大量算法和组件。由于Hadoop的计算任务需要在集群的多个节点上多次读写，因此在速度上会稍显劣势，但是其吞吐量也同样是其他框架所不能匹敌的。</p>
-</li>
-</ul>
-<ul>
-<li><strong>Storm框架</strong><br>与Hadoop的批处理模式不同，Storm采用的是流计算框架，由Twitter开源并且托管在GitHub上。与Hadoop类似的是，Storm也提出了两个计算角色，分别为Spout和Bolt。如果说Hadoop是水桶，只能一桶一桶的去井里扛，那么Storm就是水龙头，只要打开就可以源源不断的出水。Storm支持的语言也比较多，Java、Ruby、Python等语言都能很好的支持。由于Storm是流计算框架，因此使用的是内存，延迟上有极大的优势，但是Storm不会持久化数据。</li>
-</ul>
-<ul>
-<li><strong>Samza框架</strong><br>Smaza也是一种流计算框架，但他目前只支持JVM语言，灵活度上略显不足，并且Samza必须和Kafka共同使用。但是响应的，其也继承了Kafka的低延时、分区、避免回压等优势。对于已经有Hadoop+Kafka工作环境的团队来说，Samza是一个不错的选择，并且Samza在多个团队使用的时候能体现良好的性能。</li>
-</ul>
-<ul>
-<li><strong>Spark框架</strong><br>Spark属于前两种框架形式的集合体，是一种混合式的计算框架。它既有自带的实时流处理工具，也可以和Hadoop集成，代替其中的MapReduce，甚至Spark还可以单独拿出来部署集群，但是还得借助HDFS等分布式存储系统。Spark的强大之处在于其运算速度，与Storm类似，Spark也是基于内存的，并且在内存满负载的时候，硬盘也能运算，运算结果表示，Spark的速度大约为Hadoop的一百倍，并且其成本可能比Hadoop更低。但是Spark目前还没有像Hadoop哪有拥有上万级别的集群，因此现阶段的Spark和Hadoop搭配起来使用更加合适。</li>
-</ul>
-<ul>
-<li><strong>Flink框架</strong><br>Flink也是一种混合式的计算框架，但是在设计初始，Fink的侧重点在于处理流式数据，这与Spark的设计初衷恰恰相反，而在市场需求的驱使下，两者都在朝着更多的兼容性发展。Flink目前不是很成熟，更多情况下Flink还是起到一个借鉴的作用。</li>
-</ul>
 
       
     </div>
@@ -111,13 +96,13 @@
         
   
   <div class="categories">
-    <a href="/categories/Spark/">Spark</a>
+    <a href="/categories/Hive/">Hive</a>
   </div>
 
         
   
   <div class="tags">
-    <a href="/tags/Spark/">Spark</a>, <a href="/tags/High-Performance-Spark/">High Performance Spark</a>, <a href="/tags/大数据工具/">大数据工具</a>
+    <a href="/tags/hive/">hive</a>, <a href="/tags/udf/">udf</a>, <a href="/tags/udaf/">udaf</a>
   </div>
 
         

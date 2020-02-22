@@ -1,18 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>hive源码</title>
+    <title>hive udf&amp;udaf</title>
+    <url>/2020/02/21/hive-udf/</url>
+    <content><![CDATA[<p>hive自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)使用<a id="more"></a></p>
+<h1 id="hive-udf"><a href="#hive-udf" class="headerlink" title="hive udf"></a>hive udf</h1><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>查找array中是否包含被查询值</p>
+<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul>
+<li><p>测试数据准备</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">zhangsan        beijing,shanghai,tianjin,hangzhou</span><br><span class="line">lisi    changchu,chengdu,wuhan</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>hive建表与导入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Create table users(name string, worklocations array&lt;string&gt; ) row format delimited fields terminated by &#39;\t&#39; collection items terminated by &#39;,&#39;; </span><br><span class="line"></span><br><span class="line">load data local inpath &#39;&#x2F;root&#x2F;person.txt &#39; OVERWRITE INTO TABLE users;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>udf包生成与导入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.will;</span><br><span class="line"></span><br><span class="line">import org.apache.hadoop.hive.ql.exec.UDF;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line"></span><br><span class="line">public class FindInArray extends UDF &#123;</span><br><span class="line">    public ArrayList&lt;String&gt; evaluate(String keywords, ArrayList&lt;String&gt; column)&#123;</span><br><span class="line">        &#x2F;&#x2F;参数类型使用arraylist&lt;String&gt;对应hive中的array&lt;string&gt;,而不是String[]</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return column;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public String evaluate(String keywords,ArrayList&lt;String&gt; column,String name)&#123;</span><br><span class="line">        &#x2F;&#x2F;重载evaluate，另一种查询方式，返回name值</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return name;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用mvn 打包</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>导入hive</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">add jar &#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar;</span><br><span class="line">create temporary function find_in_array as &#39;com.will.FindInArray&#39;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hive&gt; select find_in_array(&#39;beijing&#39;,worklocations) from users;</span><br><span class="line">OK</span><br><span class="line">[&quot;beijing&quot;,&quot;shanghai&quot;,&quot;tianjin&quot;,&quot;hangzhou&quot;]</span><br><span class="line">NULL</span><br><span class="line">Time taken: 0.424 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<blockquote>
+<p>参考：<a href="https://blog.csdn.net/Nougats/article/details/71158318" target="_blank" rel="noopener">https://blog.csdn.net/Nougats/article/details/71158318</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Hive</category>
+      </categories>
+      <tags>
+        <tag>hive</tag>
+        <tag>udf</tag>
+        <tag>udaf</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hive源码调试入门</title>
     <url>/2020/02/21/hive-source-modification/</url>
-    <content><![CDATA[<p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。</p>
+    <content><![CDATA[<p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。<a id="more"></a></p>
 <p>hive依赖hadoop，看hive启动脚本，最终是调用hadoop启动，而hadoop最终还是执行的java -jar xxx.jar形式，所以决定先从hive java源码入口看。先试一试改动源码打印个信息。</p>
 <p>首先在hive的main函数入口增加一行</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(&quot;Will&#39;s first hive source code modification: test err print info&quot;);</span><br></pre></td></tr></table></figure>
 
 <img src="https://i.loli.net/2020/02/21/bQOyidqXgsMR3Ca.png" alt="启动" style="zoom:80%;" />
 
-
-
-<p>然后运行hive</p>
+<p>打包，然后替换lib目录下hive-cli-xxx.jar。</p>
+<p>运行hive</p>
 <p><img src="https://i.loli.net/2020/02/21/LZ16gVt4rfdXqyu.png" alt="选区_001.png"></p>
 <p>好啦，正式开启与hive源码的斗争！</p>
 ]]></content>
