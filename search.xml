@@ -31,7 +31,7 @@
   </entry>
   <entry>
     <title>hive udf&amp;udaf</title>
-    <url>/2020/02/21/hive-udf/</url>
+    <url>/2020/02/21/hive/hive-udf/</url>
     <content><![CDATA[<p>hive为我们定义了很多函数，大多数情况下是能够满足我们的需求的。但是在有些情况下，很有必要自己定义一些函数，这样使用起来非常方便。这就是自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)。udf是每行返回一个结果，而udaf则是聚合的结果，多行产生一个结果。另外还有udtf，是一行产生多个结果。目前我还没有用到过udtf，就先不介绍它了。下面分别用两个示例介绍udf和udaf<a id="more"></a></p>
 <h1 id="udf"><a href="#udf" class="headerlink" title="udf"></a>udf</h1><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>查找array中是否包含被查询值</p>
 <h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul>
@@ -125,7 +125,7 @@
   </entry>
   <entry>
     <title>hive源码调试入门</title>
-    <url>/2020/02/21/hive-source-modification/</url>
+    <url>/2020/02/21/hive/hive-source-modification/</url>
     <content><![CDATA[<p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。<a id="more"></a></p>
 <p>hive依赖hadoop，看hive启动脚本，最终是调用hadoop启动，而hadoop最终还是执行的java -jar xxx.jar形式，所以决定先从hive java源码入口看。先试一试改动源码打印个信息。</p>
 <p>首先在hive的main函数入口增加一行</p>
