@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Page 2 | Will&#39;s BigData Field</title>
+  <title>github个人网站替换为自定义域名 | Will&#39;s BigData Field</title>
   <meta name="author" content="Will">
+  
+  <meta name="description" content="首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="github个人网站替换为自定义域名"/>
   <meta property="og:site_name" content="Will&#39;s BigData Field"/>
 
   
@@ -43,8 +45,7 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-  <article id="post-github个人网站更改域名" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-github个人网站更改域名" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
   <div class="post-content">
     <header>
@@ -54,7 +55,7 @@
       
       
   
-    <h1 class="title"><a href="/2020/02/15/github个人网站更改域名/">github个人网站替换为自定义域名</a></h1>
+    <h1 class="p-name title" itemprop="headline name">github个人网站替换为自定义域名</h1>
   
 
 
@@ -62,16 +63,49 @@
     <div class="e-content entry" itemprop="articleBody">
       
         <p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p>
+<a id="more"></a>
+<p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p>
+<h3 id="域名申请"><a href="#域名申请" class="headerlink" title="域名申请"></a>域名申请</h3><p>经过我的一番调研，最终选用了godaddy的域名服务。国内的也有很多，大家根据需要选择。<br>接下来就是申请域名了。先选择一个自己喜欢的域名前缀，最好比较好记，方便自己也方便他人。域名的后缀有很多，比如.com,.top，.net等等，价格也不一样，便宜的只需要几元人民币。选完域名付完钱，在使用域名前还需要一个认证的过程，中国大陆可以选择的只有身份证。<br><strong>这里必须吐槽一下，一般需要身份证复印件的都是正反面，然后我就上传了正反面。第一次给拒绝了，理由是空白边缘留的不够宽。这次我认认真真，拍了正反面在照片中间再次上传，等了一天，又给我拒绝了，还是相同的理由！我就很纳闷了。打电话给客服问了才知道，只需要正面，但是他们审核的时候没有这个选项，就给我随便找了个理由。。。</strong>第三次终于申请成功了。</p>
+<p>接下来就是域名解析服务器替换，好像他们也提供，不替换是否可行没试。我用国内的DNSpod。</p>
+<p>首先需要在godaddy上更改域名服务器。DNSpod对于在godaddy上更改域名服务器的说明已经过时了</p>
+<p><img src="https://i.loli.net/2020/02/24/Tdk3JMGxInWoLS2.png" alt="选区_017.png"></p>
+<p>替换后如上图</p>
+<p>等一段时间，我等了半小时吧，等DNSpod上显示状态为正常就可以了</p>
+<p><img src="https://i.loli.net/2020/02/24/sv1zMHZrExTOlAa.png" alt="选区_018.png"></p>
+<p>现在再进去添加两条纪录</p>
+<p><img src="https://i.loli.net/2020/02/24/1d65DsLzUfHqRPW.png" alt="选区_020.png"></p>
+<p>上面的记录值是用下面的命令得到的。这两条表示不输入www和输入www都导向记录值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping xxx.github.io</span><br></pre></td></tr></table></figure>
+
+<p>最后，在github上填写替换的域名。我用的hexo部署的，所以在source目录下新建CNAME文件，内容为will21.cn。部署到服务器。</p>
+<p>访问will21.cn，搞定！</p>
+
       
     </div>
     <footer>
       
         
-          <div class="alignleft">
-            <a href="/2020/02/15/github个人网站更改域名/#more" class="more-link">Read More</a>
-          </div>
+  
+  <div class="categories">
+    <a href="/categories/other/">other</a>
+  </div>
+
         
+  
+  <div class="tags">
+    <a href="/tags/github个人网站/">github个人网站</a>, <a href="/tags/域名修改/">域名修改</a>
+  </div>
+
         
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
       
       <div class="clearfix"></div>
     </footer>
@@ -79,173 +113,36 @@
 </article>
 
 
+<section id="comment">
+  <h1 class="title">Comments</h1>
 
-
-
-  <article id="post-linux-基础知识" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time class="dt-published" datetime="2020-02-11T16:21:21.000Z"><a href="/2020/02/12/linux-基础知识/">2020-02-12</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2020/02/12/linux-基础知识/">基础知识</a></h1>
-  
-
-
-    </header>
-    <div class="e-content entry" itemprop="articleBody">
-      
-        <h1 id="计算机"><a href="#计算机" class="headerlink" title="计算机"></a>计算机</h1><h3 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a>组成部分</h3><ul>
-<li>输入单元</li>
-<li>CPU
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2020/02/12/linux-基础知识/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
   </div>
-</article>
-
-
-
-
-
-  <article id="post-RDD转换" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time class="dt-published" datetime="2019-11-02T14:43:50.000Z"><a href="/2019/11/02/RDD转换/">2019-11-02</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2019/11/02/RDD转换/">RDD转换</a></h1>
-  
+<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NzIyNi8yMzcyNg==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+</section>
 
 
-    </header>
-    <div class="e-content entry" itemprop="articleBody">
-      
-        <h1 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h1><p>RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2019/11/02/RDD转换/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  <article id="post-spark架构" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time class="dt-published" datetime="2019-11-02T04:43:16.000Z"><a href="/2019/11/02/spark架构/">2019-11-02</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2019/11/02/spark架构/">spark架构</a></h1>
-  
-
-
-    </header>
-    <div class="e-content entry" itemprop="articleBody">
-      
-        <h1 id="Spark架构"><a href="#Spark架构" class="headerlink" title="Spark架构"></a>Spark架构</h1><p><img src="https://i.loli.net/2019/11/02/TLMwH9aV1xStu5Y.png" alt=""></p>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2019/11/02/spark架构/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-  <article id="post-spark" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time class="dt-published" datetime="2019-10-24T08:33:13.000Z"><a href="/2019/10/24/spark/">2019-10-24</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2019/10/24/spark/">Spark绪论</a></h1>
-  
-
-
-    </header>
-    <div class="e-content entry" itemprop="articleBody">
-      
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
-<li><p>为什么会有spark</p>
-<p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2019/10/24/spark/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-
-<nav id="pagination">
-  
-    <a href="/" class="alignleft prev">Prev</a>
-  
-  
-  <div class="clearfix"></div>
-</nav></div></div>
+</div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">
   <form action="//google.com/search" method="get" accept-charset="utf-8">
@@ -360,7 +257,7 @@ var disqus_shortname = 'https-zcenao21-github-io';
   var dsq = document.createElement('script');
   dsq.type = 'text/javascript';
   dsq.async = true;
-  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 }());
 </script>
