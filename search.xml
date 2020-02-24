@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>github个人网站替换自定义域名</title>
-    <url>/2020/02/24/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
+    <url>/2020/02/24/other/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
     <content><![CDATA[<p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p>
 <a id="more"></a>
 <p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p>
@@ -149,7 +149,7 @@
   </entry>
   <entry>
     <title>hadoop在windows 10下安装步骤</title>
-    <url>/2020/02/15/hadoop-hadoop%E5%AE%89%E8%A3%85/</url>
+    <url>/2020/02/15/hadoop/hadoop-hadoop%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>首先劝大家在有条件情况下能用mac就用mac，再不行用linux系统，在windows上运行hadoop不是一个好主意！真的好麻烦。。。</p>
 <a id="more"></a>
 
@@ -212,7 +212,7 @@
   </entry>
   <entry>
     <title>基础知识</title>
-    <url>/2020/02/12/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</url>
+    <url>/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</url>
     <content><![CDATA[<h1 id="计算机"><a href="#计算机" class="headerlink" title="计算机"></a>计算机</h1><h3 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a>组成部分</h3><ul>
 <li>输入单元</li>
 <li>CPU<a id="more"></a></li>
@@ -250,11 +250,11 @@
   </entry>
   <entry>
     <title>linux---目录</title>
-    <url>/2020/02/09/Linux%E7%9B%AE%E5%BD%95/</url>
+    <url>/2020/02/09/linux/Linux%E7%9B%AE%E5%BD%95/</url>
     <content><![CDATA[<p>linux系统是一种自由和开放源码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹在1991年10月5日首次发布，在加上用户空间的应用程序之后，成为Linux操作系统[1]。linux系统作为当前最流行的系统之一，有各种版本，如centos, ubuntu等，当前移动互联网终端之王—手机—的系统之一Android也是基于linux，可以说随处可以见到linux的身影。</p>
 <p>在大数据开发中，linux系统必然会涉及，是必备的基础技能。下面将分为以下一系列文章进行介绍：</p>
 <ul>
-<li><a href="/2020/02/12/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">基础知识</a></li>
+<li></li>
 <li>常用命令</li>
 <li>文件权限</li>
 <li>shell脚本</li>
@@ -272,7 +272,7 @@
   </entry>
   <entry>
     <title>RDD转换</title>
-    <url>/2019/11/02/RDD%E8%BD%AC%E6%8D%A2/</url>
+    <url>/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/</url>
     <content><![CDATA[<h1 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h1><p>RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。<a id="more"></a></p>
 <p>RDD包含以下特性（前3个必须有，后两个可选）：</p>
 <ol>
@@ -312,12 +312,12 @@
   </entry>
   <entry>
     <title>spark---目录</title>
-    <url>/2019/11/02/spark%E7%9B%AE%E5%BD%95/</url>
+    <url>/2019/11/02/spark/spark%E7%9B%AE%E5%BD%95/</url>
     <content><![CDATA[<p>Spark作为一个开源大数据分析引擎，分布式、计算速度快是其显著的优势，特别适用于机器学习（ML）等计算中需要迭代的算法。下面将主要针对Spark Core部分，分为以下一系列文章进行介绍：</p>
 <ul>
-<li><a href="/2019/10/24/spark/" title="Spark绪论">Spark绪论</a></li>
-<li><a href="/2019/11/02/spark%E6%9E%B6%E6%9E%84/" title="Spark架构">Spark架构</a></li>
-<li><a href="/2019/11/02/RDD%E8%BD%AC%E6%8D%A2/" title="RDD转换">RDD转换</a></li>
+<li></li>
+<li></li>
+<li></li>
 <li>键值对处理</li>
 </ul>
 <blockquote>
@@ -333,7 +333,7 @@
   </entry>
   <entry>
     <title>spark架构</title>
-    <url>/2019/11/02/spark%E6%9E%B6%E6%9E%84/</url>
+    <url>/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/</url>
     <content><![CDATA[<h1 id="Spark架构"><a href="#Spark架构" class="headerlink" title="Spark架构"></a>Spark架构</h1><p><img src="https://i.loli.net/2019/11/02/TLMwH9aV1xStu5Y.png" alt=""></p>
 <a id="more"></a>
 
@@ -353,7 +353,7 @@
   </entry>
   <entry>
     <title>Spark绪论</title>
-    <url>/2019/10/24/spark/</url>
+    <url>/2019/10/24/spark/spark/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
 <li><p>为什么会有spark</p>
 <p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算<a id="more"></a> 机“Summit”浮点运算速度峰值可达20亿亿次/秒，这相当快了吧！确实很快，但是它的使用和维护费用都很高呀，一般人或者说公司根本负担不起。所以聪明的人类就发明了大数据工具。虽然单台机器的计算性能可能并不是很好，但是如果多台机器联合起来一起做计算，那么不就可以实现相对廉价的机器实现超大数据规模的计算吗？所以诞生了大数据工具Hadoop。Hadoop基于HDFS和Map-Reduce奠定了大数据领域的霸主地位。随后各种工具层出不穷。Spark针对Hadoop计算中慢的缺点，即每次计算结果都要读写到磁盘导致速度变慢的设计，作了如下改进：</p>
