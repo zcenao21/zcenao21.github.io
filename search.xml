@@ -30,6 +30,35 @@
       </tags>
   </entry>
   <entry>
+    <title>github个人网站替换自定义域名</title>
+    <url>/2020/02/24/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
+    <content><![CDATA[<p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p>
+<a id="more"></a>
+<p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p>
+<h3 id="域名申请"><a href="#域名申请" class="headerlink" title="域名申请"></a>域名申请</h3><p>经过我的一番调研，最终选用了godaddy的域名服务。国内的也有很多，大家根据需要选择。<br>接下来就是申请域名了。先选择一个自己喜欢的域名前缀，最好比较好记，方便自己也方便他人。域名的后缀有很多，比如.com,.top，.net等等，价格也不一样，便宜的只需要几元人民币。选完域名付完钱，在使用域名前还需要一个认证的过程，中国大陆可以选择的只有身份证。<br><strong>这里必须吐槽一下，一般需要身份证复印件的都是正反面，然后我就上传了正反面。第一次给拒绝了，理由是空白边缘留的不够宽。这次我认认真真，拍了正反面在照片中间再次上传，等了一天，又给我拒绝了，还是相同的理由！我就很纳闷了。打电话给客服问了才知道，只需要正面，但是他们审核的时候没有这个选项，就给我随便找了个理由。。。</strong>第三次终于申请成功了。</p>
+<p>接下来就是域名解析服务器替换，好像他们也提供，不替换是否可行没试。我用国内的DNSpod。</p>
+<p>首先需要在godaddy上更改域名服务器。DNSpod对于在godaddy上更改域名服务器的说明已经过时了</p>
+<p><img src="https://i.loli.net/2020/02/24/Tdk3JMGxInWoLS2.png" alt="选区_017.png"></p>
+<p>替换后如上图</p>
+<p>等一段时间，我等了半小时吧，等DNSpod上显示状态为正常就可以了</p>
+<p><img src="https://i.loli.net/2020/02/24/sv1zMHZrExTOlAa.png" alt="选区_018.png"></p>
+<p>现在再进去添加两条纪录</p>
+<p><img src="https://i.loli.net/2020/02/24/1d65DsLzUfHqRPW.png" alt="选区_020.png"></p>
+<p>上面的记录值是用下面的命令得到的。这两条表示不输入www和输入www都导向记录值</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ping xxx.github.io</span><br></pre></td></tr></table></figure>
+
+<p>最后，在github上填写替换的域名。我用的hexo部署的，所以在source目录下新建CNAME文件，内容为will21.cn。部署到服务器。</p>
+<p>访问will21.cn，搞定！</p>
+]]></content>
+      <categories>
+        <category>other</category>
+      </categories>
+      <tags>
+        <tag>github个人网站</tag>
+        <tag>域名修改</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hive udf&amp;udaf</title>
     <url>/2020/02/21/hive/hive-udf/</url>
     <content><![CDATA[<p>hive为我们定义了很多函数，大多数情况下是能够满足我们的需求的。但是在有些情况下，很有必要自己定义一些函数，这样使用起来非常方便。这就是自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)。udf是每行返回一个结果，而udaf则是聚合的结果，多行产生一个结果。另外还有udtf，是一行产生多个结果。目前我还没有用到过udtf，就先不介绍它了。下面分别用两个示例介绍udf和udaf<a id="more"></a></p>
@@ -254,7 +283,7 @@
     <content><![CDATA[<p>linux系统是一种自由和开放源码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹在1991年10月5日首次发布，在加上用户空间的应用程序之后，成为Linux操作系统[1]。linux系统作为当前最流行的系统之一，有各种版本，如centos, ubuntu等，当前移动互联网终端之王—手机—的系统之一Android也是基于linux，可以说随处可以见到linux的身影。</p>
 <p>在大数据开发中，linux系统必然会涉及，是必备的基础技能。下面将分为以下一系列文章进行介绍：</p>
 <ul>
-<li></li>
+<li><a href="/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">基础知识</a></li>
 <li>常用命令</li>
 <li>文件权限</li>
 <li>shell脚本</li>
@@ -315,9 +344,9 @@
     <url>/2019/11/02/spark/spark%E7%9B%AE%E5%BD%95/</url>
     <content><![CDATA[<p>Spark作为一个开源大数据分析引擎，分布式、计算速度快是其显著的优势，特别适用于机器学习（ML）等计算中需要迭代的算法。下面将主要针对Spark Core部分，分为以下一系列文章进行介绍：</p>
 <ul>
-<li></li>
-<li></li>
-<li></li>
+<li><a href="/2019/10/24/spark/spark/" title="Spark绪论">Spark绪论</a></li>
+<li><a href="/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/" title="Spark架构">Spark架构</a></li>
+<li><a href="/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/" title="RDD转换">RDD转换</a></li>
 <li>键值对处理</li>
 </ul>
 <blockquote>
