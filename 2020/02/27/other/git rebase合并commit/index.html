@@ -1,0 +1,299 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  
+  <title>git rebase合并commits | Will&#39;s BigData Field</title>
+  <meta name="author" content="Will">
+  
+  <meta name="description" content="rebase作用rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="git rebase合并commits"/>
+  <meta property="og:site_name" content="Will&#39;s BigData Field"/>
+
+  
+    <meta property="og:image" content=""/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Will&#39;s BigData Field" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Will&#39;s BigData Field</a></h1>
+  <h2><a href="/">hello world!</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-other/git rebase合并commit" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2020-02-27T14:31:21.000Z"><a href="/2020/02/27/other/git rebase合并commit/">2020-02-27</a></time>
+      
+      
+  
+    <h1 class="p-name title" itemprop="headline name">git rebase合并commits</h1>
+  
+
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。<a id="more"></a></p>
+<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><h3 id="从github上拉项目"><a href="#从github上拉项目" class="headerlink" title="从github上拉项目"></a>从github上拉项目</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> % git clone git@github.com:xxx&#x2F;rebaseTest.git</span><br><span class="line">正克隆到 &#39;rebaseTest&#39;...</span><br><span class="line">remote: Enumerating objects: 3, done.</span><br><span class="line">remote: Counting objects: 100% (3&#x2F;3), done.</span><br><span class="line">remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0</span><br><span class="line">接收对象中: 100% (3&#x2F;3), 完成.</span><br><span class="line">检查连接... 完成。</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="新建分支并切换"><a href="#新建分支并切换" class="headerlink" title="新建分支并切换"></a>新建分支并切换</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> % git checkout -b test</span><br><span class="line">切换到一个新分支 &#39;test&#39;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="修改并提交多次"><a href="#修改并提交多次" class="headerlink" title="修改并提交多次"></a>修改并提交多次</h3><p>修改一次文件后执行下面的命令一次，message替换为自定义信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add README.md</span><br><span class="line">git commit -m &quot;message&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="找到要合并的commits"><a href="#找到要合并的commits" class="headerlink" title="找到要合并的commits"></a>找到要合并的commits</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> % git log --oneline</span><br><span class="line">4254b18 11111</span><br><span class="line">d024037 00000</span><br><span class="line">f7de784 all messages</span><br></pre></td></tr></table></figure>
+
+<p>假设要将最上面两条合并</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i f7de784</span><br></pre></td></tr></table></figure>
+
+<p>将pick替换为e和s，分别表示编辑新的信息，合并之前的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">e d024037 00000</span><br><span class="line">s 4254b18 11111</span><br><span class="line"></span><br><span class="line"># Rebase f7de784..4254b18 onto f7de784 (2 command(s))</span><br><span class="line">#</span><br><span class="line"># Commands:</span><br><span class="line"># p, pick &#x3D; use commit</span><br><span class="line"># r, reword &#x3D; use commit, but edit the commit message</span><br><span class="line"># e, edit &#x3D; use commit, but stop for amending</span><br><span class="line"># s, squash &#x3D; use commit, but meld into previous commit</span><br><span class="line"># f, fixup &#x3D; like &quot;squash&quot;, but discard this commit&#39;s log message</span><br><span class="line"></span><br><span class="line">^G 求助       ^O Write Out  ^W 搜索       ^K 剪切文字   ^J 对齐</span><br><span class="line">^X 离开       ^R 读档       ^\ 替换       ^U Uncut Text ^T 拼写检查</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="合并commit信息"><a href="#合并commit信息" class="headerlink" title="合并commit信息"></a>合并commit信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># This is a combination of 2 commits.</span><br><span class="line"></span><br><span class="line">2 merged messages</span><br><span class="line"></span><br><span class="line"># 请为您的变更输入提交说明。以 &#39;#&#39; 开始的行将被忽略，而一个空的提交</span><br><span class="line"># 说明将会终止提交。</span><br><span class="line"># </span><br><span class="line"># 日期：  Thu Feb 27 22:19:08 2020 +0800</span><br><span class="line"># </span><br><span class="line"># 交互式变基操作正在进行中；至 f7de784</span><br><span class="line"># 最后一条命令已完成（2 条命令被执行）：</span><br><span class="line">#    e d024037 00000</span><br><span class="line">#    s 4254b18 11111</span><br><span class="line"># 未剩下任何命令。</span><br><span class="line"># 您在执行将分支 &#39;test&#39; 变基到 &#39;f7de784&#39; 的操作时编辑提交。</span><br><span class="line"># </span><br><span class="line"># 要提交的变更：</span><br><span class="line">#       修改：     README.md</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="切换到master分支并合并"><a href="#切换到master分支并合并" class="headerlink" title="切换到master分支并合并"></a>切换到master分支并合并</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">% git checkout master</span><br><span class="line">切换到分支 &#39;master&#39;</span><br><span class="line">您的分支与上游分支 &#39;origin&#x2F;master&#39; 一致。</span><br><span class="line">will@will-Lenovo-ideapad-720S-14IKB &#x2F;tmp&#x2F;test&#x2F;rebaseTest</span><br><span class="line"> % git merge test</span><br><span class="line">更新 f7de784..687e32e</span><br><span class="line">Fast-forward</span><br><span class="line"> README.md | 25 ++-----------------------</span><br><span class="line"> 1 file changed, 2 insertions(+), 23 deletions(-)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>到github上可以看到master分支只有一条合并后的commit信息</p>
+<p><img src="https://i.loli.net/2020/02/27/zFCWBo4NQarsmgL.png" alt="rebase.png"></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/other/">other</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Git/">Git</a>, <a href="/tags/rebase/">rebase</a>, <a href="/tags/commits合并/">commits合并</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+  </div>
+  
+<!-- 来必力City版安装代码 -->
+<div id="lv-container" data-id="city" data-uid="MTAyMC80NzIyNi8yMzcyNg==">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+</div>
+<!-- City版安装代码已完成 -->
+</section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="as_sitesearch" value="yoursite.com">
+  </form>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Hive/">Hive</a><small>2</small></li>
+  
+    <li><a href="/categories/Linux/">Linux</a><small>1</small></li>
+  
+    <li><a href="/categories/Spark/">Spark</a><small>3</small></li>
+  
+    <li><a href="/categories/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/categories/other/">other</a><small>2</small></li>
+  
+    <li><a href="/categories/目录/">目录</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Git/">Git</a><small>1</small></li>
+  
+    <li><a href="/tags/High-Performance-Spark/">High Performance Spark</a><small>3</small></li>
+  
+    <li><a href="/tags/Linux/">Linux</a><small>1</small></li>
+  
+    <li><a href="/tags/RDD/">RDD</a><small>1</small></li>
+  
+    <li><a href="/tags/Spark/">Spark</a><small>3</small></li>
+  
+    <li><a href="/tags/commits合并/">commits合并</a><small>1</small></li>
+  
+    <li><a href="/tags/github个人网站/">github个人网站</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop/">hadoop</a><small>1</small></li>
+  
+    <li><a href="/tags/hadoop安装/">hadoop安装</a><small>1</small></li>
+  
+    <li><a href="/tags/hive/">hive</a><small>2</small></li>
+  
+    <li><a href="/tags/linux目录/">linux目录</a><small>1</small></li>
+  
+    <li><a href="/tags/rebase/">rebase</a><small>1</small></li>
+  
+    <li><a href="/tags/spark架构/">spark架构</a><small>1</small></li>
+  
+    <li><a href="/tags/spark目录/">spark目录</a><small>1</small></li>
+  
+    <li><a href="/tags/udaf/">udaf</a><small>1</small></li>
+  
+    <li><a href="/tags/udf/">udf</a><small>1</small></li>
+  
+    <li><a href="/tags/windows-10/">windows 10</a><small>1</small></li>
+  
+    <li><a href="/tags/域名修改/">域名修改</a><small>1</small></li>
+  
+    <li><a href="/tags/基础知识/">基础知识</a><small>1</small></li>
+  
+    <li><a href="/tags/大数据工具/">大数据工具</a><small>1</small></li>
+  
+    <li><a href="/tags/开发/">开发</a><small>1</small></li>
+  
+    <li><a href="/tags/源码/">源码</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2020 Will
+  
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  
+        <!-- 不蒜子统计 -->
+        <span id="busuanzi_container_site_pv">
+                本站总访问量<span id="busuanzi_value_site_pv"></span>次
+        </span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv" style='display:none'>
+                本站访客数<span id="busuanzi_value_site_uv"></span>人
+        </span>
+  
+</div>
+<div class="clearfix"></div>
+</footer>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'https-zcenao21-github-io';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

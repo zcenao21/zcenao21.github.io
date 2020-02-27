@@ -1,37 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>github个人网站替换自定义域名</title>
-    <url>/2020/02/24/other/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
-    <content><![CDATA[<p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p>
-<a id="more"></a>
-<p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p>
-<h3 id="域名申请"><a href="#域名申请" class="headerlink" title="域名申请"></a>域名申请</h3><p>经过我的一番调研，最终选用了godaddy的域名服务。国内的也有很多，大家根据需要选择。<br>接下来就是申请域名了。先选择一个自己喜欢的域名前缀，最好比较好记，方便自己也方便他人。域名的后缀有很多，比如.com,.top，.net等等，价格也不一样，便宜的只需要几元人民币。选完域名付完钱，在使用域名前还需要一个认证的过程，中国大陆可以选择的只有身份证。<br><strong>这里必须吐槽一下，一般需要身份证复印件的都是正反面，然后我就上传了正反面。第一次给拒绝了，理由是空白边缘留的不够宽。这次我认认真真，拍了正反面在照片中间再次上传，等了一天，又给我拒绝了，还是相同的理由！我就很纳闷了。打电话给客服问了才知道，只需要正面，但是他们审核的时候没有这个选项，就给我随便找了个理由。。。</strong>第三次终于申请成功了。</p>
-<p>接下来就是域名解析服务器替换，好像他们也提供，不替换是否可行没试。我用国内的DNSpod。</p>
-<p>首先需要在godaddy上更改域名服务器。DNSpod对于在godaddy上更改域名服务器的说明已经过时了</p>
-<p><img src="https://i.loli.net/2020/02/24/Tdk3JMGxInWoLS2.png" alt="选区_017.png"></p>
-<p>替换后如上图</p>
-<p>等一段时间，我等了半小时吧，等DNSpod上显示状态为正常就可以了</p>
-<p><img src="https://i.loli.net/2020/02/24/sv1zMHZrExTOlAa.png" alt="选区_018.png"></p>
-<p>现在再进去添加两条纪录</p>
-<p><img src="https://i.loli.net/2020/02/24/1d65DsLzUfHqRPW.png" alt="选区_020.png"></p>
-<p>上面的记录值是用下面的命令得到的。这两条表示不输入www和输入www都导向记录值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ping xxx.github.io</span><br></pre></td></tr></table></figure>
+    <title>git rebase合并commits</title>
+    <url>/2020/02/27/other/git%20rebase%E5%90%88%E5%B9%B6commit/</url>
+    <content><![CDATA[<h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。<a id="more"></a></p>
+<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><h3 id="从github上拉项目"><a href="#从github上拉项目" class="headerlink" title="从github上拉项目"></a>从github上拉项目</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> % git clone git@github.com:xxx&#x2F;rebaseTest.git</span><br><span class="line">正克隆到 &#39;rebaseTest&#39;...</span><br><span class="line">remote: Enumerating objects: 3, done.</span><br><span class="line">remote: Counting objects: 100% (3&#x2F;3), done.</span><br><span class="line">remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0</span><br><span class="line">接收对象中: 100% (3&#x2F;3), 完成.</span><br><span class="line">检查连接... 完成。</span><br></pre></td></tr></table></figure>
 
-<p>最后，在github上填写替换的域名。我用的hexo部署的，所以在source目录下新建CNAME文件，内容为will21.cn。部署到服务器。</p>
-<p>访问will21.cn，搞定！</p>
+
+
+<h3 id="新建分支并切换"><a href="#新建分支并切换" class="headerlink" title="新建分支并切换"></a>新建分支并切换</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> % git checkout -b test</span><br><span class="line">切换到一个新分支 &#39;test&#39;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="修改并提交多次"><a href="#修改并提交多次" class="headerlink" title="修改并提交多次"></a>修改并提交多次</h3><p>修改一次文件后执行下面的命令一次，message替换为自定义信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add README.md</span><br><span class="line">git commit -m &quot;message&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="找到要合并的commits"><a href="#找到要合并的commits" class="headerlink" title="找到要合并的commits"></a>找到要合并的commits</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> % git log --oneline</span><br><span class="line">4254b18 11111</span><br><span class="line">d024037 00000</span><br><span class="line">f7de784 all messages</span><br></pre></td></tr></table></figure>
+
+<p>假设要将最上面两条合并</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i f7de784</span><br></pre></td></tr></table></figure>
+
+<p>将pick替换为e和s，分别表示编辑新的信息，合并之前的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">e d024037 00000</span><br><span class="line">s 4254b18 11111</span><br><span class="line"></span><br><span class="line"># Rebase f7de784..4254b18 onto f7de784 (2 command(s))</span><br><span class="line">#</span><br><span class="line"># Commands:</span><br><span class="line"># p, pick &#x3D; use commit</span><br><span class="line"># r, reword &#x3D; use commit, but edit the commit message</span><br><span class="line"># e, edit &#x3D; use commit, but stop for amending</span><br><span class="line"># s, squash &#x3D; use commit, but meld into previous commit</span><br><span class="line"># f, fixup &#x3D; like &quot;squash&quot;, but discard this commit&#39;s log message</span><br><span class="line"></span><br><span class="line">^G 求助       ^O Write Out  ^W 搜索       ^K 剪切文字   ^J 对齐</span><br><span class="line">^X 离开       ^R 读档       ^\ 替换       ^U Uncut Text ^T 拼写检查</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="合并commit信息"><a href="#合并commit信息" class="headerlink" title="合并commit信息"></a>合并commit信息</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># This is a combination of 2 commits.</span><br><span class="line"></span><br><span class="line">2 merged messages</span><br><span class="line"></span><br><span class="line"># 请为您的变更输入提交说明。以 &#39;#&#39; 开始的行将被忽略，而一个空的提交</span><br><span class="line"># 说明将会终止提交。</span><br><span class="line"># </span><br><span class="line"># 日期：  Thu Feb 27 22:19:08 2020 +0800</span><br><span class="line"># </span><br><span class="line"># 交互式变基操作正在进行中；至 f7de784</span><br><span class="line"># 最后一条命令已完成（2 条命令被执行）：</span><br><span class="line">#    e d024037 00000</span><br><span class="line">#    s 4254b18 11111</span><br><span class="line"># 未剩下任何命令。</span><br><span class="line"># 您在执行将分支 &#39;test&#39; 变基到 &#39;f7de784&#39; 的操作时编辑提交。</span><br><span class="line"># </span><br><span class="line"># 要提交的变更：</span><br><span class="line">#       修改：     README.md</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="切换到master分支并合并"><a href="#切换到master分支并合并" class="headerlink" title="切换到master分支并合并"></a>切换到master分支并合并</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git checkout master</span><br><span class="line">切换到分支 &#39;master&#39;</span><br><span class="line">您的分支与上游分支 &#39;origin&#x2F;master&#39; 一致。</span><br><span class="line">will@will-Lenovo-ideapad-720S-14IKB &#x2F;tmp&#x2F;test&#x2F;rebaseTest</span><br><span class="line"> % git merge test</span><br><span class="line">更新 f7de784..687e32e</span><br><span class="line">Fast-forward</span><br><span class="line"> README.md | 25 ++-----------------------</span><br><span class="line"> 1 file changed, 2 insertions(+), 23 deletions(-)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>到github上可以看到master分支只有一条合并后的commit信息</p>
+<p><img src="https://i.loli.net/2020/02/27/zFCWBo4NQarsmgL.png" alt="rebase.png"></p>
 ]]></content>
       <categories>
         <category>other</category>
       </categories>
       <tags>
-        <tag>github个人网站</tag>
-        <tag>域名修改</tag>
+        <tag>Git</tag>
+        <tag>rebase</tag>
+        <tag>commits合并</tag>
       </tags>
   </entry>
   <entry>
     <title>github个人网站替换自定义域名</title>
-    <url>/2020/02/24/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
+    <url>/2020/02/24/other/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
     <content><![CDATA[<p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p>
 <a id="more"></a>
 <p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p>
