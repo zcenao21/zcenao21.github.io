@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2020/02/23/DlNqFRHnZ6zLuoA.png">
 <meta property="og:image" content="https://i.loli.net/2020/02/23/IKn3Vv57jPScxs8.png">
 <meta property="article:published_time" content="2020-02-21T10:20:21.000Z">
-<meta property="article:modified_time" content="2020-02-24T12:41:52.908Z">
+<meta property="article:modified_time" content="2020-03-06T16:15:34.463Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="hive">
 <meta property="article:tag" content="udf">
@@ -221,7 +221,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-24 20:41:52" itemprop="dateModified" datetime="2020-02-24T20:41:52+08:00">2020-02-24</time>
+                <time title="Modified: 2020-03-07 00:15:34" itemprop="dateModified" datetime="2020-03-07T00:15:34+08:00">2020-03-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -333,6 +333,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select letters(name) from users;</span><br><span class="line">Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1</span><br><span class="line">2020-02-23 13:25:06,087 Stage-1 map &#x3D; 0%,  reduce &#x3D; 0%</span><br><span class="line">2020-02-23 13:25:11,426 Stage-1 map &#x3D; 100%,  reduce &#x3D; 0%, Cumulative CPU 2.03 sec</span><br><span class="line">2020-02-23 13:25:16,607 Stage-1 map &#x3D; 100%,  reduce &#x3D; 100%, Cumulative CPU 4.01 sec</span><br><span class="line">MapReduce Total cumulative CPU time: 4 seconds 10 msec</span><br><span class="line">Total MapReduce CPU Time Spent: 4 seconds 10 msec</span><br><span class="line">OK</span><br><span class="line">12</span><br><span class="line">Time taken: 23.819 seconds, Fetched: 1 row(s)</span><br></pre></td></tr></table></figure>
 
 
+
+<h1 id="my-own-udaf"><a href="#my-own-udaf" class="headerlink" title="my own udaf"></a>my own udaf</h1><h3 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h3><p>有一个hive表，其中两列分别代表时间戳和事件。目标是得到指定时间范围的所有事件。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>根据上一部分的介绍，要实现聚合首先要设计如何存储，传输的问题。在这个过程中我仔细研究了hive udaf示例的histogram设计，然后设计了自己的udaf。聚合存储使用hashmap，初步解析结果使用string的list保存。</p>
+<p>代码</p>
+<p><a href="https://github.com/zcenao21/hive-udaf" target="_blank" rel="noopener">github 演示项目</a></p>
+
     </div>
 
     
@@ -423,7 +429,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#udf"><span class="nav-number">1.</span> <span class="nav-text">udf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">1.0.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">1.0.2.</span> <span class="nav-text">步骤</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#udaf"><span class="nav-number">2.</span> <span class="nav-text">udaf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础知识"><span class="nav-number">2.0.1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-1"><span class="nav-number">2.0.2.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-number">2.0.3.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证"><span class="nav-number">2.0.4.</span> <span class="nav-text">验证</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#udf"><span class="nav-number">1.</span> <span class="nav-text">udf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">1.0.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤"><span class="nav-number">1.0.2.</span> <span class="nav-text">步骤</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#udaf"><span class="nav-number">2.</span> <span class="nav-text">udaf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础知识"><span class="nav-number">2.0.1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-1"><span class="nav-number">2.0.2.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-number">2.0.3.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证"><span class="nav-number">2.0.4.</span> <span class="nav-text">验证</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#my-own-udaf"><span class="nav-number">3.</span> <span class="nav-text">my own udaf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#要解决的问题"><span class="nav-number">3.0.1.</span> <span class="nav-text">要解决的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">3.0.2.</span> <span class="nav-text">分析</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -437,7 +443,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -450,7 +456,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

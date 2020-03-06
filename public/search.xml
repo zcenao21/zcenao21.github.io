@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>计算机联网</title>
+    <url>/2020/03/05/other/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E8%81%94%E7%BD%91/</url>
+    <content><![CDATA[<p>本科计算机网络学的不扎实，一直对ip寻址一知半解。最近稍微研究了一下，有了新的认识，小结一下。</p>
+<a id="more"></a>
+<p>搜索引擎是我们经常用到的，就以百度为例。当我们在本机上输入<a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>, 回车，就能在浏览器看到百度的搜索首页。看似一个简单的过程，包括了很多知识。</p>
+<h3 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h3><p>TCP/IP是计算机通信的协议，计算机间是通过IP来进行连接的。IP（仅介绍IPV4，IPV6可以自己了解）的定义是32位来表示的，每个位可以为0或者1。由于二进制不好写且不好记，所以表示的时候8位为一组表示。有过一定计算机基础都知道8位表示为十进制，能表达的范围为0～255（无符号），所以32位IP可以表示为192.168.143.252这样的一串数字，比32位更方便书写和记忆了。但是对于人来说还是不容易记住那么多的IP地址，怎么办？解决办法是用我们容易记住的网址来替换IP，比如<a href="http://www.baidu.com，我们最终还是通过IP来访问百度服务器的。" target="_blank" rel="noopener">www.baidu.com，我们最终还是通过IP来访问百度服务器的。</a></p>
+<p>这个对应关系存在哪里呢？它们存在域名解析服务器上，国际上有很多的域名解析服务器，而且是分等级的，最高级的是根域名解析服务器，各国家或组织来维护，这些可以自己了解。有了域名解析服务器，我们就可以将网址转化为对应的IP了。</p>
+<h3 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h3><p>32位的IP供全球的人使用，最多可用个数是2的32次方，差不多42亿左右，现在全球人数早就超过了这个数字;而且申请IP不是个人来申请的，而是代理商或组织申请一段连续的IP，这样就更显得不够用了。怎么办？这就涉及到了子网的概念。比如一个小办公楼，如果就分配一个IP，作为统一的通信入口和出口。对于外面的计算机来说，只要负责找到这个入口，其他的事情交给办公楼内部解决。内部可以以代号来表示其中的计算机，这样就可以节省很多IP。这个代号在IP协议里也规定了，也是用IP表示，不过有范围：</p>
+<p>A类地址：10.0.0.0 - 10.255.255.255<br>B类地址：172.16.0.0 - 172.31.255.255 C类地址：192.168.0.0 -192.168.255.255 </p>
+<p>关于ABC类可以自己了解。这样内部的IP表示也解决了。但是还有一个问题，如何识别一个一个IP是要访问内部还是外部？这就是子网掩码发挥作用的时候了。之前也说了，IP本质上还是按位来表示的，要么0要么1，所以可以按位与，与的定义是如果都是1那么与的结果是1，其他情况都是0。这样与1就表示保持原来的位不变，与0就表示置0。用公式来表示：</p>
+<p>1&amp;*=*</p>
+<p>0&amp;*=0</p>
+<p>默认的子网掩码是255.255.255.0，这个子网掩码的意思是保持32位的前24位不变，后面的置0。如果本机IP和目标IP都和子网掩码做与操作，如果结果相同说明在同一个子网内</p>
+]]></content>
+      <categories>
+        <category>other</category>
+      </categories>
+      <tags>
+        <tag>ip寻址</tag>
+        <tag>上网</tag>
+        <tag>计算机网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git rebase合并commits</title>
     <url>/2020/02/27/other/rebase%E5%90%88%E5%B9%B6commit/</url>
     <content><![CDATA[<h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。<a id="more"></a></p>
@@ -160,6 +184,12 @@
 <p>执行</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hive&gt; select letters(name) from users;</span><br><span class="line">Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1</span><br><span class="line">2020-02-23 13:25:06,087 Stage-1 map &#x3D; 0%,  reduce &#x3D; 0%</span><br><span class="line">2020-02-23 13:25:11,426 Stage-1 map &#x3D; 100%,  reduce &#x3D; 0%, Cumulative CPU 2.03 sec</span><br><span class="line">2020-02-23 13:25:16,607 Stage-1 map &#x3D; 100%,  reduce &#x3D; 100%, Cumulative CPU 4.01 sec</span><br><span class="line">MapReduce Total cumulative CPU time: 4 seconds 10 msec</span><br><span class="line">Total MapReduce CPU Time Spent: 4 seconds 10 msec</span><br><span class="line">OK</span><br><span class="line">12</span><br><span class="line">Time taken: 23.819 seconds, Fetched: 1 row(s)</span><br></pre></td></tr></table></figure>
 
+
+
+<h1 id="my-own-udaf"><a href="#my-own-udaf" class="headerlink" title="my own udaf"></a>my own udaf</h1><h3 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h3><p>有一个hive表，其中两列分别代表时间戳和事件。目标是得到指定时间范围的所有事件。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>根据上一部分的介绍，要实现聚合首先要设计如何存储，传输的问题。在这个过程中我仔细研究了hive udaf示例的histogram设计，然后设计了自己的udaf。聚合存储使用hashmap，初步解析结果使用string的list保存。</p>
+<p>代码</p>
+<p><a href="https://github.com/zcenao21/hive-udaf" target="_blank" rel="noopener">github 演示项目</a></p>
 ]]></content>
       <categories>
         <category>Hive</category>
