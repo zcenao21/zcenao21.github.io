@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png">
 <meta property="og:image" content="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png">
 <meta property="article:published_time" content="2020-03-09T16:31:21.000Z">
-<meta property="article:modified_time" content="2020-03-12T04:44:04.311Z">
+<meta property="article:modified_time" content="2020-03-17T16:32:02.971Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="文件">
@@ -221,7 +221,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-12 12:44:04" itemprop="dateModified" datetime="2020-03-12T12:44:04+08:00">2020-03-12</time>
+                <time title="Modified: 2020-03-18 00:32:02" itemprop="dateModified" datetime="2020-03-18T00:32:02+08:00">2020-03-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,13 +261,15 @@
 <p><img src="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png" alt="image.png"></p>
 <p>linux列出文件的命令<code>ls -l</code>执行一下，得到如下结果</p>
 <p><img src="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png" alt=""></p>
+<center>图1</center>
+
 <p>表示当前目录下只有一个test.txt文件。最前面的含义可以用第一张图来解释。第一个数字表示第几个符号</p>
 <p><code>-rw-rw-r--</code></p>
-<p>1: -表示文件类型是文件。接下来每3个一组</p>
+<p>1: -表示文件类型是文件。文件夹用d表示，l表示链接文件。最常用的就是这三个。接下来每3个一组</p>
 <p>2: r对于will用户可读（<code>ll</code>显示的结果第三列表示所有者用户）</p>
 <p>3: w对于will用户可写</p>
 <p>4: -对于will用户不可执行</p>
-<p>接下来的3个表示对于用户组will可读可写不可执行(<code>ll</code>显示的结果第三列表示所在用户组)</p>
+<p>接下来的3个表示对于用户组will可读可写不可执行(<code>ll</code>显示的结果第四列表示所在用户组)</p>
 <p>最后的3个表示对于其他用户可读不可写不可执行</p>
 <blockquote>
 <p>第一个问题就解决了。当以will用户登陆使用linux时，对于test.txt文件就有两个权限读和写; 若非will用户组的其他用户登陆linux时，对于test.txt文件就只有读的权限。</p>
@@ -275,6 +277,30 @@
 <blockquote>
 <p>第二个问题也解决了。如何给一群人一个权限？拉到一个用户组就可以了。</p>
 </blockquote>
+<p>对于文件和文件夹，rwx的权限含义是不一样的，如下表</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>r</th>
+<th>w</th>
+<th>x</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件</td>
+<td>读取文件内容</td>
+<td>修改文件内容</td>
+<td>执行文件内容</td>
+</tr>
+<tr>
+<td>目录</td>
+<td>读到文件名</td>
+<td>修改文件名</td>
+<td>进入该目录</td>
+</tr>
+</tbody></table>
+<p>对于目录权限的理解：若没有x权限，就无法进入该目录;若没有r权限，则文件夹中内容不可见。可以将文件夹理解成一个盒子，x权限相当于我们有了钥匙，但是是在黑夜中打开，看不见里面的内容，r权限就是一道光，照亮盒子，让我们看到里面的小盒子（子文件夹）和小糖果、小文具（文件）。</p>
 
     </div>
 
