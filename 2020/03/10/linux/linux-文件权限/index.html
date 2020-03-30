@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png">
 <meta property="og:image" content="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png">
 <meta property="article:published_time" content="2020-03-09T16:31:21.000Z">
-<meta property="article:modified_time" content="2020-03-17T16:32:02.971Z">
+<meta property="article:modified_time" content="2020-03-30T18:16:12.893Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="文件">
@@ -226,7 +226,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-18 00:32:02" itemprop="dateModified" datetime="2020-03-18T00:32:02+08:00">2020-03-18</time>
+                <time title="Modified: 2020-03-31 02:16:12" itemprop="dateModified" datetime="2020-03-31T02:16:12+08:00">2020-03-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -259,16 +259,17 @@
         <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>计算机最重要的两大部分：存储和计算。存储分永久性存储（例如文件）和短暂的存储（例如内存）。永久性存储我们接触最多的就是文件了。<a id="more"></a>大多数人都用过word，肯定都有过word没保存，工作白干了这种尴尬的事情，这就是临时的修改没有保存到文件中的缘故。文件作为重要信息载体，安全性、共享性都非常重要。我们是否可以通过linux的文件系统做到以下事情？</p>
 <p>1.不同用户对同一文件有不同权限</p>
 <p>2.是否可以分配某个权限给一群人</p>
-<p>3.为了文件安全性，是否可以设置文件只能添加或者其他权限如不能删除改名</p>
-<p>4.只让用户做指定的事情</p>
+<p>3.是否可以针对某个用户做权限限制</p>
+<p>４.为了文件安全性，是否可以设置文件只能添加或者其他权限如不能删除改名</p>
+<p>５.只让用户做指定的事情</p>
 <p>带着这些问题，我们将分3个部分进行介绍。</p>
 <h1 id="基础权限"><a href="#基础权限" class="headerlink" title="基础权限"></a>基础权限</h1><p>网上盗一张图：</p>
 <p><img src="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png" alt="image.png"></p>
 <p>linux列出文件的命令<code>ls -l</code>执行一下，得到如下结果</p>
 <p><img src="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png" alt=""></p>
 <center>图1</center>
+表示当前目录下只有一个test.txt文件。最前面的含义可以用第一张图来解释。第一个数字表示第几个符号
 
-<p>表示当前目录下只有一个test.txt文件。最前面的含义可以用第一张图来解释。第一个数字表示第几个符号</p>
 <p><code>-rw-rw-r--</code></p>
 <p>1: -表示文件类型是文件。文件夹用d表示，l表示链接文件。最常用的就是这三个。接下来每3个一组</p>
 <p>2: r对于will用户可读（<code>ll</code>显示的结果第三列表示所有者用户）</p>
@@ -306,6 +307,10 @@
 </tr>
 </tbody></table>
 <p>对于目录权限的理解：若没有x权限，就无法进入该目录;若没有r权限，则文件夹中内容不可见。可以将文件夹理解成一个盒子，x权限相当于我们有了钥匙，但是是在黑夜中打开，看不见里面的内容，r权限就是一道光，照亮盒子，让我们看到里面的小盒子（子文件夹）和小糖果、小文具（文件）。</p>
+<h1 id="ACL权限"><a href="#ACL权限" class="headerlink" title="ACL权限"></a>ACL权限</h1><p>如上一部分所介绍的，可以针对某个用户组设置权限，但是如果想针对某个用户做限制可以做到吗？比如一个项目组正在做一个项目，这些人都属于一个用户组。对于其他人，项目文件不可见。现在有个人非此项目人员，但又有查看这些项目文件的需求怎么办？传统的用户，用户组，其他用户的区分已经没办法做到了。ACL可以帮我们做到！</p>
+<p>ACL是Access Control List的英文缩写，现在的unix-like系统一般都会装。如果要确认是否有这个功能，可以使用如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dmsg | grep -i acl</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -394,7 +399,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础权限"><span class="nav-number">2.</span> <span class="nav-text">基础权限</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础权限"><span class="nav-number">2.</span> <span class="nav-text">基础权限</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ACL权限"><span class="nav-number">3.</span> <span class="nav-text">ACL权限</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
