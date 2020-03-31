@@ -1,554 +1,372 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>文件及用户权限</title>
-    <url>/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</url>
-    <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>计算机最重要的两大部分：存储和计算。存储分永久性存储（例如文件）和短暂的存储（例如内存）。永久性存储我们接触最多的就是文件了。<a id="more"></a>大多数人都用过word，肯定都有过word没保存，工作白干了这种尴尬的事情，这就是临时的修改没有保存到文件中的缘故。文件作为重要信息载体，安全性、共享性都非常重要。我们是否可以通过linux的文件系统做到以下事情？</p>
-<p>1.不同用户对同一文件有不同权限</p>
-<p>2.是否可以分配某个权限给一群人</p>
-<p>3.是否可以针对某个用户做权限限制</p>
-<p>４.为了文件安全性，是否可以设置文件只能添加或者其他权限如不能删除改名</p>
-<p>５.只让用户做指定的事情</p>
-<p>带着这些问题，我们将分3个部分进行介绍。</p>
-<h1 id="基础权限"><a href="#基础权限" class="headerlink" title="基础权限"></a>基础权限</h1><p>网上盗一张图：</p>
-<p><img src="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png" alt="image.png"></p>
-<p>linux列出文件的命令<code>ls -l</code>执行一下，得到如下结果</p>
-<p><img src="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png" alt=""></p>
-<center>图1</center>
-表示当前目录下只有一个test.txt文件。最前面的含义可以用第一张图来解释。第一个数字表示第几个符号
-
-<p><code>-rw-rw-r--</code></p>
-<p>1: -表示文件类型是文件。文件夹用d表示，l表示链接文件。最常用的就是这三个。接下来每3个一组</p>
-<p>2: r对于will用户可读（<code>ll</code>显示的结果第三列表示所有者用户）</p>
-<p>3: w对于will用户可写</p>
-<p>4: -对于will用户不可执行</p>
-<p>接下来的3个表示对于用户组will可读可写不可执行(<code>ll</code>显示的结果第四列表示所在用户组)</p>
-<p>最后的3个表示对于其他用户可读不可写不可执行</p>
-<blockquote>
-<p>第一个问题就解决了。当以will用户登陆使用linux时，对于test.txt文件就有两个权限读和写; 若非will用户组的其他用户登陆linux时，对于test.txt文件就只有读的权限。</p>
-</blockquote>
-<blockquote>
-<p>第二个问题也解决了。如何给一群人一个权限？拉到一个用户组就可以了。</p>
-</blockquote>
-<p>对于文件和文件夹，rwx的权限含义是不一样的，如下表</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>r</th>
-<th>w</th>
-<th>x</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>文件</td>
-<td>读取文件内容</td>
-<td>修改文件内容</td>
-<td>执行文件内容</td>
-</tr>
-<tr>
-<td>目录</td>
-<td>读到文件名</td>
-<td>修改文件名</td>
-<td>进入该目录</td>
-</tr>
-</tbody></table>
-<p>对于目录权限的理解：若没有x权限，就无法进入该目录;若没有r权限，则文件夹中内容不可见。可以将文件夹理解成一个盒子，x权限相当于我们有了钥匙，但是是在黑夜中打开，看不见里面的内容，r权限就是一道光，照亮盒子，让我们看到里面的小盒子（子文件夹）和小糖果、小文具（文件）。</p>
-<h1 id="ACL权限"><a href="#ACL权限" class="headerlink" title="ACL权限"></a>ACL权限</h1><p>如上一部分所介绍的，可以针对某个用户组设置权限，但是如果想针对某个用户做限制可以做到吗？比如一个项目组正在做一个项目，这些人都属于一个用户组。对于其他人，项目文件不可见。现在有个人非此项目人员，但又有查看这些项目文件的需求怎么办？传统的用户，用户组，其他用户的区分已经没办法做到了。ACL可以帮我们做到！</p>
-<p>ACL是Access Control List的英文缩写，现在的unix-like系统一般都会装。如果要确认是否有这个功能，可以使用如下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dmsg | grep -i acl</span><br></pre></td></tr></table></figure>
-
-]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>文件及用户权限</title>
+      <link href="/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/"/>
+      <url>/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</url>
+      
+        <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>计算机最重要的两大部分：存储和计算。存储分永久性存储（例如文件）和短暂的存储（例如内存）。永久性存储我们接触最多的就是文件了。<a id="more"></a>大多数人都用过word，肯定都有过word没保存，工作白干了这种尴尬的事情，这就是临时的修改没有保存到文件中的缘故。文件作为重要信息载体，安全性、共享性都非常重要。我们是否可以通过linux的文件系统做到以下事情？</p><p>1.不同用户对同一文件有不同权限</p><p>2.是否可以分配某个权限给一群人</p><p>3.是否可以针对某个用户做权限限制</p><p>4.为了文件安全性，是否可以设置文件只能添加或者其他权限如不能删除改名</p><p>5.只让用户做指定的事情</p><p>带着这些问题，我们将分3个部分进行介绍。</p><h1 id="基础权限"><a href="#基础权限" class="headerlink" title="基础权限"></a>基础权限</h1><p>网上盗一张图：</p><p><img src="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png" alt="image.png"></p><p>linux列出文件的命令<code>ls -l</code>执行一下，得到如下结果</p><p><img src="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png" alt=""></p><center>图1</center>表示当前目录下只有一个test.txt文件。最前面的含义可以用第一张图来解释。第一个数字表示第几个符号<p><code>-rw-rw-r--</code></p><p>1: -表示文件类型是文件。文件夹用d表示，l表示链接文件。最常用的就是这三个。接下来每3个一组</p><p>2: r对于will用户可读（<code>ll</code>显示的结果第三列表示所有者用户）</p><p>3: w对于will用户可写</p><p>4: -对于will用户不可执行</p><p>接下来的3个表示对于用户组will可读可写不可执行(<code>ll</code>显示的结果第四列表示所在用户组)</p><p>最后的3个表示对于其他用户可读不可写不可执行</p><blockquote><p>第一个问题就解决了。当以will用户登陆使用linux时，对于test.txt文件就有两个权限读和写; 若非will用户组的其他用户登陆linux时，对于test.txt文件就只有读的权限。</p></blockquote><blockquote><p>第二个问题也解决了。如何给一群人一个权限？拉到一个用户组就可以了。</p></blockquote><p>对于文件和文件夹，rwx的权限含义是不一样的，如下表</p><table><thead><tr><th></th><th>r</th><th>w</th><th>x</th></tr></thead><tbody><tr><td>文件</td><td>读取文件内容</td><td>修改文件内容</td><td>执行文件内容</td></tr><tr><td>目录</td><td>读到文件名</td><td>修改文件名</td><td>进入该目录</td></tr></tbody></table><p>对于目录权限的理解：若没有x权限，就无法进入该目录;若没有r权限，则文件夹中内容不可见。可以将文件夹理解成一个盒子，x权限相当于我们有了钥匙，但是是在黑夜中打开，看不见里面的内容，r权限就是一道光，照亮盒子，让我们看到里面的小盒子（子文件夹）和小糖果、小文具（文件）。</p><h1 id="ACL权限"><a href="#ACL权限" class="headerlink" title="ACL权限"></a>ACL权限</h1><p>如上一部分所介绍的，可以针对某个用户组设置权限，但是如果想针对某个用户做限制可以做到吗？比如一个项目组正在做一个项目，这些人都属于一个用户组。对于其他人，项目文件不可见。现在有个人非此项目人员，但又有查看这些项目文件的需求怎么办？传统的用户，用户组，其他用户的区分已经没办法做到了。ACL可以帮我们做到！</p><p>ACL是Access Control List的英文缩写，现在的unix-like系统一般都会装。如果要确认是否有这个功能，可以使用如下命令：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dmsg | grep -i acl</span><br></pre></td></tr></table></figure><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>以示例来说明。以当前用户创建一个文件，再写点东西进去</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">touch testfile</span><br><span class="line"></span><br><span class="line"> % ll</span><br><span class="line">总用量 0</span><br><span class="line">-rw-rw-r-- 1 will will 0 4月   1 00:40 testfile</span><br><span class="line"></span><br><span class="line">% echo &quot;big data&quot; &gt; testfile</span><br><span class="line">% cat testfile </span><br><span class="line">big data</span><br></pre></td></tr></table></figure><p>假设已经有了一个用户tom，这个用户经常恶作剧，所以我们想限制tom这个人不能对这个文件进行修改</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> % setfacl -m u:tom:r testfile </span><br><span class="line"> % ll</span><br><span class="line">-rw-rw-r--+ 1 will will 9 4月   1 00:43 testfile</span><br></pre></td></tr></table></figure><p>可以发现在九个字母表示的权限后面多了一个+号，表示有ACL权限设置了。设置ACL的命令为<code>setfacl</code>，-m表示设置参数给文件使用，-x表示删除ACL参数，-b表示删除所有的ACL参数。下面验证是否设置成功，即tom能不能修改这个文件</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">% su - tom</span><br><span class="line">$ ls -l</span><br><span class="line">-rw-rw-r--+ 1 will will 9 4月   1 00:43 testfile</span><br><span class="line">$ cat testfile </span><br><span class="line">big data</span><br><span class="line">$ vim testfile</span><br></pre></td></tr></table></figure><p>使用vim编辑文件就会提示文件只读，设置成功。</p><p>获取ACL设置可以用<code>getfacl</code></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ getfacl testfile </span><br><span class="line"># file: testfile</span><br><span class="line"># owner: will</span><br><span class="line"># group: will</span><br><span class="line">user::rw-</span><br><span class="line">user:tom:r--</span><br><span class="line">group::rw-</span><br><span class="line">mask::rw-</span><br><span class="line">other::r--</span><br></pre></td></tr></table></figure><p>ACL还可以针对用户组设置，还能设置继承时的文件权限，比如子文件对某用户/某用户组只读</p><p>针对用户组设置：<code>setfacl -m g:user:rwx filename</code></p><p>设置继承：<code>setfacl -m d:u:user:rx dirname</code></p><p>取消ACL：<code>setfacl -b fielname</code></p><blockquote><p>第三个问题圆满解决</p></blockquote><h1 id="文件隐藏属性"><a href="#文件隐藏属性" class="headerlink" title="文件隐藏属性"></a>文件隐藏属性</h1><p>隐藏属性是个啥？可以理解成基本属性的补充。比如我们需要设置某个文件只能添加怎么办？普通的权限设置已经无能为力了，这时候就用到了隐藏属性。</p><p>chatttr [+-=] [ai] 文件或目录名称</p><blockquote><p>a参数表示文件只能增加数据，不能删除也不能修改，只有root有权限设置此权限</p><p>i参数表示文件不能删除，改名，设置链接，无法写入或新增数据</p></blockquote><p>lsattr [-adR] 文件或目录</p><p>分别用于配置和显示隐藏属性</p><p>如下示例，表示设置文件只能添加，妄图写数据报错</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">% sudo chattr +a testfile</span><br><span class="line">% echo &quot;input&quot; &gt; testfile </span><br><span class="line">不允许的操作: testfile</span><br></pre></td></tr></table></figure><blockquote><p>第四个问题到这里也解决了！</p></blockquote>]]></content>
+      
+      
       <categories>
-        <category>Linux</category>
+          
+          <category> Linux </category>
+          
       </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>文件</tag>
-        <tag>权限</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>计算机联网</title>
-    <url>/2020/03/05/other/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E8%81%94%E7%BD%91/</url>
-    <content><![CDATA[<p>本科计算机网络学的不扎实，一直对ip寻址一知半解。最近稍微研究了一下，有了新的认识，小结一下。</p>
-<a id="more"></a>
-<p>搜索引擎是我们经常用到的，就以百度为例。当我们在本机上输入<a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>, 回车，就能在浏览器看到百度的搜索首页。看似一个简单的过程，包括了很多知识。</p>
-<h3 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h3><p>TCP/IP是计算机通信的协议，计算机间是通过IP来进行连接的。IP（仅介绍IPV4，IPV6可以自己了解）的定义是32位来表示的，每个位可以为0或者1。由于二进制不好写且不好记，所以表示的时候8位为一组表示。有过一定计算机基础都知道8位表示为十进制，能表达的范围为0～255（无符号），所以32位IP可以表示为192.168.143.252这样的一串数字，比32位更方便书写和记忆了。但是对于人来说还是不容易记住那么多的IP地址，怎么办？解决办法是用我们容易记住的网址来替换IP，比如<a href="http://www.baidu.com，我们最终还是通过IP来访问百度服务器的。" target="_blank" rel="noopener">www.baidu.com，我们最终还是通过IP来访问百度服务器的。</a></p>
-<p>这个对应关系存在哪里呢？它们存在域名解析服务器上，国际上有很多的域名解析服务器，而且是分等级的，最高级的是根域名解析服务器，各国家或组织来维护，这些可以自己了解。有了域名解析服务器，我们就可以将网址转化为对应的IP了。</p>
-<h3 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h3><p>32位的IP供全球的人使用，最多可用个数是2的32次方，差不多42亿左右，现在全球人数早就超过了这个数字;而且申请IP不是个人来申请的，而是代理商或组织申请一段连续的IP，这样就更显得不够用了。怎么办？这就涉及到了子网的概念。比如一个小办公楼，如果就分配一个IP，作为统一的通信入口和出口。对于外面的计算机来说，只要负责找到这个入口，其他的事情交给办公楼内部解决。内部可以以代号来表示其中的计算机，这样就可以节省很多IP。这个代号在IP协议里也规定了，也是用IP表示，不过有范围：</p>
-<p>A类地址：10.0.0.0 - 10.255.255.255<br>B类地址：172.16.0.0 - 172.31.255.255 C类地址：192.168.0.0 -192.168.255.255 </p>
-<p>关于ABC类可以自己了解。这样内部的IP表示也解决了。但是还有一个问题，如何识别一个一个IP是要访问内部还是外部？这就是子网掩码发挥作用的时候了。之前也说了，IP本质上还是按位来表示的，要么0要么1，所以可以按位与，与的定义是如果都是1那么与的结果是1，其他情况都是0。这样与1就表示保持原来的位不变，与0就表示置0。用公式来表示：</p>
-<p>1&amp;*=*</p>
-<p>0&amp;*=0</p>
-<p>默认的子网掩码是255.255.255.0，这个子网掩码的意思是保持32位的前24位不变，后面的置0。如果本机IP和目标IP都和子网掩码做与操作，如果结果相同说明在同一个子网内</p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Linux </tag>
+            
+            <tag> 文件 </tag>
+            
+            <tag> 权限 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>计算机联网</title>
+      <link href="/2020/03/05/other/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E8%81%94%E7%BD%91/"/>
+      <url>/2020/03/05/other/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B9%8B%E8%81%94%E7%BD%91/</url>
+      
+        <content type="html"><![CDATA[<p>本科计算机网络学的不扎实，一直对ip寻址一知半解。最近稍微研究了一下，有了新的认识，小结一下。</p><a id="more"></a><p>搜索引擎是我们经常用到的，就以百度为例。当我们在本机上输入<a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>, 回车，就能在浏览器看到百度的搜索首页。看似一个简单的过程，包括了很多知识。</p><h3 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h3><p>TCP/IP是计算机通信的协议，计算机间是通过IP来进行连接的。IP（仅介绍IPV4，IPV6可以自己了解）的定义是32位来表示的，每个位可以为0或者1。由于二进制不好写且不好记，所以表示的时候8位为一组表示。有过一定计算机基础都知道8位表示为十进制，能表达的范围为0～255（无符号），所以32位IP可以表示为192.168.143.252这样的一串数字，比32位更方便书写和记忆了。但是对于人来说还是不容易记住那么多的IP地址，怎么办？解决办法是用我们容易记住的网址来替换IP，比如<a href="http://www.baidu.com，我们最终还是通过IP来访问百度服务器的。" target="_blank" rel="noopener">www.baidu.com，我们最终还是通过IP来访问百度服务器的。</a></p><p>这个对应关系存在哪里呢？它们存在域名解析服务器上，国际上有很多的域名解析服务器，而且是分等级的，最高级的是根域名解析服务器，各国家或组织来维护，这些可以自己了解。有了域名解析服务器，我们就可以将网址转化为对应的IP了。</p><h3 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h3><p>32位的IP供全球的人使用，最多可用个数是2的32次方，差不多42亿左右，现在全球人数早就超过了这个数字;而且申请IP不是个人来申请的，而是代理商或组织申请一段连续的IP，这样就更显得不够用了。怎么办？这就涉及到了子网的概念。比如一个小办公楼，如果就分配一个IP，作为统一的通信入口和出口。对于外面的计算机来说，只要负责找到这个入口，其他的事情交给办公楼内部解决。内部可以以代号来表示其中的计算机，这样就可以节省很多IP。这个代号在IP协议里也规定了，也是用IP表示，不过有范围：</p><p>A类地址：10.0.0.0 - 10.255.255.255<br>B类地址：172.16.0.0 - 172.31.255.255 C类地址：192.168.0.0 -192.168.255.255 </p><p>关于ABC类可以自己了解。这样内部的IP表示也解决了。但是还有一个问题，如何识别一个一个IP是要访问内部还是外部？这就是子网掩码发挥作用的时候了。之前也说了，IP本质上还是按位来表示的，要么0要么1，所以可以按位与，与的定义是如果都是1那么与的结果是1，其他情况都是0。这样与1就表示保持原来的位不变，与0就表示置0。用公式来表示：</p><p>1&amp;*=*</p><p>0&amp;*=0</p><p>默认的子网掩码是255.255.255.0，这个子网掩码的意思是保持32位的前24位不变，后面的置0。如果本机IP和目标IP都和子网掩码做与操作，如果结果相同说明在同一个子网内</p>]]></content>
+      
+      
       <categories>
-        <category>other</category>
+          
+          <category> other </category>
+          
       </categories>
-      <tags>
-        <tag>ip寻址</tag>
-        <tag>上网</tag>
-        <tag>计算机网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git rebase合并commits</title>
-    <url>/2020/02/27/other/rebase%E5%90%88%E5%B9%B6commit/</url>
-    <content><![CDATA[<h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。<a id="more"></a></p>
-<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><h3 id="首先新建项目并从github上拉下来"><a href="#首先新建项目并从github上拉下来" class="headerlink" title="首先新建项目并从github上拉下来"></a>首先新建项目并从github上拉下来</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> % git clone git@github.com:xxx&#x2F;rebaseTest.git</span><br><span class="line">正克隆到 &#39;rebaseTest&#39;...</span><br><span class="line">remote: Enumerating objects: 3, done.</span><br><span class="line">remote: Counting objects: 100% (3&#x2F;3), done.</span><br><span class="line">remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0</span><br><span class="line">接收对象中: 100% (3&#x2F;3), 完成.</span><br><span class="line">检查连接... 完成。</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="新建分支并切换"><a href="#新建分支并切换" class="headerlink" title="新建分支并切换"></a>新建分支并切换</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> % git checkout -b test</span><br><span class="line">切换到一个新分支 &#39;test&#39;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="修改并提交多次"><a href="#修改并提交多次" class="headerlink" title="修改并提交多次"></a>修改并提交多次</h3><p>修改一次文件后执行下面的命令一次，message替换为自定义信息</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add README.md</span><br><span class="line">git commit -m &quot;message&quot;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="找到要合并的commits"><a href="#找到要合并的commits" class="headerlink" title="找到要合并的commits"></a>找到要合并的commits</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> % git log --oneline</span><br><span class="line">4254b18 11111</span><br><span class="line">d024037 00000</span><br><span class="line">f7de784 all messages</span><br></pre></td></tr></table></figure>
-
-<p>假设要将最上面两条合并</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i f7de784</span><br></pre></td></tr></table></figure>
-
-<p>将pick替换为e和s，分别表示编辑新的信息，合并之前的</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">e d024037 00000</span><br><span class="line">s 4254b18 11111</span><br><span class="line"></span><br><span class="line"># Rebase f7de784..4254b18 onto f7de784 (2 command(s))</span><br><span class="line">#</span><br><span class="line"># Commands:</span><br><span class="line"># p, pick &#x3D; use commit</span><br><span class="line"># r, reword &#x3D; use commit, but edit the commit message</span><br><span class="line"># e, edit &#x3D; use commit, but stop for amending</span><br><span class="line"># s, squash &#x3D; use commit, but meld into previous commit</span><br><span class="line"># f, fixup &#x3D; like &quot;squash&quot;, but discard this commit&#39;s log message</span><br><span class="line"></span><br><span class="line">^G 求助       ^O Write Out  ^W 搜索       ^K 剪切文字   ^J 对齐</span><br><span class="line">^X 离开       ^R 读档       ^\ 替换       ^U Uncut Text ^T 拼写检查</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="合并commit信息"><a href="#合并commit信息" class="headerlink" title="合并commit信息"></a>合并commit信息</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># This is a combination of 2 commits.</span><br><span class="line"></span><br><span class="line">2 merged messages</span><br><span class="line"></span><br><span class="line"># 请为您的变更输入提交说明。以 &#39;#&#39; 开始的行将被忽略，而一个空的提交</span><br><span class="line"># 说明将会终止提交。</span><br><span class="line"># </span><br><span class="line"># 日期：  Thu Feb 27 22:19:08 2020 +0800</span><br><span class="line"># </span><br><span class="line"># 交互式变基操作正在进行中；至 f7de784</span><br><span class="line"># 最后一条命令已完成（2 条命令被执行）：</span><br><span class="line">#    e d024037 00000</span><br><span class="line">#    s 4254b18 11111</span><br><span class="line"># 未剩下任何命令。</span><br><span class="line"># 您在执行将分支 &#39;test&#39; 变基到 &#39;f7de784&#39; 的操作时编辑提交。</span><br><span class="line"># </span><br><span class="line"># 要提交的变更：</span><br><span class="line">#       修改：     README.md</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="切换到master分支并合并"><a href="#切换到master分支并合并" class="headerlink" title="切换到master分支并合并"></a>切换到master分支并合并</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git checkout master</span><br><span class="line">切换到分支 &#39;master&#39;</span><br><span class="line">您的分支与上游分支 &#39;origin&#x2F;master&#39; 一致。</span><br><span class="line">will@will-Lenovo-ideapad-720S-14IKB &#x2F;tmp&#x2F;test&#x2F;rebaseTest</span><br><span class="line"> % git merge test</span><br><span class="line">更新 f7de784..687e32e</span><br><span class="line">Fast-forward</span><br><span class="line"> README.md | 25 ++-----------------------</span><br><span class="line"> 1 file changed, 2 insertions(+), 23 deletions(-)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>到github上可以看到master分支只有一条合并后的commit信息</p>
-<p><img src="https://i.loli.net/2020/02/27/zFCWBo4NQarsmgL.png" alt="rebase.png"></p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> ip寻址 </tag>
+            
+            <tag> 上网 </tag>
+            
+            <tag> 计算机网络 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>git rebase合并commits</title>
+      <link href="/2020/02/27/other/rebase%E5%90%88%E5%B9%B6commit/"/>
+      <url>/2020/02/27/other/rebase%E5%90%88%E5%B9%B6commit/</url>
+      
+        <content type="html"><![CDATA[<h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。<a id="more"></a></p><h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><h3 id="首先新建项目并从github上拉下来"><a href="#首先新建项目并从github上拉下来" class="headerlink" title="首先新建项目并从github上拉下来"></a>首先新建项目并从github上拉下来</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> % git clone git@github.com:xxx&#x2F;rebaseTest.git</span><br><span class="line">正克隆到 &#39;rebaseTest&#39;...</span><br><span class="line">remote: Enumerating objects: 3, done.</span><br><span class="line">remote: Counting objects: 100% (3&#x2F;3), done.</span><br><span class="line">remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0</span><br><span class="line">接收对象中: 100% (3&#x2F;3), 完成.</span><br><span class="line">检查连接... 完成。</span><br></pre></td></tr></table></figure><h3 id="新建分支并切换"><a href="#新建分支并切换" class="headerlink" title="新建分支并切换"></a>新建分支并切换</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> % git checkout -b test</span><br><span class="line">切换到一个新分支 &#39;test&#39;</span><br></pre></td></tr></table></figure><h3 id="修改并提交多次"><a href="#修改并提交多次" class="headerlink" title="修改并提交多次"></a>修改并提交多次</h3><p>修改一次文件后执行下面的命令一次，message替换为自定义信息</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add README.md</span><br><span class="line">git commit -m &quot;message&quot;</span><br></pre></td></tr></table></figure><h3 id="找到要合并的commits"><a href="#找到要合并的commits" class="headerlink" title="找到要合并的commits"></a>找到要合并的commits</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> % git log --oneline</span><br><span class="line">4254b18 11111</span><br><span class="line">d024037 00000</span><br><span class="line">f7de784 all messages</span><br></pre></td></tr></table></figure><p>假设要将最上面两条合并</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase -i f7de784</span><br></pre></td></tr></table></figure><p>将pick替换为e和s，分别表示编辑新的信息，合并之前的</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">e d024037 00000</span><br><span class="line">s 4254b18 11111</span><br><span class="line"></span><br><span class="line"># Rebase f7de784..4254b18 onto f7de784 (2 command(s))</span><br><span class="line">#</span><br><span class="line"># Commands:</span><br><span class="line"># p, pick &#x3D; use commit</span><br><span class="line"># r, reword &#x3D; use commit, but edit the commit message</span><br><span class="line"># e, edit &#x3D; use commit, but stop for amending</span><br><span class="line"># s, squash &#x3D; use commit, but meld into previous commit</span><br><span class="line"># f, fixup &#x3D; like &quot;squash&quot;, but discard this commit&#39;s log message</span><br><span class="line"></span><br><span class="line">^G 求助       ^O Write Out  ^W 搜索       ^K 剪切文字   ^J 对齐</span><br><span class="line">^X 离开       ^R 读档       ^\ 替换       ^U Uncut Text ^T 拼写检查</span><br></pre></td></tr></table></figure><h3 id="合并commit信息"><a href="#合并commit信息" class="headerlink" title="合并commit信息"></a>合并commit信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># This is a combination of 2 commits.</span><br><span class="line"></span><br><span class="line">2 merged messages</span><br><span class="line"></span><br><span class="line"># 请为您的变更输入提交说明。以 &#39;#&#39; 开始的行将被忽略，而一个空的提交</span><br><span class="line"># 说明将会终止提交。</span><br><span class="line"># </span><br><span class="line"># 日期：  Thu Feb 27 22:19:08 2020 +0800</span><br><span class="line"># </span><br><span class="line"># 交互式变基操作正在进行中；至 f7de784</span><br><span class="line"># 最后一条命令已完成（2 条命令被执行）：</span><br><span class="line">#    e d024037 00000</span><br><span class="line">#    s 4254b18 11111</span><br><span class="line"># 未剩下任何命令。</span><br><span class="line"># 您在执行将分支 &#39;test&#39; 变基到 &#39;f7de784&#39; 的操作时编辑提交。</span><br><span class="line"># </span><br><span class="line"># 要提交的变更：</span><br><span class="line">#       修改：     README.md</span><br></pre></td></tr></table></figure><h3 id="切换到master分支并合并"><a href="#切换到master分支并合并" class="headerlink" title="切换到master分支并合并"></a>切换到master分支并合并</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">% git checkout master</span><br><span class="line">切换到分支 &#39;master&#39;</span><br><span class="line">您的分支与上游分支 &#39;origin&#x2F;master&#39; 一致。</span><br><span class="line">will@will-Lenovo-ideapad-720S-14IKB &#x2F;tmp&#x2F;test&#x2F;rebaseTest</span><br><span class="line"> % git merge test</span><br><span class="line">更新 f7de784..687e32e</span><br><span class="line">Fast-forward</span><br><span class="line"> README.md | 25 ++-----------------------</span><br><span class="line"> 1 file changed, 2 insertions(+), 23 deletions(-)</span><br></pre></td></tr></table></figure><p>到github上可以看到master分支只有一条合并后的commit信息</p><p><img src="https://i.loli.net/2020/02/27/zFCWBo4NQarsmgL.png" alt="rebase.png"></p>]]></content>
+      
+      
       <categories>
-        <category>other</category>
+          
+          <category> other </category>
+          
       </categories>
-      <tags>
-        <tag>Git</tag>
-        <tag>rebase</tag>
-        <tag>commits合并</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>github个人网站替换自定义域名</title>
-    <url>/2020/02/24/other/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
-    <content><![CDATA[<p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p>
-<a id="more"></a>
-<p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p>
-<h3 id="域名申请"><a href="#域名申请" class="headerlink" title="域名申请"></a>域名申请</h3><p>经过我的一番调研，最终选用了godaddy的域名服务。国内的也有很多，大家根据需要选择。<br>接下来就是申请域名了。先选择一个自己喜欢的域名前缀，最好比较好记，方便自己也方便他人。域名的后缀有很多，比如.com,.top，.net等等，价格也不一样，便宜的只需要几元人民币。选完域名付完钱，在使用域名前还需要一个认证的过程，中国大陆可以选择的只有身份证。<br><strong>这里必须吐槽一下，一般需要身份证复印件的都是正反面，然后我就上传了正反面。第一次给拒绝了，理由是空白边缘留的不够宽。这次我认认真真，拍了正反面在照片中间再次上传，等了一天，又给我拒绝了，还是相同的理由！我就很纳闷了。打电话给客服问了才知道，只需要正面，但是他们审核的时候没有这个选项，就给我随便找了个理由。。。</strong>第三次终于申请成功了。</p>
-<p>接下来就是域名解析服务器替换，好像他们也提供，不替换是否可行没试。我用国内的DNSpod。</p>
-<p>首先需要在godaddy上更改域名服务器。DNSpod对于在godaddy上更改域名服务器的说明已经过时了</p>
-<p><img src="https://i.loli.net/2020/02/24/Tdk3JMGxInWoLS2.png" alt="选区_017.png"></p>
-<p>替换后如上图</p>
-<p>等一段时间，我等了半小时吧，等DNSpod上显示状态为正常就可以了</p>
-<p><img src="https://i.loli.net/2020/02/24/sv1zMHZrExTOlAa.png" alt="选区_018.png"></p>
-<p>现在再进去添加两条纪录</p>
-<p><img src="https://i.loli.net/2020/02/24/1d65DsLzUfHqRPW.png" alt="选区_020.png"></p>
-<p>上面的记录值是用下面的命令得到的。这两条表示不输入www和输入www都导向记录值</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ping xxx.github.io</span><br></pre></td></tr></table></figure>
-
-<p>最后，在github上填写替换的域名。我用的hexo部署的，所以在source目录下新建CNAME文件，内容为will21.cn。部署到服务器。</p>
-<p>访问will21.cn，搞定！</p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Git </tag>
+            
+            <tag> rebase </tag>
+            
+            <tag> commits合并 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>github个人网站替换自定义域名</title>
+      <link href="/2020/02/24/other/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/"/>
+      <url>/2020/02/24/other/github%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99%E6%9B%B4%E6%94%B9%E5%9F%9F%E5%90%8D/</url>
+      
+        <content type="html"><![CDATA[<p>首先非常感谢github提供的个人网站功能，然后感谢hexo提供了方便的写博客手段。<br>github个人建站，一般访问网站名为xxx.github.io，这种名字对于强迫症患者来说真的是无法忍受。但是github也提供了更改为自定义域名功能，非常人性化。</p><a id="more"></a><p>所以如果你没有把博客迁到国内服务器的需求，只需要替换一下域名即可。下面说一下我的操作步骤，主要还在申请域名上。</p><h3 id="域名申请"><a href="#域名申请" class="headerlink" title="域名申请"></a>域名申请</h3><p>经过我的一番调研，最终选用了godaddy的域名服务。国内的也有很多，大家根据需要选择。<br>接下来就是申请域名了。先选择一个自己喜欢的域名前缀，最好比较好记，方便自己也方便他人。域名的后缀有很多，比如.com,.top，.net等等，价格也不一样，便宜的只需要几元人民币。选完域名付完钱，在使用域名前还需要一个认证的过程，中国大陆可以选择的只有身份证。<br><strong>这里必须吐槽一下，一般需要身份证复印件的都是正反面，然后我就上传了正反面。第一次给拒绝了，理由是空白边缘留的不够宽。这次我认认真真，拍了正反面在照片中间再次上传，等了一天，又给我拒绝了，还是相同的理由！我就很纳闷了。打电话给客服问了才知道，只需要正面，但是他们审核的时候没有这个选项，就给我随便找了个理由。。。</strong>第三次终于申请成功了。</p><p>接下来就是域名解析服务器替换，好像他们也提供，不替换是否可行没试。我用国内的DNSpod。</p><p>首先需要在godaddy上更改域名服务器。DNSpod对于在godaddy上更改域名服务器的说明已经过时了</p><p><img src="https://i.loli.net/2020/02/24/Tdk3JMGxInWoLS2.png" alt="选区_017.png"></p><p>替换后如上图</p><p>等一段时间，我等了半小时吧，等DNSpod上显示状态为正常就可以了</p><p><img src="https://i.loli.net/2020/02/24/sv1zMHZrExTOlAa.png" alt="选区_018.png"></p><p>现在再进去添加两条纪录</p><p><img src="https://i.loli.net/2020/02/24/1d65DsLzUfHqRPW.png" alt="选区_020.png"></p><p>上面的记录值是用下面的命令得到的。这两条表示不输入www和输入www都导向记录值</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping xxx.github.io</span><br></pre></td></tr></table></figure><p>最后，在github上填写替换的域名。我用的hexo部署的，所以在source目录下新建CNAME文件，内容为will21.cn。部署到服务器。</p><p>访问will21.cn，搞定！</p>]]></content>
+      
+      
       <categories>
-        <category>other</category>
+          
+          <category> other </category>
+          
       </categories>
-      <tags>
-        <tag>github个人网站</tag>
-        <tag>域名修改</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hive udf&amp;udaf</title>
-    <url>/2020/02/21/hive/hive-udf/</url>
-    <content><![CDATA[<p>hive为我们定义了很多函数，大多数情况下是能够满足我们的需求的。但是在有些情况下，很有必要自己定义一些函数，这样使用起来非常方便。这就是自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)。udf是每行返回一个结果，而udaf则是聚合的结果，多行产生一个结果。另外还有udtf，是一行产生多个结果。目前我还没有用到过udtf，就先不介绍它了。下面分别用两个示例介绍udf和udaf<a id="more"></a></p>
-<h1 id="udf"><a href="#udf" class="headerlink" title="udf"></a>udf</h1><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>查找array中是否包含被查询值</p>
-<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul>
-<li><p>测试数据准备</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">zhangsan        beijing,shanghai,tianjin,hangzhou</span><br><span class="line">lisi    changchu,chengdu,wuhan</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>hive建表与导入</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Create table users(name string, worklocations array&lt;string&gt; ) row format delimited fields terminated by &#39;\t&#39; collection items terminated by &#39;,&#39;; </span><br><span class="line"></span><br><span class="line">load data local inpath &#39;&#x2F;root&#x2F;person.txt &#39; OVERWRITE INTO TABLE users;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>udf包生成与导入</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.will;</span><br><span class="line"></span><br><span class="line">import org.apache.hadoop.hive.ql.exec.UDF;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line"></span><br><span class="line">public class FindInArray extends UDF &#123;</span><br><span class="line">    public ArrayList&lt;String&gt; evaluate(String keywords, ArrayList&lt;String&gt; column)&#123;</span><br><span class="line">        &#x2F;&#x2F;参数类型使用arraylist&lt;String&gt;对应hive中的array&lt;string&gt;,而不是String[]</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return column;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public String evaluate(String keywords,ArrayList&lt;String&gt; column,String name)&#123;</span><br><span class="line">        &#x2F;&#x2F;重载evaluate，另一种查询方式，返回name值</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return name;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用mvn 打包</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>导入hive</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">add jar &#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar;</span><br><span class="line">create temporary function find_in_array as &#39;com.will.FindInArray&#39;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hive&gt; select find_in_array(&#39;beijing&#39;,worklocations) from users;</span><br><span class="line">OK</span><br><span class="line">[&quot;beijing&quot;,&quot;shanghai&quot;,&quot;tianjin&quot;,&quot;hangzhou&quot;]</span><br><span class="line">NULL</span><br><span class="line">Time taken: 0.424 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<blockquote>
-<p>参考：<a href="https://blog.csdn.net/Nougats/article/details/71158318" target="_blank" rel="noopener">https://blog.csdn.net/Nougats/article/details/71158318</a></p>
-</blockquote>
-<h1 id="udaf"><a href="#udaf" class="headerlink" title="udaf"></a>udaf</h1><blockquote>
-<p>参考： </p>
-<p><a href="https://blog.51cto.com/xiaolanlan/2397771" target="_blank" rel="noopener">https://blog.51cto.com/xiaolanlan/2397771</a></p>
-<p><a href="https://www.cnblogs.com/Rudd/p/5137612.html" target="_blank" rel="noopener">https://www.cnblogs.com/Rudd/p/5137612.html</a></p>
-</blockquote>
-<h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p>hive的udtf有两种，Simple和Generic。这是由于历史问题，Simple先出现，但是因为反射问题效率较低，所以现在推荐使用Generic的写法。</p>
-<ul>
-<li>Simple。即继承<code>org.apache.hadoop.hive.ql.exec.UDAF</code>类，并在派生类中以静态内部类的方式实现<code>org.apache.hadoop.hive.ql.exec.UDAFEvaluator</code>接口。在Hive源码包<code>org.apache.hadoop.hive.contrib.udaf.example</code>中包含几个示例。可以直接参阅。但是这些接口已经被注解为Deprecated，建议不要使用这种方式开发新的UDAF函数。</li>
-<li>Generic。这是Hive社区推荐的新的写法，以抽象类代替原有的接口。新的抽象类<code>org.apache.hadoop.hive.ql.udf.generic.AbstractGenericUDAFResolver</code>替代老的UDAF接口，新的抽象类<code>org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator</code>替代老的UDAFEvaluator接口。</li>
-</ul>
-<p>hive是立足于hadoop之上，也就是hive基于mapreduce，hive sql最终还是会转化为mapreduce执行。为了实现mapreduce，udaf中用model来表示mapreduce各个阶段。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static enum Mode &#123;</span><br><span class="line">        PARTIAL1,</span><br><span class="line">        PARTIAL2,</span><br><span class="line">        FINAL,</span><br><span class="line">        COMPLETE;</span><br><span class="line"></span><br><span class="line">        private Mode() &#123;&#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>PARTIAL1: 这个是mapreduce的map阶段:从原始数据到部分数据聚合，将会调用<strong>iterate()</strong>和*<em>terminatePartial() *</em></li>
-<li>PARTIAL2: 这个是mapreduce的map端的Combiner阶段，负责在map端合并map的数据::从部分数据聚合到部分数据聚合，将会调用<strong>merge()</strong> 和 <strong>terminatePartial()</strong> </li>
-<li>FINAL: mapreduce的reduce阶段，从部分数据的聚合到完全聚合，将会调用<strong>merge()</strong>和*<em>terminate() *</em></li>
-</ul>
-<hr>
-<ul>
-<li><p>COMPLETE: 如果出现了这个阶段，表示mapreduce只有map，没有reduce，所以map端就直接出结果了，从原始数据直接到完全聚合，将会调用 <strong>iterate()</strong>和<strong>terminate()</strong></p>
-<p><img src="https://i.loli.net/2020/02/23/DlNqFRHnZ6zLuoA.png" alt="image.png"></p>
-</li>
-</ul>
-<p><img src="https://i.loli.net/2020/02/23/IKn3Vv57jPScxs8.png" alt="image.png"></p>
-<p>udaf骨架示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class GenericUDAFHistogramNumeric extends AbstractGenericUDAFResolver &#123;</span><br><span class="line">  static final Log LOG &#x3D; LogFactory.getLog(GenericUDAFHistogramNumeric.class.getName());</span><br><span class="line"> </span><br><span class="line">  @Override</span><br><span class="line">  public GenericUDAFEvaluator getEvaluator(GenericUDAFParameterInfo info) throws SemanticException &#123;</span><br><span class="line">    &#x2F;&#x2F; 这里主要做类型检查</span><br><span class="line"> </span><br><span class="line">    return new GenericUDAFHistogramNumericEvaluator();</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  public static class GenericUDAFHistogramNumericEvaluator extends GenericUDAFEvaluator &#123;</span><br><span class="line">         &#x2F;&#x2F; 确定各个阶段输入输出参数的数据格式ObjectInspectors</span><br><span class="line">         public  ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException&#123;</span><br><span class="line">             return  null;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; 保存数据聚集结果的类</span><br><span class="line">         public AggregationBuffer getNewAggregationBuffer() throws HiveException &#123;</span><br><span class="line">             return null;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">		 &#x2F;&#x2F; 重置聚集结果</span><br><span class="line">         public void reset(AggregationBuffer aggregationBuffer) throws HiveException &#123;&#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; map阶段，迭代处理输入sql传过来的列数据 </span><br><span class="line">         public void iterate(AggregationBuffer aggregationBuffer, Object[] objects) throws HiveException &#123;&#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; map与combiner结束返回结果，得到部分数据聚集结果</span><br><span class="line">         public Object terminatePartial(AggregationBuffer aggregationBuffer) throws HiveException &#123;</span><br><span class="line">             return null;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; combiner合并map返回的结果，还有reducer合并mapper或combiner返回的结果。</span><br><span class="line">         public void merge(AggregationBuffer aggregationBuffer, Object o) throws HiveException &#123;&#125;</span><br><span class="line"></span><br><span class="line">		 &#x2F;&#x2F; reducer阶段，输出最终结果 </span><br><span class="line">         public Object terminate(AggregationBuffer aggregationBuffer) throws HiveException &#123;</span><br><span class="line">             return null;</span><br><span class="line">         &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h3><p>统计字符数</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.will;</span><br><span class="line"></span><br><span class="line">import org.apache.hadoop.hive.ql.exec.UDFArgumentTypeException;</span><br><span class="line">import org.apache.hadoop.hive.ql.metadata.HiveException;</span><br><span class="line">import org.apache.hadoop.hive.ql.parse.SemanticException;</span><br><span class="line">import org.apache.hadoop.hive.ql.udf.generic.AbstractGenericUDAFResolver;</span><br><span class="line">import org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator;</span><br><span class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;</span><br><span class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;</span><br><span class="line">import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector;</span><br><span class="line">import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;</span><br><span class="line">import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils;</span><br><span class="line"></span><br><span class="line">public class TotalNumOfLetttersGenericUDAF extends AbstractGenericUDAFResolver &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public GenericUDAFEvaluator getEvaluator(TypeInfo[] parameters) throws SemanticException &#123;</span><br><span class="line"></span><br><span class="line">        if (parameters.length !&#x3D; 1) &#123;</span><br><span class="line">            throw new UDFArgumentTypeException(parameters.length - 1,&quot;Exactly one argument is expected.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ObjectInspector oi &#x3D; TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(parameters[0]);</span><br><span class="line"></span><br><span class="line">        if (oi.getCategory() !&#x3D; ObjectInspector.Category.PRIMITIVE)&#123;</span><br><span class="line">            throw new UDFArgumentTypeException(0,</span><br><span class="line">                    &quot;Argument must be PRIMITIVE, but &quot;</span><br><span class="line">                    + oi.getCategory().name()</span><br><span class="line">                    + &quot; was passed.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        PrimitiveObjectInspector inputOI &#x3D; (PrimitiveObjectInspector) oi;</span><br><span class="line">        if (inputOI.getPrimitiveCategory() !&#x3D; PrimitiveObjectInspector.PrimitiveCategory.STRING)&#123;</span><br><span class="line">            throw new UDFArgumentTypeException(0, &quot;Argument must be String, but &quot;</span><br><span class="line">                     + inputOI.getPrimitiveCategory().name()</span><br><span class="line">                     + &quot; was passed.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return new TotalNumOfLettersEvaluator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static class TotalNumOfLettersEvaluator extends GenericUDAFEvaluator&#123;</span><br><span class="line">        PrimitiveObjectInspector inputOI;</span><br><span class="line">        ObjectInspector outputOI;</span><br><span class="line">        PrimitiveObjectInspector integerOI;</span><br><span class="line"></span><br><span class="line">        int total &#x3D; 0;</span><br><span class="line">        private boolean warned &#x3D; false;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">         public  ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException&#123;</span><br><span class="line">            assert (parameters.length &#x3D;&#x3D; 1);</span><br><span class="line">            super.init(m, parameters);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;map阶段读取sql列，输入为String基础数据格式</span><br><span class="line">            if (m &#x3D;&#x3D; Mode.PARTIAL1 || m &#x3D;&#x3D; Mode.COMPLETE) &#123;</span><br><span class="line">                inputOI &#x3D; (PrimitiveObjectInspector) parameters[0];</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F;其余阶段，输入为Integer基础数据格式</span><br><span class="line">                integerOI &#x3D; (PrimitiveObjectInspector) parameters[0];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F; 指定各个阶段输出数据格式都为Integer类型</span><br><span class="line">            outputOI &#x3D; ObjectInspectorFactory.getReflectionObjectInspector(Integer.class,</span><br><span class="line">                                        ObjectInspectorFactory.ObjectInspectorOptions.JAVA);</span><br><span class="line"></span><br><span class="line">            return outputOI;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;存储当前字符总数的类</span><br><span class="line">        static class LetterSumAgg implements AggregationBuffer &#123;</span><br><span class="line">            int sum &#x3D; 0;</span><br><span class="line">            void add(int num)&#123;</span><br><span class="line">                sum +&#x3D; num;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">         public AggregationBuffer getNewAggregationBuffer() throws HiveException &#123;</span><br><span class="line">             LetterSumAgg result &#x3D; new LetterSumAgg();</span><br><span class="line">             return result;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public void reset(AggregationBuffer aggregationBuffer) throws HiveException &#123;</span><br><span class="line">             LetterSumAgg myagg &#x3D; new LetterSumAgg();</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public void iterate(AggregationBuffer agg, Object[] parameters) throws HiveException &#123;</span><br><span class="line">             assert (parameters.length &#x3D;&#x3D; 1);</span><br><span class="line">             if (parameters[0] !&#x3D; null) &#123;</span><br><span class="line">                 LetterSumAgg myagg &#x3D; (LetterSumAgg) agg;</span><br><span class="line">                 Object p1 &#x3D; ((PrimitiveObjectInspector) inputOI).getPrimitiveJavaObject(parameters[0]);</span><br><span class="line">                 myagg.add(String.valueOf(p1).length());</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public Object terminatePartial(AggregationBuffer agg) throws HiveException &#123;</span><br><span class="line">             LetterSumAgg myagg &#x3D; (LetterSumAgg) agg;</span><br><span class="line">             total +&#x3D; myagg.sum;</span><br><span class="line">             return total;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public void merge(AggregationBuffer agg, Object partial) throws HiveException &#123;</span><br><span class="line">             if (partial !&#x3D; null) &#123;</span><br><span class="line">                 LetterSumAgg myagg1 &#x3D; (LetterSumAgg) agg;</span><br><span class="line">                 Integer partialSum &#x3D; (Integer) integerOI.getPrimitiveJavaObject(partial);</span><br><span class="line">                 LetterSumAgg myagg2 &#x3D; new LetterSumAgg();</span><br><span class="line">                 myagg2.add(partialSum);</span><br><span class="line">                 myagg1.add(myagg2.sum);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public Object terminate(AggregationBuffer agg) throws HiveException &#123;</span><br><span class="line">             LetterSumAgg myagg &#x3D; (LetterSumAgg) agg;</span><br><span class="line">             total &#x3D; myagg.sum;</span><br><span class="line">             return myagg.sum;</span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>首先准备数据</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hive&gt; select * from users;</span><br><span class="line">OK</span><br><span class="line">zhangsan	[&quot;beijing&quot;,&quot;shanghai&quot;,&quot;tianjin&quot;,&quot;hangzhou&quot;]</span><br><span class="line">lisi	[&quot;changchu&quot;,&quot;chengdu&quot;,&quot;wuhan&quot;]</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后添加jar包</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt; ADD JAR &#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar;</span><br><span class="line">Added [&#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar] to class path</span><br><span class="line">Added resources: [&#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar]</span><br></pre></td></tr></table></figure>
-
-
-
-<p>定义函数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hive&gt;  CREATE TEMPORARY FUNCTION letters as &#39;com.will.TotalNumOfLetttersGenericUDAF&#39;;</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.049 seconds</span><br></pre></td></tr></table></figure>
-
-
-
-<p>执行</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hive&gt; select letters(name) from users;</span><br><span class="line">Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1</span><br><span class="line">2020-02-23 13:25:06,087 Stage-1 map &#x3D; 0%,  reduce &#x3D; 0%</span><br><span class="line">2020-02-23 13:25:11,426 Stage-1 map &#x3D; 100%,  reduce &#x3D; 0%, Cumulative CPU 2.03 sec</span><br><span class="line">2020-02-23 13:25:16,607 Stage-1 map &#x3D; 100%,  reduce &#x3D; 100%, Cumulative CPU 4.01 sec</span><br><span class="line">MapReduce Total cumulative CPU time: 4 seconds 10 msec</span><br><span class="line">Total MapReduce CPU Time Spent: 4 seconds 10 msec</span><br><span class="line">OK</span><br><span class="line">12</span><br><span class="line">Time taken: 23.819 seconds, Fetched: 1 row(s)</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="my-own-udaf"><a href="#my-own-udaf" class="headerlink" title="my own udaf"></a>my own udaf</h1><h3 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h3><p>有一个hive表，其中两列分别代表时间戳和事件。目标是得到指定时间范围的所有事件。</p>
-<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>根据上一部分的介绍，要实现聚合首先要设计如何存储，传输的问题。在这个过程中我仔细研究了hive udaf示例的histogram设计，然后设计了自己的udaf。聚合存储使用hashmap，初步解析结果使用string的list保存。</p>
-<p>代码</p>
-<p><a href="https://github.com/zcenao21/hive-udaf" target="_blank" rel="noopener">github 演示项目</a></p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> github个人网站 </tag>
+            
+            <tag> 域名修改 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>hive udf&amp;udaf</title>
+      <link href="/2020/02/21/hive/hive-udf/"/>
+      <url>/2020/02/21/hive/hive-udf/</url>
+      
+        <content type="html"><![CDATA[<p>hive为我们定义了很多函数，大多数情况下是能够满足我们的需求的。但是在有些情况下，很有必要自己定义一些函数，这样使用起来非常方便。这就是自定义函数(udf)和自定义聚合函数(udaf,user defined aggregation function)。udf是每行返回一个结果，而udaf则是聚合的结果，多行产生一个结果。另外还有udtf，是一行产生多个结果。目前我还没有用到过udtf，就先不介绍它了。下面分别用两个示例介绍udf和udaf<a id="more"></a></p><h1 id="udf"><a href="#udf" class="headerlink" title="udf"></a>udf</h1><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>查找array中是否包含被查询值</p><h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><ul><li><p>测试数据准备</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zhangsan        beijing,shanghai,tianjin,hangzhou</span><br><span class="line">lisi    changchu,chengdu,wuhan</span><br></pre></td></tr></table></figure></li><li><p>hive建表与导入</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Create table users(name string, worklocations array&lt;string&gt; ) row format delimited fields terminated by &#39;\t&#39; collection items terminated by &#39;,&#39;; </span><br><span class="line"></span><br><span class="line">load data local inpath &#39;&#x2F;root&#x2F;person.txt &#39; OVERWRITE INTO TABLE users;</span><br></pre></td></tr></table></figure></li><li><p>udf包生成与导入</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">package com.will;</span><br><span class="line"></span><br><span class="line">import org.apache.hadoop.hive.ql.exec.UDF;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line"></span><br><span class="line">public class FindInArray extends UDF &#123;</span><br><span class="line">    public ArrayList&lt;String&gt; evaluate(String keywords, ArrayList&lt;String&gt; column)&#123;</span><br><span class="line">        &#x2F;&#x2F;参数类型使用arraylist&lt;String&gt;对应hive中的array&lt;string&gt;,而不是String[]</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return column;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public String evaluate(String keywords,ArrayList&lt;String&gt; column,String name)&#123;</span><br><span class="line">        &#x2F;&#x2F;重载evaluate，另一种查询方式，返回name值</span><br><span class="line">        if(column.contains(keywords))&#123;</span><br><span class="line">            return name;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>使用mvn 打包</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure></li><li><p>导入hive</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add jar &#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar;</span><br><span class="line">create temporary function find_in_array as &#39;com.will.FindInArray&#39;;</span><br></pre></td></tr></table></figure></li><li><p>使用</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select find_in_array(&#39;beijing&#39;,worklocations) from users;</span><br><span class="line">OK</span><br><span class="line">[&quot;beijing&quot;,&quot;shanghai&quot;,&quot;tianjin&quot;,&quot;hangzhou&quot;]</span><br><span class="line">NULL</span><br><span class="line">Time taken: 0.424 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure></li></ul><blockquote><p>参考：<a href="https://blog.csdn.net/Nougats/article/details/71158318" target="_blank" rel="noopener">https://blog.csdn.net/Nougats/article/details/71158318</a></p></blockquote><h1 id="udaf"><a href="#udaf" class="headerlink" title="udaf"></a>udaf</h1><blockquote><p>参考： </p><p><a href="https://blog.51cto.com/xiaolanlan/2397771" target="_blank" rel="noopener">https://blog.51cto.com/xiaolanlan/2397771</a></p><p><a href="https://www.cnblogs.com/Rudd/p/5137612.html" target="_blank" rel="noopener">https://www.cnblogs.com/Rudd/p/5137612.html</a></p></blockquote><h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p>hive的udtf有两种，Simple和Generic。这是由于历史问题，Simple先出现，但是因为反射问题效率较低，所以现在推荐使用Generic的写法。</p><ul><li>Simple。即继承<code>org.apache.hadoop.hive.ql.exec.UDAF</code>类，并在派生类中以静态内部类的方式实现<code>org.apache.hadoop.hive.ql.exec.UDAFEvaluator</code>接口。在Hive源码包<code>org.apache.hadoop.hive.contrib.udaf.example</code>中包含几个示例。可以直接参阅。但是这些接口已经被注解为Deprecated，建议不要使用这种方式开发新的UDAF函数。</li><li>Generic。这是Hive社区推荐的新的写法，以抽象类代替原有的接口。新的抽象类<code>org.apache.hadoop.hive.ql.udf.generic.AbstractGenericUDAFResolver</code>替代老的UDAF接口，新的抽象类<code>org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator</code>替代老的UDAFEvaluator接口。</li></ul><p>hive是立足于hadoop之上，也就是hive基于mapreduce，hive sql最终还是会转化为mapreduce执行。为了实现mapreduce，udaf中用model来表示mapreduce各个阶段。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static enum Mode &#123;</span><br><span class="line">        PARTIAL1,</span><br><span class="line">        PARTIAL2,</span><br><span class="line">        FINAL,</span><br><span class="line">        COMPLETE;</span><br><span class="line"></span><br><span class="line">        private Mode() &#123;&#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><ul><li>PARTIAL1: 这个是mapreduce的map阶段:从原始数据到部分数据聚合，将会调用<strong>iterate()</strong>和*<em>terminatePartial() *</em></li><li>PARTIAL2: 这个是mapreduce的map端的Combiner阶段，负责在map端合并map的数据::从部分数据聚合到部分数据聚合，将会调用<strong>merge()</strong> 和 <strong>terminatePartial()</strong> </li><li>FINAL: mapreduce的reduce阶段，从部分数据的聚合到完全聚合，将会调用<strong>merge()</strong>和*<em>terminate() *</em></li></ul><hr><ul><li><p>COMPLETE: 如果出现了这个阶段，表示mapreduce只有map，没有reduce，所以map端就直接出结果了，从原始数据直接到完全聚合，将会调用 <strong>iterate()</strong>和<strong>terminate()</strong></p><p><img src="https://i.loli.net/2020/02/23/DlNqFRHnZ6zLuoA.png" alt="image.png"></p></li></ul><p><img src="https://i.loli.net/2020/02/23/IKn3Vv57jPScxs8.png" alt="image.png"></p><p>udaf骨架示例：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">public class GenericUDAFHistogramNumeric extends AbstractGenericUDAFResolver &#123;</span><br><span class="line">  static final Log LOG &#x3D; LogFactory.getLog(GenericUDAFHistogramNumeric.class.getName());</span><br><span class="line"> </span><br><span class="line">  @Override</span><br><span class="line">  public GenericUDAFEvaluator getEvaluator(GenericUDAFParameterInfo info) throws SemanticException &#123;</span><br><span class="line">    &#x2F;&#x2F; 这里主要做类型检查</span><br><span class="line"> </span><br><span class="line">    return new GenericUDAFHistogramNumericEvaluator();</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  public static class GenericUDAFHistogramNumericEvaluator extends GenericUDAFEvaluator &#123;</span><br><span class="line">         &#x2F;&#x2F; 确定各个阶段输入输出参数的数据格式ObjectInspectors</span><br><span class="line">         public  ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException&#123;</span><br><span class="line">             return  null;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; 保存数据聚集结果的类</span><br><span class="line">         public AggregationBuffer getNewAggregationBuffer() throws HiveException &#123;</span><br><span class="line">             return null;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line"> &#x2F;&#x2F; 重置聚集结果</span><br><span class="line">         public void reset(AggregationBuffer aggregationBuffer) throws HiveException &#123;&#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; map阶段，迭代处理输入sql传过来的列数据 </span><br><span class="line">         public void iterate(AggregationBuffer aggregationBuffer, Object[] objects) throws HiveException &#123;&#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; map与combiner结束返回结果，得到部分数据聚集结果</span><br><span class="line">         public Object terminatePartial(AggregationBuffer aggregationBuffer) throws HiveException &#123;</span><br><span class="line">             return null;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         &#x2F;&#x2F; combiner合并map返回的结果，还有reducer合并mapper或combiner返回的结果。</span><br><span class="line">         public void merge(AggregationBuffer aggregationBuffer, Object o) throws HiveException &#123;&#125;</span><br><span class="line"></span><br><span class="line"> &#x2F;&#x2F; reducer阶段，输出最终结果 </span><br><span class="line">         public Object terminate(AggregationBuffer aggregationBuffer) throws HiveException &#123;</span><br><span class="line">             return null;</span><br><span class="line">         &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h3><p>统计字符数</p><h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line">package com.will;</span><br><span class="line"></span><br><span class="line">import org.apache.hadoop.hive.ql.exec.UDFArgumentTypeException;</span><br><span class="line">import org.apache.hadoop.hive.ql.metadata.HiveException;</span><br><span class="line">import org.apache.hadoop.hive.ql.parse.SemanticException;</span><br><span class="line">import org.apache.hadoop.hive.ql.udf.generic.AbstractGenericUDAFResolver;</span><br><span class="line">import org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator;</span><br><span class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;</span><br><span class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;</span><br><span class="line">import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector;</span><br><span class="line">import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;</span><br><span class="line">import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils;</span><br><span class="line"></span><br><span class="line">public class TotalNumOfLetttersGenericUDAF extends AbstractGenericUDAFResolver &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public GenericUDAFEvaluator getEvaluator(TypeInfo[] parameters) throws SemanticException &#123;</span><br><span class="line"></span><br><span class="line">        if (parameters.length !&#x3D; 1) &#123;</span><br><span class="line">            throw new UDFArgumentTypeException(parameters.length - 1,&quot;Exactly one argument is expected.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ObjectInspector oi &#x3D; TypeInfoUtils.getStandardJavaObjectInspectorFromTypeInfo(parameters[0]);</span><br><span class="line"></span><br><span class="line">        if (oi.getCategory() !&#x3D; ObjectInspector.Category.PRIMITIVE)&#123;</span><br><span class="line">            throw new UDFArgumentTypeException(0,</span><br><span class="line">                    &quot;Argument must be PRIMITIVE, but &quot;</span><br><span class="line">                    + oi.getCategory().name()</span><br><span class="line">                    + &quot; was passed.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        PrimitiveObjectInspector inputOI &#x3D; (PrimitiveObjectInspector) oi;</span><br><span class="line">        if (inputOI.getPrimitiveCategory() !&#x3D; PrimitiveObjectInspector.PrimitiveCategory.STRING)&#123;</span><br><span class="line">            throw new UDFArgumentTypeException(0, &quot;Argument must be String, but &quot;</span><br><span class="line">                     + inputOI.getPrimitiveCategory().name()</span><br><span class="line">                     + &quot; was passed.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return new TotalNumOfLettersEvaluator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static class TotalNumOfLettersEvaluator extends GenericUDAFEvaluator&#123;</span><br><span class="line">        PrimitiveObjectInspector inputOI;</span><br><span class="line">        ObjectInspector outputOI;</span><br><span class="line">        PrimitiveObjectInspector integerOI;</span><br><span class="line"></span><br><span class="line">        int total &#x3D; 0;</span><br><span class="line">        private boolean warned &#x3D; false;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">         public  ObjectInspector init(Mode m, ObjectInspector[] parameters) throws HiveException&#123;</span><br><span class="line">            assert (parameters.length &#x3D;&#x3D; 1);</span><br><span class="line">            super.init(m, parameters);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;map阶段读取sql列，输入为String基础数据格式</span><br><span class="line">            if (m &#x3D;&#x3D; Mode.PARTIAL1 || m &#x3D;&#x3D; Mode.COMPLETE) &#123;</span><br><span class="line">                inputOI &#x3D; (PrimitiveObjectInspector) parameters[0];</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F;其余阶段，输入为Integer基础数据格式</span><br><span class="line">                integerOI &#x3D; (PrimitiveObjectInspector) parameters[0];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F; 指定各个阶段输出数据格式都为Integer类型</span><br><span class="line">            outputOI &#x3D; ObjectInspectorFactory.getReflectionObjectInspector(Integer.class,</span><br><span class="line">                                        ObjectInspectorFactory.ObjectInspectorOptions.JAVA);</span><br><span class="line"></span><br><span class="line">            return outputOI;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;存储当前字符总数的类</span><br><span class="line">        static class LetterSumAgg implements AggregationBuffer &#123;</span><br><span class="line">            int sum &#x3D; 0;</span><br><span class="line">            void add(int num)&#123;</span><br><span class="line">                sum +&#x3D; num;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">         public AggregationBuffer getNewAggregationBuffer() throws HiveException &#123;</span><br><span class="line">             LetterSumAgg result &#x3D; new LetterSumAgg();</span><br><span class="line">             return result;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public void reset(AggregationBuffer aggregationBuffer) throws HiveException &#123;</span><br><span class="line">             LetterSumAgg myagg &#x3D; new LetterSumAgg();</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public void iterate(AggregationBuffer agg, Object[] parameters) throws HiveException &#123;</span><br><span class="line">             assert (parameters.length &#x3D;&#x3D; 1);</span><br><span class="line">             if (parameters[0] !&#x3D; null) &#123;</span><br><span class="line">                 LetterSumAgg myagg &#x3D; (LetterSumAgg) agg;</span><br><span class="line">                 Object p1 &#x3D; ((PrimitiveObjectInspector) inputOI).getPrimitiveJavaObject(parameters[0]);</span><br><span class="line">                 myagg.add(String.valueOf(p1).length());</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public Object terminatePartial(AggregationBuffer agg) throws HiveException &#123;</span><br><span class="line">             LetterSumAgg myagg &#x3D; (LetterSumAgg) agg;</span><br><span class="line">             total +&#x3D; myagg.sum;</span><br><span class="line">             return total;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public void merge(AggregationBuffer agg, Object partial) throws HiveException &#123;</span><br><span class="line">             if (partial !&#x3D; null) &#123;</span><br><span class="line">                 LetterSumAgg myagg1 &#x3D; (LetterSumAgg) agg;</span><br><span class="line">                 Integer partialSum &#x3D; (Integer) integerOI.getPrimitiveJavaObject(partial);</span><br><span class="line">                 LetterSumAgg myagg2 &#x3D; new LetterSumAgg();</span><br><span class="line">                 myagg2.add(partialSum);</span><br><span class="line">                 myagg1.add(myagg2.sum);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         public Object terminate(AggregationBuffer agg) throws HiveException &#123;</span><br><span class="line">             LetterSumAgg myagg &#x3D; (LetterSumAgg) agg;</span><br><span class="line">             total &#x3D; myagg.sum;</span><br><span class="line">             return myagg.sum;</span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>首先准备数据</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select * from users;</span><br><span class="line">OK</span><br><span class="line">zhangsan[&quot;beijing&quot;,&quot;shanghai&quot;,&quot;tianjin&quot;,&quot;hangzhou&quot;]</span><br><span class="line">lisi[&quot;changchu&quot;,&quot;chengdu&quot;,&quot;wuhan&quot;]</span><br></pre></td></tr></table></figure><p>然后添加jar包</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; ADD JAR &#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar;</span><br><span class="line">Added [&#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar] to class path</span><br><span class="line">Added resources: [&#x2F;home&#x2F;will&#x2F;work&#x2F;projects&#x2F;hive_udf_test&#x2F;target&#x2F;hive_udf_test-1.0-SNAPSHOT.jar]</span><br></pre></td></tr></table></figure><p>定义函数</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive&gt;  CREATE TEMPORARY FUNCTION letters as &#39;com.will.TotalNumOfLetttersGenericUDAF&#39;;</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.049 seconds</span><br></pre></td></tr></table></figure><p>执行</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select letters(name) from users;</span><br><span class="line">Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1</span><br><span class="line">2020-02-23 13:25:06,087 Stage-1 map &#x3D; 0%,  reduce &#x3D; 0%</span><br><span class="line">2020-02-23 13:25:11,426 Stage-1 map &#x3D; 100%,  reduce &#x3D; 0%, Cumulative CPU 2.03 sec</span><br><span class="line">2020-02-23 13:25:16,607 Stage-1 map &#x3D; 100%,  reduce &#x3D; 100%, Cumulative CPU 4.01 sec</span><br><span class="line">MapReduce Total cumulative CPU time: 4 seconds 10 msec</span><br><span class="line">Total MapReduce CPU Time Spent: 4 seconds 10 msec</span><br><span class="line">OK</span><br><span class="line">12</span><br><span class="line">Time taken: 23.819 seconds, Fetched: 1 row(s)</span><br></pre></td></tr></table></figure><h1 id="my-own-udaf"><a href="#my-own-udaf" class="headerlink" title="my own udaf"></a>my own udaf</h1><h3 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h3><p>有一个hive表，其中两列分别代表时间戳和事件。目标是得到指定时间范围的所有事件。</p><h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>根据上一部分的介绍，要实现聚合首先要设计如何存储，传输的问题。在这个过程中我仔细研究了hive udaf示例的histogram设计，然后设计了自己的udaf。聚合存储使用hashmap，初步解析结果使用string的list保存。</p><p>代码</p><p><a href="https://github.com/zcenao21/hive-udaf" target="_blank" rel="noopener">github 演示项目</a></p>]]></content>
+      
+      
       <categories>
-        <category>Hive</category>
+          
+          <category> Hive </category>
+          
       </categories>
-      <tags>
-        <tag>hive</tag>
-        <tag>udf</tag>
-        <tag>udaf</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hive源码调试入门</title>
-    <url>/2020/02/21/hive/hive-source-modification/</url>
-    <content><![CDATA[<p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。<a id="more"></a></p>
-<p>hive依赖hadoop，看hive启动脚本，最终是调用hadoop启动，而hadoop最终还是执行的java -jar xxx.jar形式，所以决定先从hive java源码入口看。先试一试改动源码打印个信息。</p>
-<p>首先在hive的main函数入口增加一行</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(&quot;Will&#39;s first hive source code modification: test err print info&quot;);</span><br></pre></td></tr></table></figure>
-
-<img src="https://i.loli.net/2020/02/21/bQOyidqXgsMR3Ca.png" alt="启动" style="zoom:80%;" />
-
-<p>打包，然后替换lib目录下hive-cli-xxx.jar。</p>
-<p>运行hive</p>
-<p><img src="https://i.loli.net/2020/02/21/LZ16gVt4rfdXqyu.png" alt="选区_001.png"></p>
-<p>好啦，正式开启与hive源码的斗争！</p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> hive </tag>
+            
+            <tag> udf </tag>
+            
+            <tag> udaf </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>hive源码调试入门</title>
+      <link href="/2020/02/21/hive/hive-source-modification/"/>
+      <url>/2020/02/21/hive/hive-source-modification/</url>
+      
+        <content type="html"><![CDATA[<p>在windows上折腾安装好了hadoop，hive因为文件路径太长不支持等各种奇奇怪怪的问题始终运行不起来，下了大决心放弃windows系统，unbuntu走起！重装系统还算顺利，几个小时搞定。然后就是ubuntu上运行hadoop,成功; ubuntu上运行hive，成功！下一步hive源码走起。<a id="more"></a></p><p>hive依赖hadoop，看hive启动脚本，最终是调用hadoop启动，而hadoop最终还是执行的java -jar xxx.jar形式，所以决定先从hive java源码入口看。先试一试改动源码打印个信息。</p><p>首先在hive的main函数入口增加一行</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(&quot;Will&#39;s first hive source code modification: test err print info&quot;);</span><br></pre></td></tr></table></figure><img src="https://i.loli.net/2020/02/21/bQOyidqXgsMR3Ca.png" alt="启动" style="zoom:80%;" /><p>打包，然后替换lib目录下hive-cli-xxx.jar。</p><p>运行hive</p><p><img src="https://i.loli.net/2020/02/21/LZ16gVt4rfdXqyu.png" alt="选区_001.png"></p><p>好啦，正式开启与hive源码的斗争！</p>]]></content>
+      
+      
       <categories>
-        <category>Hive</category>
+          
+          <category> Hive </category>
+          
       </categories>
-      <tags>
-        <tag>hive</tag>
-        <tag>源码</tag>
-        <tag>开发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hadoop在windows 10下安装步骤</title>
-    <url>/2020/02/15/hadoop/hadoop-hadoop%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>首先劝大家在有条件情况下能用mac就用mac，再不行用linux系统，在windows上运行hadoop不是一个好主意！真的好麻烦。。。</p>
-<a id="more"></a>
-
-
-
-<h1 id="准备文件"><a href="#准备文件" class="headerlink" title="准备文件"></a>准备文件</h1><ul>
-<li>在官网上下载hadoop的压缩包</li>
-<li>然后有个github项目专门做windows下配置的包，具体链接需要自己搜一下</li>
-</ul>
-<p>我用的是hadoop 2.10.0，然后配置文件和hadoop包都在里面，需要自己下载</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;18ZVB89xOUq43gJ7cqlZUGA </span><br><span class="line">提取码：wj3v</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h1><ul>
-<li>安装好java环境，这是基础，网上一堆教程</li>
-<li>解压缩hadoop压缩包，然后解压下载的另一个配置文件，直接拷贝覆盖即可</li>
-</ul>
-<p>这里卡了好久，因为文件路径太长经常解压后部分文件无法解压成功，这个可以参考链接：<a href="https://knowledge.autodesk.com/zh-hans/search-result/caas/sfdcarticles/sfdcarticles/CHS/The-Windows-10-default-path-length-limitation-MAX-PATH-is-256-characters.html" target="_blank" rel="noopener">点这里</a>，最好放在盘的第一层，我就放在C:\下面</p>
-<ul>
-<li><p>配置hadoop环境变量</p>
-<p>我的电脑-&gt;属性-&gt;高级系统设置-&gt;环境变量-&gt;系统变量</p>
-<p>新建HADOOP_HOME, 我的配置：C:\hadoop-2.10.0\bin</p>
-<p><img src="https://i.loli.net/2020/02/20/T9MjvyiPe8rcE5H.jpg" alt="b146837bly1gbxf3b0kv0j20s9071dfu.jpg"></p>
-</li>
-</ul>
-<p>​     在PATH变量中添加：%HADOOP_HOME%</p>
-<ul>
-<li><p>编辑 hadoop安装目录下 etc/hadoop/hadoop-env.cmd, 替换JAVA_HOME路径，”D:\program files\Java\jdk1.8.0_171”为JAVA安装路径。</p>
-<p>set JAVA_HOME=”D:\program files\Java\jdk1.8.0_171”</p>
-<p>然后编辑在hadoop根目录下创建data目录，目录中再创建两个空文件夹datanode和namenode，之后编辑 etc/hadoop/hdfs-site.xml，替换路径/hadoop-2.10.0/为你的hadoop安装根目录</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line"> &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;value&gt;1&lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.name.dir&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;value&gt;&#x2F;hadoop-2.10.0&#x2F;data&#x2F;namenode&lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.datanode.data.dir&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;value&gt;&#x2F;hadoop-2.10.0&#x2F;data&#x2F;datanode&lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>格式化namenode</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">在任意目录执行 hdfs namenode -format</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>到安装根目录下的sbin目录，执行</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">start-all.cmd</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.loli.net/2020/02/20/Lupda64fCRmJEHo.jpg" alt="b146837bly1gbxfmuf908j20z50li7gm.jpg"></p>
-<p>验证是否成功：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
-
-<p>会有以下进程在运行：</p>
-<p>NodeManager<br>DataNode<br>ResourceManager<br>NameNode</p>
-</li>
-</ul>
-<h1 id="问题及解决方法"><a href="#问题及解决方法" class="headerlink" title="问题及解决方法"></a>问题及解决方法</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java.lang.NoClassDefFoundError: org&#x2F;apache&#x2F;hadoop&#x2F;yarn&#x2F;server&#x2F;timelineservice&#x2F;collector&#x2F;TimelineCollectorManager</span><br><span class="line">        at java.lang.ClassLoader.defineClass1(Native Method)</span><br><span class="line">        at java.lang.ClassLoader.defineClass(ClassLoader.java:763)</span><br><span class="line">        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)</span><br><span class="line">        at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)</span><br><span class="line">        at java.net.URLClassLoader.access$100(URLClassLoader.java:73)</span><br><span class="line">        at java.net.URLClassLoader$1.run(URLClassLoader.java:368)</span><br><span class="line">        at java.net.URLClassLoader$1.run(URLClassLoader.java:362)</span><br><span class="line">        at java.security.AccessController.doPrivileged(Native Method)</span><br><span class="line">        at java.net.URLClassLoader.findClass(URLClassLoader.java:361)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)</span><br><span class="line">        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)</span><br><span class="line">        at java.lang.Class.getDeclaredMethods0(Native Method)</span><br><span class="line">        at java.lang.Class.privateGetDeclaredMethods(Class.java:2701)</span><br><span class="line">        at java.lang.Class.getDeclaredMethods(Class.java:1975)</span><br><span class="line">        at com.google.inject.spi.InjectionPoint.getInjectionPoints(InjectionPoint.java:688)</span><br><span class="line">        at com.google.inject.spi.InjectionPoint.forInstanceMethodsAndFields(InjectionPoint.java:380)</span><br><span class="line">        at com.google.inject.spi.InjectionPoint.forInstanceMethodsAndFields(InjectionPoint.java:399)</span><br><span class="line">        at com.google.inject.internal.BindingBuilder.toInstance(BindingBuilder.java:84)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.webapp.RMWebApp.setup(RMWebApp.java:56)</span><br><span class="line">        at org.apache.hadoop.yarn.webapp.WebApp.configureServlets(WebApp.java:160)</span><br><span class="line">        at com.google.inject.servlet.ServletModule.configure(ServletModule.java:55)</span><br><span class="line">        at com.google.inject.AbstractModule.configure(AbstractModule.java:62)</span><br><span class="line">        at com.google.inject.spi.Elements$RecordingBinder.install(Elements.java:340)</span><br><span class="line">        at com.google.inject.spi.Elements.getElements(Elements.java:110)</span><br><span class="line">        at com.google.inject.internal.InjectorShell$Builder.build(InjectorShell.java:138)</span><br><span class="line">        at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:104)</span><br><span class="line">        at com.google.inject.Guice.createInjector(Guice.java:96)</span><br><span class="line">        at com.google.inject.Guice.createInjector(Guice.java:73)</span><br><span class="line">        at com.google.inject.Guice.createInjector(Guice.java:62)</span><br><span class="line">        at org.apache.hadoop.yarn.webapp.WebApps$Builder.build(WebApps.java:356)</span><br><span class="line">        at org.apache.hadoop.yarn.webapp.WebApps$Builder.start(WebApps.java:401)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.ResourceManager.startWepApp(ResourceManager.java:1137)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.ResourceManager.serviceStart(ResourceManager.java:1245)</span><br><span class="line">        at org.apache.hadoop.service.AbstractService.start(AbstractService.java:194)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.ResourceManager.main(ResourceManager.java:1446)</span><br><span class="line">Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.yarn.server.timelineservice.collector.TimelineCollectorManager</span><br><span class="line">        at java.net.URLClassLoader.findClass(URLClassLoader.java:381)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)</span><br><span class="line">        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)</span><br><span class="line">        ... 36 more</span><br></pre></td></tr></table></figure>
-
-<p>*<em>解决方法： *</em>share\hadoop\yarn\timelineservice 下 hadoop-yarn-server-timelineservice-3.0.3.jar copy 到share\hadoop\yarn目录下 </p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> hive </tag>
+            
+            <tag> 源码 </tag>
+            
+            <tag> 开发 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>hadoop在windows 10下安装步骤</title>
+      <link href="/2020/02/15/hadoop/hadoop-hadoop%E5%AE%89%E8%A3%85/"/>
+      <url>/2020/02/15/hadoop/hadoop-hadoop%E5%AE%89%E8%A3%85/</url>
+      
+        <content type="html"><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>首先劝大家在有条件情况下能用mac就用mac，再不行用linux系统，在windows上运行hadoop不是一个好主意！真的好麻烦。。。</p><a id="more"></a><h1 id="准备文件"><a href="#准备文件" class="headerlink" title="准备文件"></a>准备文件</h1><ul><li>在官网上下载hadoop的压缩包</li><li>然后有个github项目专门做windows下配置的包，具体链接需要自己搜一下</li></ul><p>我用的是hadoop 2.10.0，然后配置文件和hadoop包都在里面，需要自己下载</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;18ZVB89xOUq43gJ7cqlZUGA </span><br><span class="line">提取码：wj3v</span><br></pre></td></tr></table></figure><h1 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h1><ul><li>安装好java环境，这是基础，网上一堆教程</li><li>解压缩hadoop压缩包，然后解压下载的另一个配置文件，直接拷贝覆盖即可</li></ul><p>这里卡了好久，因为文件路径太长经常解压后部分文件无法解压成功，这个可以参考链接：<a href="https://knowledge.autodesk.com/zh-hans/search-result/caas/sfdcarticles/sfdcarticles/CHS/The-Windows-10-default-path-length-limitation-MAX-PATH-is-256-characters.html" target="_blank" rel="noopener">点这里</a>，最好放在盘的第一层，我就放在C:\下面</p><ul><li><p>配置hadoop环境变量</p><p>我的电脑-&gt;属性-&gt;高级系统设置-&gt;环境变量-&gt;系统变量</p><p>新建HADOOP_HOME, 我的配置：C:\hadoop-2.10.0\bin</p><p><img src="https://i.loli.net/2020/02/20/T9MjvyiPe8rcE5H.jpg" alt="b146837bly1gbxf3b0kv0j20s9071dfu.jpg"></p></li></ul><p>​     在PATH变量中添加：%HADOOP_HOME%</p><ul><li><p>编辑 hadoop安装目录下 etc/hadoop/hadoop-env.cmd, 替换JAVA_HOME路径，”D:\program files\Java\jdk1.8.0_171”为JAVA安装路径。</p><p>set JAVA_HOME=”D:\program files\Java\jdk1.8.0_171”</p><p>然后编辑在hadoop根目录下创建data目录，目录中再创建两个空文件夹datanode和namenode，之后编辑 etc/hadoop/hdfs-site.xml，替换路径/hadoop-2.10.0/为你的hadoop安装根目录</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line"> &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;value&gt;1&lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.name.dir&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;value&gt;&#x2F;hadoop-2.10.0&#x2F;data&#x2F;namenode&lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.datanode.data.dir&lt;&#x2F;name&gt;</span><br><span class="line">        &lt;value&gt;&#x2F;hadoop-2.10.0&#x2F;data&#x2F;datanode&lt;&#x2F;value&gt;</span><br><span class="line">    &lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure></li><li><p>格式化namenode</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在任意目录执行 hdfs namenode -format</span><br></pre></td></tr></table></figure></li><li><p>到安装根目录下的sbin目录，执行</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-all.cmd</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2020/02/20/Lupda64fCRmJEHo.jpg" alt="b146837bly1gbxfmuf908j20z50li7gm.jpg"></p><p>验证是否成功：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure><p>会有以下进程在运行：</p><p>NodeManager<br>DataNode<br>ResourceManager<br>NameNode</p></li></ul><h1 id="问题及解决方法"><a href="#问题及解决方法" class="headerlink" title="问题及解决方法"></a>问题及解决方法</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">java.lang.NoClassDefFoundError: org&#x2F;apache&#x2F;hadoop&#x2F;yarn&#x2F;server&#x2F;timelineservice&#x2F;collector&#x2F;TimelineCollectorManager</span><br><span class="line">        at java.lang.ClassLoader.defineClass1(Native Method)</span><br><span class="line">        at java.lang.ClassLoader.defineClass(ClassLoader.java:763)</span><br><span class="line">        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)</span><br><span class="line">        at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)</span><br><span class="line">        at java.net.URLClassLoader.access$100(URLClassLoader.java:73)</span><br><span class="line">        at java.net.URLClassLoader$1.run(URLClassLoader.java:368)</span><br><span class="line">        at java.net.URLClassLoader$1.run(URLClassLoader.java:362)</span><br><span class="line">        at java.security.AccessController.doPrivileged(Native Method)</span><br><span class="line">        at java.net.URLClassLoader.findClass(URLClassLoader.java:361)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)</span><br><span class="line">        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)</span><br><span class="line">        at java.lang.Class.getDeclaredMethods0(Native Method)</span><br><span class="line">        at java.lang.Class.privateGetDeclaredMethods(Class.java:2701)</span><br><span class="line">        at java.lang.Class.getDeclaredMethods(Class.java:1975)</span><br><span class="line">        at com.google.inject.spi.InjectionPoint.getInjectionPoints(InjectionPoint.java:688)</span><br><span class="line">        at com.google.inject.spi.InjectionPoint.forInstanceMethodsAndFields(InjectionPoint.java:380)</span><br><span class="line">        at com.google.inject.spi.InjectionPoint.forInstanceMethodsAndFields(InjectionPoint.java:399)</span><br><span class="line">        at com.google.inject.internal.BindingBuilder.toInstance(BindingBuilder.java:84)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.webapp.RMWebApp.setup(RMWebApp.java:56)</span><br><span class="line">        at org.apache.hadoop.yarn.webapp.WebApp.configureServlets(WebApp.java:160)</span><br><span class="line">        at com.google.inject.servlet.ServletModule.configure(ServletModule.java:55)</span><br><span class="line">        at com.google.inject.AbstractModule.configure(AbstractModule.java:62)</span><br><span class="line">        at com.google.inject.spi.Elements$RecordingBinder.install(Elements.java:340)</span><br><span class="line">        at com.google.inject.spi.Elements.getElements(Elements.java:110)</span><br><span class="line">        at com.google.inject.internal.InjectorShell$Builder.build(InjectorShell.java:138)</span><br><span class="line">        at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:104)</span><br><span class="line">        at com.google.inject.Guice.createInjector(Guice.java:96)</span><br><span class="line">        at com.google.inject.Guice.createInjector(Guice.java:73)</span><br><span class="line">        at com.google.inject.Guice.createInjector(Guice.java:62)</span><br><span class="line">        at org.apache.hadoop.yarn.webapp.WebApps$Builder.build(WebApps.java:356)</span><br><span class="line">        at org.apache.hadoop.yarn.webapp.WebApps$Builder.start(WebApps.java:401)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.ResourceManager.startWepApp(ResourceManager.java:1137)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.ResourceManager.serviceStart(ResourceManager.java:1245)</span><br><span class="line">        at org.apache.hadoop.service.AbstractService.start(AbstractService.java:194)</span><br><span class="line">        at org.apache.hadoop.yarn.server.resourcemanager.ResourceManager.main(ResourceManager.java:1446)</span><br><span class="line">Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.yarn.server.timelineservice.collector.TimelineCollectorManager</span><br><span class="line">        at java.net.URLClassLoader.findClass(URLClassLoader.java:381)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)</span><br><span class="line">        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)</span><br><span class="line">        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)</span><br><span class="line">        ... 36 more</span><br></pre></td></tr></table></figure><p>*<em>解决方法： *</em>share\hadoop\yarn\timelineservice 下 hadoop-yarn-server-timelineservice-3.0.3.jar copy 到share\hadoop\yarn目录下 </p>]]></content>
+      
+      
       <categories>
-        <category>hadoop</category>
+          
+          <category> hadoop </category>
+          
       </categories>
-      <tags>
-        <tag>hadoop</tag>
-        <tag>hadoop安装</tag>
-        <tag>windows 10</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基础知识</title>
-    <url>/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</url>
-    <content><![CDATA[<h1 id="计算机"><a href="#计算机" class="headerlink" title="计算机"></a>计算机</h1><h3 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a>组成部分</h3><ul>
-<li>输入单元</li>
-<li>CPU<a id="more"></a></li>
-<li>内存</li>
-<li>外部存储设备</li>
-<li>输出单元</li>
-</ul>
-<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ul>
-<li>超级计算机</li>
-<li>大型计算机</li>
-<li>迷你计算机</li>
-<li>工作站</li>
-<li>微电脑</li>
-</ul>
-<h3 id="文件大小"><a href="#文件大小" class="headerlink" title="文件大小"></a>文件大小</h3><p>B=&gt;K=&gt;M=&gt;G=&gt;T=&gt;P=&gt;E</p>
-<p>关系都是1024的倍数，如1M=1024K</p>
-<h3 id="结构层次"><a href="#结构层次" class="headerlink" title="结构层次"></a>结构层次</h3><p>网络图片，侵删</p>
-<p><img src="https://i.loli.net/2020/03/10/kmq52KJte6GyuzW.png" alt="image.png"></p>
-<p>普通用户熟悉的是操作系统和应用程序。linux操作系统的核心为linux内核。在linux中，常常用到命令行工具，称为shell。shell是一个用户调用接口，包含各种命令可以和系统交互。内核和系统硬件进行交互。</p>
-<h1 id="帮助"><a href="#帮助" class="headerlink" title="帮助"></a>帮助</h1><p>因为传统linux系统只有命令行模式，所以需要使用各种命令，但是记住所有的命令和参数这是几乎不可能的，所以知道如何获取帮助非常重要。</p>
-<p>获取帮助的命令主要有三个，help, man, info。这三个得到的查询结果详细程度依次递增。</p>
-<p><strong>help命令</strong></p>
-<p>help 命令经常使用，可以简洁的列出命令使用方法</p>
-<p>示例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">help echo</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="https://i.loli.net/2020/02/20/jNaxOQpHEnBAWZy.jpg" alt="b146837bly1gbsy3grssnj21fd09qwff.jpg"></p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> hadoop </tag>
+            
+            <tag> hadoop安装 </tag>
+            
+            <tag> windows 10 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>基础知识</title>
+      <link href="/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+      <url>/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</url>
+      
+        <content type="html"><![CDATA[<h1 id="计算机"><a href="#计算机" class="headerlink" title="计算机"></a>计算机</h1><h3 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a>组成部分</h3><ul><li>输入单元</li><li>CPU<a id="more"></a></li><li>内存</li><li>外部存储设备</li><li>输出单元</li></ul><h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ul><li>超级计算机</li><li>大型计算机</li><li>迷你计算机</li><li>工作站</li><li>微电脑</li></ul><h3 id="文件大小"><a href="#文件大小" class="headerlink" title="文件大小"></a>文件大小</h3><p>B=&gt;K=&gt;M=&gt;G=&gt;T=&gt;P=&gt;E</p><p>关系都是1024的倍数，如1M=1024K</p><h3 id="结构层次"><a href="#结构层次" class="headerlink" title="结构层次"></a>结构层次</h3><p>网络图片，侵删</p><p><img src="https://i.loli.net/2020/03/10/kmq52KJte6GyuzW.png" alt="image.png"></p><p>普通用户熟悉的是操作系统和应用程序。linux操作系统的核心为linux内核。在linux中，常常用到命令行工具，称为shell。shell是一个用户调用接口，包含各种命令可以和系统交互。内核和系统硬件进行交互。</p><h1 id="帮助"><a href="#帮助" class="headerlink" title="帮助"></a>帮助</h1><p>因为传统linux系统只有命令行模式，所以需要使用各种命令，但是记住所有的命令和参数这是几乎不可能的，所以知道如何获取帮助非常重要。</p><p>获取帮助的命令主要有三个，help, man, info。这三个得到的查询结果详细程度依次递增。</p><p><strong>help命令</strong></p><p>help 命令经常使用，可以简洁的列出命令使用方法</p><p>示例：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">help echo</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2020/02/20/jNaxOQpHEnBAWZy.jpg" alt="b146837bly1gbsy3grssnj21fd09qwff.jpg"></p>]]></content>
+      
+      
       <categories>
-        <category>Linux</category>
+          
+          <category> Linux </category>
+          
       </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>基础知识</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>linux---目录</title>
-    <url>/2020/02/09/linux/Linux%E7%9B%AE%E5%BD%95/</url>
-    <content><![CDATA[<p>linux系统是一种自由和开放源码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹在1991年10月5日首次发布，在加上用户空间的应用程序之后，成为Linux操作系统[1]。linux系统作为当前最流行的系统之一，有各种版本，如centos, ubuntu等，当前移动互联网终端之王—手机—的系统之一Android也是基于linux，可以说随处可以见到linux的身影。</p>
-<p>在大数据开发中，linux系统必然会涉及，是必备的基础技能。下面将分为以下一系列文章进行介绍：</p>
-<ul>
-<li><a href="/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">基础知识</a></li>
-<li>常用命令</li>
-<li><a href="/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/" title="文件及用户权限">文件及用户权限</a></li>
-<li>shell脚本</li>
-</ul>
-<blockquote>
-<p>[1] 维基百科</p>
-</blockquote>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Linux </tag>
+            
+            <tag> 基础知识 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>linux---目录</title>
+      <link href="/2020/02/09/linux/Linux%E7%9B%AE%E5%BD%95/"/>
+      <url>/2020/02/09/linux/Linux%E7%9B%AE%E5%BD%95/</url>
+      
+        <content type="html"><![CDATA[<p>linux系统是一种自由和开放源码的类UNIX操作系统。该操作系统的内核由林纳斯·托瓦兹在1991年10月5日首次发布，在加上用户空间的应用程序之后，成为Linux操作系统[1]。linux系统作为当前最流行的系统之一，有各种版本，如centos, ubuntu等，当前移动互联网终端之王—手机—的系统之一Android也是基于linux，可以说随处可以见到linux的身影。</p><p>在大数据开发中，linux系统必然会涉及，是必备的基础技能。下面将分为以下一系列文章进行介绍：</p><ul><li><a href="/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">基础知识</a></li><li>常用命令</li><li><a href="/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/" title="文件及用户权限">文件及用户权限</a></li><li>shell脚本</li></ul><blockquote><p>[1] 维基百科</p></blockquote>]]></content>
+      
+      
       <categories>
-        <category>目录</category>
+          
+          <category> 目录 </category>
+          
       </categories>
-      <tags>
-        <tag>linux目录</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RDD转换</title>
-    <url>/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/</url>
-    <content><![CDATA[<h1 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h1><p>RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。<a id="more"></a></p>
-<p>RDD包含以下特性（前3个必须有，后两个可选）：</p>
-<ol>
-<li><p>partitions()</p>
-<p>返回组成分布式数据集的分区对象数组。</p>
-</li>
-<li><p>itearator(p, parentIters)</p>
-<p>为每个父分区计算分区p的iteartors。</p>
-</li>
-<li><p>dependencies</p>
-<p>返回依赖对象序列。</p>
-</li>
-<li><p>partitioner()—可选</p>
-<p>若RDD有相关元素与分区信息，则返回Scala option type的分区对象。</p>
-</li>
-<li><p>prefferedLocations(p)—可选</p>
-<p>返回数据分区的存储位置信息。</p>
-</li>
-</ol>
-<p>针对RDD的处理有丰富的操作，包括Action算子和Transformation算子。Action操作返回对象非RDD，Transformation操作返回仍然是RDD。Action算子是触发行动的算子，<strong>Action算子数量等于Spark Job的数量</strong>；Transformation算子会对RDD进行变换，根据父RDD和子RDD的依赖关系不同，Transformation又分为宽依赖和窄依赖。宽依赖的示意图如下：</p>
-<p><img src="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png" alt="image.png"></p>
-<p>窄依赖的严格定义：<strong>each partition of the parrent RDD is used by at most one partition of the child RDD（译：每个父RDD的分区最多被一个子RDD分区使用）</strong>。</p>
-<p>这是区分宽窄依赖最严格的定义，还有一个并不是非常严格的说法，但是便于理解：</p>
-<p>需要进行shuffle的为宽依赖，不需要的为窄依赖。</p>
-<p><strong>Spark Job中的Stage个数就等于宽依赖个数。</strong></p>
-<p>常用的Action算子有reduce,collect,count,first,take,aggregate, fold, foreach, saveAsTextFile, countByKey等; 常用的Transformation算子有map, filter, flatmap, mapPartitions, sample, union, intersection, distinct, groupByKey, countByKey, sortBy, join, coalesce, repartition, repartitionAndSortWithinPatitions, mapValues等。</p>
-<h1 id="Spark-Job阶段划分"><a href="#Spark-Job阶段划分" class="headerlink" title="Spark Job阶段划分"></a>Spark Job阶段划分</h1><p><img src="https://i.loli.net/2019/11/02/Iw4YD79qiK2h6kp.jpg" alt=""></p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> linux目录 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>RDD转换</title>
+      <link href="/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/"/>
+      <url>/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/</url>
+      
+        <content type="html"><![CDATA[<h1 id="RDD"><a href="#RDD" class="headerlink" title="RDD"></a>RDD</h1><p>RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。<a id="more"></a></p><p>RDD包含以下特性（前3个必须有，后两个可选）：</p><ol><li><p>partitions()</p><p>返回组成分布式数据集的分区对象数组。</p></li><li><p>itearator(p, parentIters)</p><p>为每个父分区计算分区p的iteartors。</p></li><li><p>dependencies</p><p>返回依赖对象序列。</p></li><li><p>partitioner()—可选</p><p>若RDD有相关元素与分区信息，则返回Scala option type的分区对象。</p></li><li><p>prefferedLocations(p)—可选</p><p>返回数据分区的存储位置信息。</p></li></ol><p>针对RDD的处理有丰富的操作，包括Action算子和Transformation算子。Action操作返回对象非RDD，Transformation操作返回仍然是RDD。Action算子是触发行动的算子，<strong>Action算子数量等于Spark Job的数量</strong>；Transformation算子会对RDD进行变换，根据父RDD和子RDD的依赖关系不同，Transformation又分为宽依赖和窄依赖。宽依赖的示意图如下：</p><p><img src="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png" alt="image.png"></p><p>窄依赖的严格定义：<strong>each partition of the parrent RDD is used by at most one partition of the child RDD（译：每个父RDD的分区最多被一个子RDD分区使用）</strong>。</p><p>这是区分宽窄依赖最严格的定义，还有一个并不是非常严格的说法，但是便于理解：</p><p>需要进行shuffle的为宽依赖，不需要的为窄依赖。</p><p><strong>Spark Job中的Stage个数就等于宽依赖个数。</strong></p><p>常用的Action算子有reduce,collect,count,first,take,aggregate, fold, foreach, saveAsTextFile, countByKey等; 常用的Transformation算子有map, filter, flatmap, mapPartitions, sample, union, intersection, distinct, groupByKey, countByKey, sortBy, join, coalesce, repartition, repartitionAndSortWithinPatitions, mapValues等。</p><h1 id="Spark-Job阶段划分"><a href="#Spark-Job阶段划分" class="headerlink" title="Spark Job阶段划分"></a>Spark Job阶段划分</h1><p><img src="https://i.loli.net/2019/11/02/Iw4YD79qiK2h6kp.jpg" alt=""></p>]]></content>
+      
+      
       <categories>
-        <category>Spark</category>
+          
+          <category> Spark </category>
+          
       </categories>
-      <tags>
-        <tag>Spark</tag>
-        <tag>High Performance Spark</tag>
-        <tag>RDD</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>spark---目录</title>
-    <url>/2019/11/02/spark/spark%E7%9B%AE%E5%BD%95/</url>
-    <content><![CDATA[<p>Spark作为一个开源大数据分析引擎，分布式、计算速度快是其显著的优势，特别适用于机器学习（ML）等计算中需要迭代的算法。下面将主要针对Spark Core部分，分为以下一系列文章进行介绍：</p>
-<ul>
-<li><a href="/2019/10/24/spark/spark/" title="Spark绪论">Spark绪论</a></li>
-<li><a href="/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/" title="Spark架构">Spark架构</a></li>
-<li><a href="/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/" title="RDD转换">RDD转换</a></li>
-<li>键值对处理</li>
-</ul>
-<blockquote>
-<p>参考书目：high performance spark, Holden karau &amp; Rachel Warren</p>
-</blockquote>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Spark </tag>
+            
+            <tag> High Performance Spark </tag>
+            
+            <tag> RDD </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>spark---目录</title>
+      <link href="/2019/11/02/spark/spark%E7%9B%AE%E5%BD%95/"/>
+      <url>/2019/11/02/spark/spark%E7%9B%AE%E5%BD%95/</url>
+      
+        <content type="html"><![CDATA[<p>Spark作为一个开源大数据分析引擎，分布式、计算速度快是其显著的优势，特别适用于机器学习（ML）等计算中需要迭代的算法。下面将主要针对Spark Core部分，分为以下一系列文章进行介绍：</p><ul><li><a href="/2019/10/24/spark/spark/" title="Spark绪论">Spark绪论</a></li><li><a href="/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/" title="Spark架构">Spark架构</a></li><li><a href="/2019/11/02/spark/RDD%E8%BD%AC%E6%8D%A2/" title="RDD转换">RDD转换</a></li><li>键值对处理</li></ul><blockquote><p>参考书目：high performance spark, Holden karau &amp; Rachel Warren</p></blockquote>]]></content>
+      
+      
       <categories>
-        <category>目录</category>
+          
+          <category> 目录 </category>
+          
       </categories>
-      <tags>
-        <tag>spark目录</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>spark架构</title>
-    <url>/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<h1 id="Spark架构"><a href="#Spark架构" class="headerlink" title="Spark架构"></a>Spark架构</h1><p><img src="https://i.loli.net/2019/11/02/TLMwH9aV1xStu5Y.png" alt=""></p>
-<a id="more"></a>
-
-<p>一个sparkApplication对应 Driver程序中一个SparkContext，而SparkContext由一系列Spark job组成。一个Worker Node可以由多个Executer组成，但是Executer不能跨Worker Node。</p>
-<h1 id="spark数据处理系统"><a href="#spark数据处理系统" class="headerlink" title="spark数据处理系统"></a>spark数据处理系统</h1><p> Spark可以在仅有单个JVM的单台机器上运行，但更常与分布式存储系统和集群管理器串联组成如下数据处理系统。分布式存储系统用来存放数据，集群管理器用来协调管理集群spark任务。Spark目前支持4种集群管理器：Standalone集群管理器，Apache Mesos，Hadoop YARN，EC2。</p>
-<p><img src="https://i.loli.net/2019/11/02/5ijlposeYMDScIU.png" alt="Spark"></p>
-<h1 id="spark生态系统"><a href="#spark生态系统" class="headerlink" title="spark生态系统"></a>spark生态系统</h1><p><img src="https://i.loli.net/2019/11/02/B2JjgU7hczEba1r.png" alt="spark生态系统"></p>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> spark目录 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>spark架构</title>
+      <link href="/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/"/>
+      <url>/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Spark架构"><a href="#Spark架构" class="headerlink" title="Spark架构"></a>Spark架构</h1><p><img src="https://i.loli.net/2019/11/02/TLMwH9aV1xStu5Y.png" alt=""></p><a id="more"></a><p>一个sparkApplication对应 Driver程序中一个SparkContext，而SparkContext由一系列Spark job组成。一个Worker Node可以由多个Executer组成，但是Executer不能跨Worker Node。</p><h1 id="spark数据处理系统"><a href="#spark数据处理系统" class="headerlink" title="spark数据处理系统"></a>spark数据处理系统</h1><p> Spark可以在仅有单个JVM的单台机器上运行，但更常与分布式存储系统和集群管理器串联组成如下数据处理系统。分布式存储系统用来存放数据，集群管理器用来协调管理集群spark任务。Spark目前支持4种集群管理器：Standalone集群管理器，Apache Mesos，Hadoop YARN，EC2。</p><p><img src="https://i.loli.net/2019/11/02/5ijlposeYMDScIU.png" alt="Spark"></p><h1 id="spark生态系统"><a href="#spark生态系统" class="headerlink" title="spark生态系统"></a>spark生态系统</h1><p><img src="https://i.loli.net/2019/11/02/B2JjgU7hczEba1r.png" alt="spark生态系统"></p>]]></content>
+      
+      
       <categories>
-        <category>Spark</category>
+          
+          <category> Spark </category>
+          
       </categories>
-      <tags>
-        <tag>Spark</tag>
-        <tag>High Performance Spark</tag>
-        <tag>spark架构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Spark绪论</title>
-    <url>/2019/10/24/spark/spark/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
-<li><p>为什么会有spark</p>
-<p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算<a id="more"></a> 机“Summit”浮点运算速度峰值可达20亿亿次/秒，这相当快了吧！确实很快，但是它的使用和维护费用都很高呀，一般人或者说公司根本负担不起。所以聪明的人类就发明了大数据工具。虽然单台机器的计算性能可能并不是很好，但是如果多台机器联合起来一起做计算，那么不就可以实现相对廉价的机器实现超大数据规模的计算吗？所以诞生了大数据工具Hadoop。Hadoop基于HDFS和Map-Reduce奠定了大数据领域的霸主地位。随后各种工具层出不穷。Spark针对Hadoop计算中慢的缺点，即每次计算结果都要读写到磁盘导致速度变慢的设计，作了如下改进：</p>
-<ol>
-<li>计算中间结果保存在内存中。Hadoop每次的计算结果都会放回HDFS，这种设计严重影响了计算速度。spark基于内存的设计则改进了这一点。</li>
-<li>惰性计算。Spark使用有向无环图（DAG）调度机制，遇到action操作算子才进行实际计算，所有就有了优化空间。</li>
-</ol>
-<blockquote>
-<p>可参考对比：<a href="https://www.zhihu.com/question/26568496" target="_blank" rel="noopener">https://www.zhihu.com/question/26568496</a></p>
-</blockquote>
-</li>
-<li><p>Spark是什么</p>
-<p>官方定义：<strong>Apache Spark™</strong> is a unified analytics engine for large-scale data processing。翻译过来就是：用于大规模数据处理的分析引擎。再直白一点就是说：spark是用于快速处理大量数据的工具。</p>
-<img src="https://ericfu.me/images/2018/06/spark-banner.png" width="700" hegiht="113" align=center />
-
-
-
-</li>
-</ul>
-<h1 id="和其他工具对比"><a href="#和其他工具对比" class="headerlink" title="和其他工具对比"></a>和其他工具对比</h1><blockquote>
-<p>引用自：<a href="https://www.boxuegu.com/news/458.html" target="_blank" rel="noopener">https://www.boxuegu.com/news/458.html</a></p>
-</blockquote>
-<ul>
-<li><p><strong>Hadoop框架</strong></p>
-<p>提起大数据，第一个想起的肯定是Hadoop，因为Hadoop是目前世界上应用最广泛的大数据工具，它凭借极高的容错率和极低的硬件价格，在大数据市场上风生水起。Hadoop还是第一个在开源社区上引发高度关注的批处理框架，他提出的Map和Reduce的计算模式简洁而优雅。迄今为止，Hadoop已经成为了一个广阔的生态圈，实现了大量算法和组件。由于Hadoop的计算任务需要在集群的多个节点上多次读写，因此在速度上会稍显劣势，但是其吞吐量也同样是其他框架所不能匹敌的。</p>
-</li>
-</ul>
-<ul>
-<li><strong>Storm框架</strong><br>与Hadoop的批处理模式不同，Storm采用的是流计算框架，由Twitter开源并且托管在GitHub上。与Hadoop类似的是，Storm也提出了两个计算角色，分别为Spout和Bolt。如果说Hadoop是水桶，只能一桶一桶的去井里扛，那么Storm就是水龙头，只要打开就可以源源不断的出水。Storm支持的语言也比较多，Java、Ruby、Python等语言都能很好的支持。由于Storm是流计算框架，因此使用的是内存，延迟上有极大的优势，但是Storm不会持久化数据。</li>
-</ul>
-<ul>
-<li><strong>Samza框架</strong><br>Smaza也是一种流计算框架，但他目前只支持JVM语言，灵活度上略显不足，并且Samza必须和Kafka共同使用。但是响应的，其也继承了Kafka的低延时、分区、避免回压等优势。对于已经有Hadoop+Kafka工作环境的团队来说，Samza是一个不错的选择，并且Samza在多个团队使用的时候能体现良好的性能。</li>
-</ul>
-<ul>
-<li><strong>Spark框架</strong><br>Spark属于前两种框架形式的集合体，是一种混合式的计算框架。它既有自带的实时流处理工具，也可以和Hadoop集成，代替其中的MapReduce，甚至Spark还可以单独拿出来部署集群，但是还得借助HDFS等分布式存储系统。Spark的强大之处在于其运算速度，与Storm类似，Spark也是基于内存的，并且在内存满负载的时候，硬盘也能运算，运算结果表示，Spark的速度大约为Hadoop的一百倍，并且其成本可能比Hadoop更低。但是Spark目前还没有像Hadoop哪有拥有上万级别的集群，因此现阶段的Spark和Hadoop搭配起来使用更加合适。</li>
-</ul>
-<ul>
-<li><strong>Flink框架</strong><br>Flink也是一种混合式的计算框架，但是在设计初始，Fink的侧重点在于处理流式数据，这与Spark的设计初衷恰恰相反，而在市场需求的驱使下，两者都在朝着更多的兼容性发展。Flink目前不是很成熟，更多情况下Flink还是起到一个借鉴的作用。</li>
-</ul>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Spark </tag>
+            
+            <tag> High Performance Spark </tag>
+            
+            <tag> spark架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Spark绪论</title>
+      <link href="/2019/10/24/spark/spark/"/>
+      <url>/2019/10/24/spark/spark/</url>
+      
+        <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul><li><p>为什么会有spark</p><p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算<a id="more"></a> 机“Summit”浮点运算速度峰值可达20亿亿次/秒，这相当快了吧！确实很快，但是它的使用和维护费用都很高呀，一般人或者说公司根本负担不起。所以聪明的人类就发明了大数据工具。虽然单台机器的计算性能可能并不是很好，但是如果多台机器联合起来一起做计算，那么不就可以实现相对廉价的机器实现超大数据规模的计算吗？所以诞生了大数据工具Hadoop。Hadoop基于HDFS和Map-Reduce奠定了大数据领域的霸主地位。随后各种工具层出不穷。Spark针对Hadoop计算中慢的缺点，即每次计算结果都要读写到磁盘导致速度变慢的设计，作了如下改进：</p><ol><li>计算中间结果保存在内存中。Hadoop每次的计算结果都会放回HDFS，这种设计严重影响了计算速度。spark基于内存的设计则改进了这一点。</li><li>惰性计算。Spark使用有向无环图（DAG）调度机制，遇到action操作算子才进行实际计算，所有就有了优化空间。</li></ol><blockquote><p>可参考对比：<a href="https://www.zhihu.com/question/26568496" target="_blank" rel="noopener">https://www.zhihu.com/question/26568496</a></p></blockquote></li><li><p>Spark是什么</p><p>官方定义：<strong>Apache Spark™</strong> is a unified analytics engine for large-scale data processing。翻译过来就是：用于大规模数据处理的分析引擎。再直白一点就是说：spark是用于快速处理大量数据的工具。</p><img src="https://ericfu.me/images/2018/06/spark-banner.png" width="700" hegiht="113" align=center /></li></ul><h1 id="和其他工具对比"><a href="#和其他工具对比" class="headerlink" title="和其他工具对比"></a>和其他工具对比</h1><blockquote><p>引用自：<a href="https://www.boxuegu.com/news/458.html" target="_blank" rel="noopener">https://www.boxuegu.com/news/458.html</a></p></blockquote><ul><li><p><strong>Hadoop框架</strong></p><p>提起大数据，第一个想起的肯定是Hadoop，因为Hadoop是目前世界上应用最广泛的大数据工具，它凭借极高的容错率和极低的硬件价格，在大数据市场上风生水起。Hadoop还是第一个在开源社区上引发高度关注的批处理框架，他提出的Map和Reduce的计算模式简洁而优雅。迄今为止，Hadoop已经成为了一个广阔的生态圈，实现了大量算法和组件。由于Hadoop的计算任务需要在集群的多个节点上多次读写，因此在速度上会稍显劣势，但是其吞吐量也同样是其他框架所不能匹敌的。</p></li></ul><ul><li><strong>Storm框架</strong><br>与Hadoop的批处理模式不同，Storm采用的是流计算框架，由Twitter开源并且托管在GitHub上。与Hadoop类似的是，Storm也提出了两个计算角色，分别为Spout和Bolt。如果说Hadoop是水桶，只能一桶一桶的去井里扛，那么Storm就是水龙头，只要打开就可以源源不断的出水。Storm支持的语言也比较多，Java、Ruby、Python等语言都能很好的支持。由于Storm是流计算框架，因此使用的是内存，延迟上有极大的优势，但是Storm不会持久化数据。</li></ul><ul><li><strong>Samza框架</strong><br>Smaza也是一种流计算框架，但他目前只支持JVM语言，灵活度上略显不足，并且Samza必须和Kafka共同使用。但是响应的，其也继承了Kafka的低延时、分区、避免回压等优势。对于已经有Hadoop+Kafka工作环境的团队来说，Samza是一个不错的选择，并且Samza在多个团队使用的时候能体现良好的性能。</li></ul><ul><li><strong>Spark框架</strong><br>Spark属于前两种框架形式的集合体，是一种混合式的计算框架。它既有自带的实时流处理工具，也可以和Hadoop集成，代替其中的MapReduce，甚至Spark还可以单独拿出来部署集群，但是还得借助HDFS等分布式存储系统。Spark的强大之处在于其运算速度，与Storm类似，Spark也是基于内存的，并且在内存满负载的时候，硬盘也能运算，运算结果表示，Spark的速度大约为Hadoop的一百倍，并且其成本可能比Hadoop更低。但是Spark目前还没有像Hadoop哪有拥有上万级别的集群，因此现阶段的Spark和Hadoop搭配起来使用更加合适。</li></ul><ul><li><strong>Flink框架</strong><br>Flink也是一种混合式的计算框架，但是在设计初始，Fink的侧重点在于处理流式数据，这与Spark的设计初衷恰恰相反，而在市场需求的驱使下，两者都在朝着更多的兼容性发展。Flink目前不是很成熟，更多情况下Flink还是起到一个借鉴的作用。</li></ul>]]></content>
+      
+      
       <categories>
-        <category>Spark</category>
+          
+          <category> Spark </category>
+          
       </categories>
-      <tags>
-        <tag>Spark</tag>
-        <tag>High Performance Spark</tag>
-        <tag>大数据工具</tag>
-      </tags>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> Spark </tag>
+            
+            <tag> High Performance Spark </tag>
+            
+            <tag> 大数据工具 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
 </search>
