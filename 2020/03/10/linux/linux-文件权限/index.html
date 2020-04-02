@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2020/03/12/Nwa34uJdEZFgW2H.png">
 <meta property="og:image" content="https://i.loli.net/2020/03/12/HvxWYgweRpmGf6l.png">
 <meta property="article:published_time" content="2020-03-09T16:31:21.000Z">
-<meta property="article:modified_time" content="2020-03-31T17:19:37.461Z">
+<meta property="article:modified_time" content="2020-04-02T17:43:41.491Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="文件">
@@ -226,7 +226,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-01 01:19:37" itemprop="dateModified" datetime="2020-04-01T01:19:37+08:00">2020-04-01</time>
+                <time title="Modified: 2020-04-03 01:43:41" itemprop="dateModified" datetime="2020-04-03T01:43:41+08:00">2020-04-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -345,6 +345,38 @@
 <blockquote>
 <p>第四个问题到这里也解决了！</p>
 </blockquote>
+<h1 id="文件特殊权限：SUID-SGID-SBIT"><a href="#文件特殊权限：SUID-SGID-SBIT" class="headerlink" title="文件特殊权限：SUID/SGID/SBIT"></a>文件特殊权限：SUID/SGID/SBIT</h1><p>终于来到了最后一类权限。这类权限能干嘛？比如一个普通用户，我们希望他只能执行某个操作。比如Linux修改密码的工作就是/usr/bin/passwd来做的，这个脚本修改的是/etc/shadow里面的东西。然而，对于/etc/shadow这个文件是高度保密的，不然就会出现密码泄露，而且文件权限是— — —，即只有root有权限修改。那么我们平时怎么修改自己的密码？答案就是在执行时获得root权限。</p>
+<h3 id="Set-UID"><a href="#Set-UID" class="headerlink" title="Set UID"></a>Set UID</h3><p>简称SUID。这个就可以实现执行时获得权限的功能，它有如下特性</p>
+<ul>
+<li>SUID仅对二进制程序有效</li>
+<li>执行者需要对改程序具有x的权限</li>
+<li>本权限仅在执行程序过程中有效</li>
+<li>执行者将具有该程序拥有者的权限</li>
+</ul>
+<p>拥有SUID权限时，用户权限x变成s。</p>
+<h3 id="Set-GID"><a href="#Set-GID" class="headerlink" title="Set GID"></a>Set GID</h3><p>与SUID不同的是，SGID可以针对文件和目录设置，而且对文件和目录设置时功能不同。</p>
+<p>对于文件来说：</p>
+<ul>
+<li>SGID对二进制程序有用</li>
+<li>程序执行者需要对该程序具备x权限</li>
+<li>执行者将在执行过程中获得该程序用户组支持</li>
+</ul>
+<p>对于目录来说：</p>
+<ul>
+<li>用户若对此目录具有r和x权限时，该用户能够进入该目录</li>
+<li>用户在此目录下的有效用户组会变成该目录的用户组</li>
+<li>用户：若用户在此目录下拥有w权限，则用户所建立的新文件用户组与此目录用户组相同</li>
+</ul>
+<p>对于目录的第三个特性非常有用！</p>
+<p>当拥有SGID权限时，s会出现在用户组的x位置</p>
+<h3 id="Sticky-Bit"><a href="#Sticky-Bit" class="headerlink" title="Sticky Bit"></a>Sticky Bit</h3><p>简称SBIT。仅针对目录有效</p>
+<ul>
+<li>当用户对此目录具有w、x权限</li>
+<li>当用户在该目录下建立文件或目录时，仅有root和自己才有权利增删改该文件，其他人有r权限时可以读。</li>
+</ul>
+<blockquote>
+<p>最后一个问题圆满解决！</p>
+</blockquote>
 
     </div>
 
@@ -433,7 +465,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础权限"><span class="nav-number">2.</span> <span class="nav-text">基础权限</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ACL权限"><span class="nav-number">3.</span> <span class="nav-text">ACL权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">3.0.1.</span> <span class="nav-text">使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件隐藏属性"><span class="nav-number">4.</span> <span class="nav-text">文件隐藏属性</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础权限"><span class="nav-number">2.</span> <span class="nav-text">基础权限</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ACL权限"><span class="nav-number">3.</span> <span class="nav-text">ACL权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">3.0.1.</span> <span class="nav-text">使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件隐藏属性"><span class="nav-number">4.</span> <span class="nav-text">文件隐藏属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件特殊权限：SUID-SGID-SBIT"><span class="nav-number">5.</span> <span class="nav-text">文件特殊权限：SUID&#x2F;SGID&#x2F;SBIT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Set-UID"><span class="nav-number">5.0.1.</span> <span class="nav-text">Set UID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Set-GID"><span class="nav-number">5.0.2.</span> <span class="nav-text">Set GID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sticky-Bit"><span class="nav-number">5.0.3.</span> <span class="nav-text">Sticky Bit</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
