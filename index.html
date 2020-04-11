@@ -538,10 +538,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-02-27 22:31:21 / Modified: 22:45:21" itemprop="dateCreated datePublished" datetime="2020-02-27T22:31:21+08:00">2020-02-27</time>
+              <time title="Created: 2020-02-27 22:31:21" itemprop="dateCreated datePublished" datetime="2020-02-27T22:31:21+08:00">2020-02-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-12 01:25:16" itemprop="dateModified" datetime="2020-04-12T01:25:16+08:00">2020-04-12</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -563,7 +569,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase主要和merge对比。相对于merge，rebase可以合并编辑commits历史，从而让更改逻辑一目了然。
+          <h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><p>rebase翻译过来是变基，主要作用有两个</p>
+<ul>
+<li><strong>合并代码不会有冲突，因为在rebase过程中已经解决了</strong>。程序员很多时候需要协同开发，假设有如下场景，分别有开发的程序猿A和程序员B，以及他们的leader来合并A和B的代码。程序猿A和B同时从master分支拉代码并新建为各自的分支，之后程序猿A和B同时对一个文件做了修改，这在日常coding中非常常见。这时如果A的代码由leader合并到了master分支，B在A合并之后提交自己的修改。由于对同一个文件做了修改，leader必须处理完冲突之后才能将B的代码合并。通过rebase，还是上述的过程，不过这次B这次做了rebase到master分支的操作，在这个过程中就已经处理完冲突。由于B对于自己的修改是很清楚的，由他来处理冲突更合适。leader就不需要处理冲突了。</li>
+<li><strong>让提交信息更加清晰</strong>。在开发过程中，我们经常会保存修改的代码到程序仓库(如github, gitlab)。在保存之前会有一个commit信息，很多人都是随便写这个commit信息，而合并代码之后这些commit信息会现实在修改历史中，很多时候这些信息都是没必要的。假如有多个程序猿同时开发，这些commit信息就会多如牛毛，之后看修改信息就很困难了。其实只需要把所有修改的内容总结到一个commit信息中即可，这样提交的代码修改逻辑就十分清晰。rebase可以实现合并commit信息的功能。</li>
+</ul>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/02/27/other/rebase%E5%90%88%E5%B9%B6commit/#more" rel="contents">
