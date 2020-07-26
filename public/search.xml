@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>git的使用</title>
+    <title>Git的使用</title>
     <url>/2020/07/26/other/git/</url>
     <content><![CDATA[<h3 id="Git是做什么的"><a href="#Git是做什么的" class="headerlink" title="Git是做什么的"></a>Git是做什么的</h3><p>Git（读音为/gɪt/）是一个开源的分布式版本控制系统，可以有效、高速地处理从很小到非常大的项目版本管理。Git 是 Linus Torvalds为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件[百度百科]。不得不感慨一下，Linus这位大佬是真的厉害，从0-1创造了没有的东西，还不止一个！据传言，这个软件是在两周完成，一个月投入使用的。。。</p>
 <p>言归正传，通俗的说，Git的主要用途是用于版本控制，对于纯文本形式的文件尤其适合。非纯文本的比如视频就可以选择其他更好的工具来管理。而且Git的开发初衷是为了管理linux内核源码，也就是说是为代码版本控制量身定制的。</p>
