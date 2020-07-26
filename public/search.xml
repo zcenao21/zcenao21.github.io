@@ -8,20 +8,132 @@
 <p>现在的互联网公司基本都用Git做代码版本控制，因为它可以高效完美地解决团队合作开发的问题。另外有各种代码仓库帮我们管理代码，比如Github，Gitlab。</p>
 <p>Git的功能十分强大，本文对普通的开发者最常用的功能做了一些小总结。<a id="more"></a>列表如下：</p>
 <ul>
-<li>提交</li>
-<li>回退</li>
-<li>显示修改log</li>
-<li>创建分支</li>
-<li>合并分支</li>
-<li>暂存修改及恢复</li>
-<li>重放修改</li>
-<li>打标签</li>
-<li>命令简化</li>
-<li>设置提交者信息</li>
-<li>合并commit</li>
+<li><p>同步远程仓库到本地</p>
+</li>
+<li><p>修改并提交</p>
+</li>
+<li><p>回退</p>
+</li>
+<li><p>显示修改log</p>
+</li>
+<li><p>创建分支</p>
+</li>
+<li><p>合并分支</p>
+</li>
+<li><p>暂存修改及恢复</p>
+</li>
+<li><p>重放修改</p>
+</li>
+<li><p>打标签</p>
+</li>
+<li><p>命令简化</p>
+</li>
+<li><p>设置提交者信息</p>
+</li>
+<li><p>合并commit</p>
+</li>
 </ul>
 <p>下面依次进行介绍。为了演示操作，我们选择github创建新项目进行操作。如果没有帐号，请登陆github网站或使用搜索引擎搜索相关注册教程。</p>
-<h3 id="提交"><a href="#提交" class="headerlink" title="提交"></a>提交</h3>]]></content>
+<h3 id="同步远程仓库到本地"><a href="#同步远程仓库到本地" class="headerlink" title="同步远程仓库到本地"></a>同步远程仓库到本地</h3><p>首先我们在github上新建一个仓库，然后同步到本地</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git clone git@github.com:zcenao21&#x2F;git-test.git</span><br><span class="line">正克隆到 &#39;git-test&#39;...</span><br><span class="line">remote: Enumerating objects: 3, done.</span><br><span class="line">remote: Counting objects: 100% (3&#x2F;3), done.</span><br><span class="line">remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0</span><br><span class="line">接收对象中: 100% (3&#x2F;3), 完成.</span><br><span class="line">检查连接... 完成。</span><br></pre></td></tr></table></figure>
+
+<p>命令是git clone xxx.git，ssh串可以通过点击图中code绿色块得到</p>
+<p><img src="https://i.loli.net/2020/07/26/3xsm2vdWutOEe1n.png" alt="ssh.png"></p>
+<h3 id="修改并提交"><a href="#修改并提交" class="headerlink" title="修改并提交"></a>修改并提交</h3><p>克隆到本地后，可以通过git add添加修改到暂存区，git commit命令给修改增加注释信息并添加到本地git仓库中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% cd git-test</span><br><span class="line">% vim README.md</span><br></pre></td></tr></table></figure>
+
+<p>vim对README.md文件进行修改，修改完成后内容为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% cat README.md </span><br><span class="line">	git test</span><br></pre></td></tr></table></figure>
+
+<p>git status命令可以查看文件状态</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git status</span><br><span class="line">    位于分支 master</span><br><span class="line">    您的分支与上游分支 &#39;origin&#x2F;master&#39; 一致。</span><br><span class="line">    尚未暂存以备提交的变更：</span><br><span class="line">      （使用 &quot;git add &lt;文件&gt;...&quot; 更新要提交的内容）</span><br><span class="line">      （使用 &quot;git checkout -- &lt;文件&gt;...&quot; 丢弃工作区的改动）</span><br><span class="line"></span><br><span class="line">        修改：     README.md</span><br><span class="line"></span><br><span class="line">    修改尚未加入提交（使用 &quot;git add&quot; 和&#x2F;或 &quot;git commit -a&quot;）</span><br></pre></td></tr></table></figure>
+
+<p>然后添加文件到本地仓库并注释</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git add README.md </span><br><span class="line">% git commit -m &quot;first commit&quot;</span><br><span class="line">    [master 98a32a9] first commit</span><br><span class="line">    1 file changed, 1 insertion(+), 2 deletions(-)</span><br></pre></td></tr></table></figure>
+
+<p>然后推送到远程仓库，这样就完成了一次完整的提交过程</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git push origin master</span><br><span class="line">    对象计数中: 3, 完成.</span><br><span class="line">    写入对象中: 100% (3&#x2F;3), 260 bytes | 0 bytes&#x2F;s, 完成.</span><br><span class="line">    Total 3 (delta 0), reused 0 (delta 0)</span><br><span class="line">    To git@github.com:zcenao21&#x2F;git-test.git</span><br><span class="line">       04ca6fe..98a32a9  master -&gt; master</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="回退"><a href="#回退" class="headerlink" title="回退"></a>回退</h3><p>如果改错了怎么办？比如我们修改了README.md，然而想回到上一次的提交，可以用git reset命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% vim README.md </span><br><span class="line">% git commit -am &quot;2nd line&quot;</span><br><span class="line">    [master 55ea9f4] 2nd line</span><br><span class="line">     1 file changed, 1 insertion(+)</span><br><span class="line">% cat README.md </span><br><span class="line">    git test</span><br><span class="line">    git test 2nd line</span><br></pre></td></tr></table></figure>
+
+<p>首先我们修改了README.md，增加了 git test 2nd line这一行，然后提交到本地仓库，现在要回退到修改前的内容，即删掉新增第二行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git reset --hard HEAD^</span><br><span class="line">	HEAD 现在位于 d608dba 1st commit</span><br><span class="line">% cat README.md </span><br><span class="line"> 	git test</span><br></pre></td></tr></table></figure>
+
+<p>这样就回到了第一次提交的时候。如果要回到上上次呢？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --hard HEAD^^</span><br></pre></td></tr></table></figure>
+
+<p>三次到更多次依次类推，更简单的提交方式是</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --hard HEAD~100</span><br></pre></td></tr></table></figure>
+
+<p>表示回到一百次前，估计应该不会用到</p>
+<h3 id="显示修改log"><a href="#显示修改log" class="headerlink" title="显示修改log"></a>显示修改log</h3><p>显示log需要用到git log命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git log</span><br><span class="line">    commit d608dbac936d917c5e9d5d6b7176d68cea98a0b1</span><br><span class="line">    Author: 张超 &lt;zhangchao29@xiaomi.com&gt;</span><br><span class="line">    Date:   Sun Jul 26 21:43:48 2020 +0800</span><br><span class="line"></span><br><span class="line">        1st commit</span><br><span class="line"></span><br><span class="line">    commit 04ca6fec277e4da0a142add5826cf64b49fd2756</span><br><span class="line">    Author: zcenao21 &lt;buct_zc@163.com&gt;</span><br><span class="line">    Date:   Sun Jul 26 21:18:00 2020 +0800</span><br><span class="line"></span><br><span class="line">        Initial commit</span><br></pre></td></tr></table></figure>
+
+<p>但是这样很不好看，有一个输出好看的log的命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git log --graph --pretty&#x3D;oneline --abbrev-commit</span><br><span class="line">    * d608dba 1st commit</span><br><span class="line">    * 04ca6fe Initial commit</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，d608dba是d608dbac936d917c5e9d5d6b7176d68cea98a0b1这一长串的缩写，是这次commit的唯一标识，非常有用。比如我们想回到初始的版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git reset --hard 04ca6fe</span><br><span class="line">	HEAD 现在位于 04ca6fe Initial commit</span><br><span class="line">% cat README.md </span><br><span class="line">    # git-test</span><br><span class="line">    git测试</span><br></pre></td></tr></table></figure>
+
+<p>那么如果我们想撤销回退的内容怎么办？提交的内容已经在log中消失了！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git log --graph --pretty&#x3D;oneline --abbrev-commit</span><br><span class="line">	* 04ca6fe Initial commit</span><br></pre></td></tr></table></figure>
+
+<p>git reflog命令可以看到所有的历史修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git reflog</span><br><span class="line">    04ca6fe HEAD@&#123;0&#125;: reset: moving to 04ca6fe</span><br><span class="line">    d608dba HEAD@&#123;1&#125;: reset: moving to HEAD^</span><br><span class="line">    b2e751e HEAD@&#123;2&#125;: commit: 2nd line</span><br><span class="line">    。。。</span><br><span class="line">    98a32a9 HEAD@&#123;11&#125;: commit: first commit</span><br><span class="line">    04ca6fe HEAD@&#123;12&#125;: clone: from git@github.com:zcenao21&#x2F;git-test.git</span><br></pre></td></tr></table></figure>
+
+<p>然后我们执行如下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git reset --hard b2e751e</span><br><span class="line">    HEAD 现在位于 b2e751e 2nd line</span><br><span class="line">    will@will-Lenovo-ideapad-720S-14IKB ~&#x2F;study&#x2F;projects&#x2F;git-test</span><br><span class="line">% cat README.md </span><br><span class="line">    git test</span><br><span class="line">    git test 2nd line</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，git reset可以回退到任意版本</p>
+<h3 id="创建分支"><a href="#创建分支" class="headerlink" title="创建分支"></a>创建分支</h3><p>分支非常重要，是团队合作的利器。每个团队成员从主分支拉取一个分支，然后并行开发各自的模块，最终合并到主分支中去。这样既保持了开发的独立性，又实现了团队合作。创建分支示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git checkout -b dev</span><br></pre></td></tr></table></figure>
+
+<p>dev为分支名。</p>
+<h3 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h3><p>假如在分支上做了修改，如何合并到主分支呢？示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% vim README.md </span><br><span class="line">% git commit -am &quot;3rd revise&quot;</span><br><span class="line">    [dev b4ed33e] 3rd revise</span><br><span class="line">     1 file changed, 1 insertion(+)</span><br><span class="line">% cat README.md </span><br><span class="line">    git test</span><br><span class="line">    git test 2nd line</span><br><span class="line">    git test 3rd line</span><br><span class="line">% git checkout master</span><br><span class="line">    切换到分支 &#39;master&#39;</span><br><span class="line">    您的分支和 &#39;origin&#x2F;master&#39; 出现了偏离，</span><br><span class="line">    并且分别有 2 和 1 处不同的提交。</span><br><span class="line">      （使用 &quot;git pull&quot; 来合并远程分支）</span><br><span class="line">% git merge dev </span><br><span class="line">    更新 b2e751e..b4ed33e</span><br><span class="line">    Fast-forward</span><br><span class="line">     README.md | 1 +</span><br><span class="line">     1 file changed, 1 insertion(+)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="暂存修改及恢复"><a href="#暂存修改及恢复" class="headerlink" title="暂存修改及恢复"></a>暂存修改及恢复</h3><p>什么时候需要暂存呢？比如我们正在一个分支dev开发，来了一个新需求，这是我们在dev的开发还没做完，直接合并不行，会导致项目出错，其他人就没办法继续编译开发了。暂存可以将从上次提交完开始到现在做的修改暂时保存起来，之后完成了其他需求再恢复这个暂存项。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% vim README.md </span><br><span class="line">% cat README.md </span><br><span class="line">    git test</span><br><span class="line">    git test 2nd line</span><br><span class="line">    git test 3rd line.</span><br><span class="line">% git status</span><br><span class="line">    位于分支 dev</span><br><span class="line">    尚未暂存以备提交的变更：</span><br><span class="line">      （使用 &quot;git add &lt;文件&gt;...&quot; 更新要提交的内容）</span><br><span class="line">      （使用 &quot;git checkout -- &lt;文件&gt;...&quot; 丢弃工作区的改动）</span><br><span class="line"></span><br><span class="line">        修改：     README.md</span><br><span class="line"></span><br><span class="line">    修改尚未加入提交（使用 &quot;git add&quot; 和&#x2F;或 &quot;git commit -a&quot;）</span><br><span class="line">% git stash</span><br><span class="line">    Saved working directory and index state WIP on dev: b4ed33e 3rd revise</span><br><span class="line">    HEAD 现在位于 b4ed33e 3rd revise</span><br><span class="line">% git status</span><br><span class="line">    位于分支 dev</span><br><span class="line">    无文件要提交，干净的工作区</span><br></pre></td></tr></table></figure>
+
+<p>上面的操作是先修改dev分支的readme文件（最后一行新增.号），然后暂存操作，可以发现现在的dev分支为干净状态，恢复到了上次提交的状态。恢复暂回内容的命令为git stash pop</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% cat README.md </span><br><span class="line">    git test</span><br><span class="line">    git test 2nd line</span><br><span class="line">    git test 3rd line</span><br><span class="line">% git stash pop</span><br><span class="line">    位于分支 dev</span><br><span class="line">    尚未暂存以备提交的变更：</span><br><span class="line">      （使用 &quot;git add &lt;文件&gt;...&quot; 更新要提交的内容）</span><br><span class="line">      （使用 &quot;git checkout -- &lt;文件&gt;...&quot; 丢弃工作区的改动）</span><br><span class="line"></span><br><span class="line">        修改：     README.md</span><br><span class="line"></span><br><span class="line">    修改尚未加入提交（使用 &quot;git add&quot; 和&#x2F;或 &quot;git commit -a&quot;）</span><br><span class="line">    丢弃了 refs&#x2F;stash@&#123;0&#125; (e47bf4e261b238728cefd414a1fa7948adec5265)</span><br><span class="line">% cat README.md </span><br><span class="line">    git test</span><br><span class="line">    git test 2nd line</span><br><span class="line">    git test 3rd line.</span><br></pre></td></tr></table></figure>
+
+<p>我们也可以多次进行暂存，恢复的命令如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git stash apply xxx &#x2F;&#x2F;恢复某次stash，xxx可以用git stash list查看</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="重放修改"><a href="#重放修改" class="headerlink" title="重放修改"></a>重放修改</h3><p>如果在某个分支上做了修改，但是想把这些修改同时应用到其他分支上，即“重放”修改。下面的示例是dev领先master分支一个commit，要在master分支上重放dev分支上的最后一次commit，使用git cherry-pick操作即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git diff dev master </span><br><span class="line">    diff --git a&#x2F;README.md b&#x2F;README.md</span><br><span class="line">    index 88c9632..9cead72 100644</span><br><span class="line">    --- a&#x2F;README.md</span><br><span class="line">    +++ b&#x2F;README.md</span><br><span class="line">    @@ -1,3 +1,3 @@</span><br><span class="line">    -git test</span><br><span class="line">    + git test</span><br><span class="line">     git test 2nd line</span><br><span class="line">     git test 3rd line</span><br><span class="line">% git log --graph --pretty&#x3D;oneline --abbrev-commit</span><br><span class="line">    * a2b2c9a remove first blank</span><br><span class="line">    * b4ed33e 3rd revise</span><br><span class="line">    * b2e751e 2nd line</span><br><span class="line">    * d608dba 1st commit</span><br><span class="line">    * 04ca6fe Initial commit</span><br><span class="line">% git checkout master</span><br><span class="line">    切换到分支 &#39;master&#39;</span><br><span class="line">    您的分支和 &#39;origin&#x2F;master&#39; 出现了偏离，</span><br><span class="line">    并且分别有 3 和 1 处不同的提交。</span><br><span class="line">      （使用 &quot;git pull&quot; 来合并远程分支）</span><br><span class="line"> % git cherry-pick a2b2c9a</span><br><span class="line">    [master a8f25bd] remove first blank</span><br><span class="line">     Date: Mon Jul 27 00:46:02 2020 +0800</span><br><span class="line">     1 file changed, 1 insertion(+), 1 deletion(-)</span><br><span class="line">% git log --graph --pretty&#x3D;oneline --abbrev-commit</span><br><span class="line">    * a8f25bd remove first blank</span><br><span class="line">    * b4ed33e 3rd revise</span><br><span class="line">    * b2e751e 2nd line</span><br><span class="line">    * d608dba 1st commit</span><br><span class="line">    * 04ca6fe Initial commit</span><br><span class="line">% git diff a8f25bd b4ed33e</span><br><span class="line">    diff --git a&#x2F;README.md b&#x2F;README.md</span><br><span class="line">    index 88c9632..9cead72 100644</span><br><span class="line">    --- a&#x2F;README.md</span><br><span class="line">    +++ b&#x2F;README.md</span><br><span class="line">    @@ -1,3 +1,3 @@</span><br><span class="line">    -git test</span><br><span class="line">    + git test</span><br><span class="line">     git test 2nd line</span><br><span class="line">     git test 3rd line</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="打标签"><a href="#打标签" class="headerlink" title="打标签"></a>打标签</h3><p>标签和commit很类似，标签常用来管理版本号。commit到一定数量，一个功能开发完成，这时候就可以打一个tag。github还会贴心的为tag打包可以直接下载。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">% git tag v1.0</span><br><span class="line">% git tag</span><br><span class="line">	v1.0</span><br></pre></td></tr></table></figure>
+
+<p>删除及其它操作如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git tag -a v2.0 -m &quot;move ahead!&quot; 4225b7d  &#x2F;&#x2F;给标签加上备注</span><br><span class="line">git tag -d v1.0 &#x2F;&#x2F;删除标签</span><br><span class="line">git push origin :refs&#x2F;tags&#x2F;v0.9 &#x2F;&#x2F;删除远程标签。先删除本地，git tag -d 命令，然后执行此命令删除远程</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="命令简化"><a href="#命令简化" class="headerlink" title="命令简化"></a>命令简化</h3><p>刚刚的git log后跟的一长串有没有让你留下深刻的印象？Git提供了一种快捷方式。比如缩写git log …</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git config --global alias.lg &quot;log --color --graph --pretty&#x3D;format:&#39;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#39; --abbrev-commit&quot;</span><br></pre></td></tr></table></figure>
+
+<p>之后我们就可以使用git lg这个命令了</p>
+<h3 id="设置提交者信息"><a href="#设置提交者信息" class="headerlink" title="设置提交者信息"></a>设置提交者信息</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git config --global user.name &quot;名字&quot;</span><br><span class="line">git config --global user.email &quot;邮箱&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这是针对全局的设置，如果对于某个仓库想单独设置，可以修改.git/config文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[user]   </span><br><span class="line">	name &#x3D; XXX(自己的名称英文)   </span><br><span class="line">	email &#x3D; XXXX(邮箱)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="合并commit"><a href="#合并commit" class="headerlink" title="合并commit"></a>合并commit</h3><p>参考<a href="/2020/07/26/other/git/" title="Git-Rebase">Git-Rebase</a></p>
+]]></content>
       <categories>
         <category>other</category>
       </categories>
