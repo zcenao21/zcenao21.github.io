@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>git的使用</title>
+    <url>/2020/07/26/other/git/</url>
+    <content><![CDATA[<h1 id="rebase作用"><a href="#rebase作用" class="headerlink" title="rebase作用"></a>rebase作用</h1><h3 id="Git是做什么的"><a href="#Git是做什么的" class="headerlink" title="Git是做什么的"></a>Git是做什么的</h3><p>Git（读音为/gɪt/）是一个开源的分布式版本控制系统，可以有效、高速地处理从很小到非常大的项目版本管理。Git 是 Linus Torvalds为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件[百度百科]。不得不感慨一下，Linus这位大佬是真的厉害，从0-1创造了没有的东西，还不止一个！据传言，这个软件是在两周完成，一个月投入使用的。。。</p>
+<p>言归正传，通俗的说，Git的主要用途是用于版本控制，对于纯文本形式的文件尤其适合。非纯文本的比如视频就可以选择其他更好的工具来管理。而且Git的开发初衷是为了管理linux内核源码，也就是说是为代码版本控制量身定制的。</p>
+<p>现在的互联网公司基本都用Git做代码版本控制，因为它可以高效完美地解决团队合作开发的问题。另外有各种免费的代码仓库帮我们管理代码，比如Github，Gitlab。</p>
+<p>Git的功能十分强大，本文对普通的开发者最常用的功能做了一些小总结。<a id="more"></a>列表如下：</p>
+<ul>
+<li>提交</li>
+<li>回退</li>
+<li>显示修改log</li>
+<li>创建分支</li>
+<li>合并分支</li>
+<li>暂存修改及恢复</li>
+<li>重放修改</li>
+<li>打标签</li>
+<li>命令简化</li>
+<li>设置提交者信息</li>
+<li>合并commit</li>
+</ul>
+<p>下面依次进行介绍。为了演示操作，我们选择github创建新项目进行操作。如果没有帐号，请登陆github网站或使用搜索引擎搜索相关注册教程。</p>
+<h3 id="提交"><a href="#提交" class="headerlink" title="提交"></a>提交</h3>]]></content>
+      <categories>
+        <category>other</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>工具</tag>
+        <tag>代码提交</tag>
+        <tag>团队开发</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>文件及用户权限</title>
     <url>/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</url>
     <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>计算机最重要的两大部分：存储和计算。存储分永久性存储（例如文件）和短暂的存储（例如内存）。永久性存储我们接触最多的就是文件了。<a id="more"></a>大多数人都用过word，肯定都有过word没保存，工作白干了这种尴尬的事情，这就是临时的修改没有保存到文件中的缘故。文件作为重要信息载体，安全性、共享性都非常重要。我们是否可以通过linux的文件系统做到以下事情？</p>
