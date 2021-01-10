@@ -12,7 +12,7 @@
 <li>将结果序列化返回给调用者</li>
 <li>调用者反序列化得到结果</li>
 </ul>
-<p><img src="https://github.com/zcenao21/photos-blog/blob/main/rpc-start/rpc.png" alt="rpc"></p>
+<p><img src="https://github.com/zcenao21/photos-blog/blob/main/rpc-start/rpc.png?raw=true" alt="rpc"></p>
 <h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><hr>
 <p>为了更好理解RPC，参考知乎作者分享（见文末）的内容，自己敲了一遍（已上传<a href="https://github.com/zcenao21/rpc-learn" target="_blank" rel="noopener">github</a>）</p>
 <p>首先是远程服务部分：</p>
