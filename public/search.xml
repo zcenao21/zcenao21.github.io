@@ -1,6 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>RPC初探</title>
+    <url>/2021/01/09/java/rpc%E5%88%9D%E6%8E%A2/</url>
+    <content><![CDATA[<h1 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h1><p>RPC(Remote Procedure Call)，即远程过程调用，主要用于分布式情景下节点间的调用，可以让远程调用使用起来就像本地调用一样方便。<a id="more"></a></p>
+<p>最简单RPC实现包括如下内容</p>
+<ul>
+<li>调用者发起调用</li>
+<li>封装调用，打包方法名和参数，序列化</li>
+<li>被调用端反序列化，得到方法名参数，使用反射并执行得到结果</li>
+<li>将结果序列化返回给调用者</li>
+<li>调用者反序列化得到结果</li>
+</ul>
+<p><img src="https://github.com/zcenao21/photos-blog/blob/main/rpc-start/rpc.png" alt="rpc"></p>
+<h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><hr>
+<p>为了更好理解RPC，参考知乎作者分享（见文末）的内容，自己敲了一遍（已上传<a href="https://github.com/zcenao21/rpc-learn" target="_blank" rel="noopener">github</a>）</p>
+<p>首先是远程服务部分：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ProviderApp &#123;</span><br><span class="line">    private Calculator calculator &#x3D; new CalculatorImpl();</span><br><span class="line">    static final int PORT&#x3D;9090;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">        new ProviderApp().run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void run() throws IOException &#123;</span><br><span class="line">        ServerSocket listener &#x3D; new ServerSocket(PORT);</span><br><span class="line">        try &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                log.info(&quot;rpc method waiting for call!&quot;);</span><br><span class="line">                Socket socket &#x3D; listener.accept();</span><br><span class="line">                try &#123;</span><br><span class="line">                    &#x2F;&#x2F; 将请求反序列化</span><br><span class="line">                    ObjectInputStream objectInputStream &#x3D; new ObjectInputStream(socket.getInputStream());</span><br><span class="line">                    Object object &#x3D; objectInputStream.readObject();</span><br><span class="line"></span><br><span class="line">                    log.info(&quot;request is &#123;&#125;&quot;, object);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 调用服务</span><br><span class="line">                    int result &#x3D; 0;</span><br><span class="line">                    if (object instanceof CalculateRpcRequest) &#123;</span><br><span class="line">                        CalculateRpcRequest calculateRpcRequest &#x3D; (CalculateRpcRequest) object;</span><br><span class="line">                        if (&quot;add&quot;.equals(calculateRpcRequest.getMethod())) &#123;</span><br><span class="line">                            log.info(&quot;add service called!&quot;);</span><br><span class="line">                            result &#x3D; calculator.add(calculateRpcRequest.getA(), calculateRpcRequest.getB());</span><br><span class="line">                        &#125; else &#123;</span><br><span class="line">                            throw new UnsupportedOperationException();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 返回结果</span><br><span class="line">                    ObjectOutputStream objectOutputStream &#x3D; new ObjectOutputStream(socket.getOutputStream());</span><br><span class="line">                    objectOutputStream.writeObject(new Integer(result));</span><br><span class="line">                    log.info(&quot;rpc method call finished!&quot;);</span><br><span class="line">                &#125; catch (Exception e) &#123;</span><br><span class="line">                    log.error(&quot;fail&quot;, e);</span><br><span class="line">                &#125; finally &#123;</span><br><span class="line">                    socket.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            listener.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中计算器接口：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Calculator &#123;</span><br><span class="line">    public int add(int a, int b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>计算器加法实现：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class CalculatorImpl implements Calculator&#123;</span><br><span class="line">    public int add(int a, int b) &#123;</span><br><span class="line">     return a+b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>封装方法和参数的类：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class CalculateRpcRequest implements Serializable &#123;</span><br><span class="line">    int a;</span><br><span class="line">    int b;</span><br><span class="line"></span><br><span class="line">    public CalculateRpcRequest(int a,int b)&#123;</span><br><span class="line">        this.a&#x3D;a;</span><br><span class="line">        this.b&#x3D;b;</span><br><span class="line">    &#125;</span><br><span class="line">    public String getMethod()&#123;</span><br><span class="line">        return &quot;add&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    public int getA() &#123;</span><br><span class="line">        return a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getB() &#123;</span><br><span class="line">        return b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外一个是调用端：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ConsumerApp &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Calculator calculator &#x3D; new CalculatorRemoteImpl();</span><br><span class="line">        int result &#x3D; calculator.add(6, 2);</span><br><span class="line">        log.info(&quot;get sum:&quot;+result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中封装方法和参数以及接收返回结果的过程如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class CalculatorRemoteImpl implements Calculator &#123;</span><br><span class="line">    static final int PORT&#x3D;9090;</span><br><span class="line"></span><br><span class="line">    public int add(int a, int b) &#123;</span><br><span class="line">        String address &#x3D; &quot;127.0.0.1&quot;;</span><br><span class="line">        try &#123;</span><br><span class="line">            log.info(&quot;now call rpc method!&quot;);</span><br><span class="line">            Socket socket &#x3D; new Socket(address, PORT);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F; 将请求序列化</span><br><span class="line">            CalculateRpcRequest calculateRpcRequest &#x3D; generateRequest(a, b);</span><br><span class="line">            ObjectOutputStream objectOutputStream &#x3D; new ObjectOutputStream(socket.getOutputStream());</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F; 将请求发给服务提供方</span><br><span class="line">            objectOutputStream.writeObject(calculateRpcRequest);</span><br><span class="line">            log.info(&quot;send request to service provider! then wait for result!&quot;);</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F; 将响应体反序列化</span><br><span class="line">            ObjectInputStream objectInputStream &#x3D; new ObjectInputStream(socket.getInputStream());</span><br><span class="line">            Object response &#x3D; objectInputStream.readObject();</span><br><span class="line">            log.info(&quot;get result from service provider! response:&#123;&#125;&quot;,response);</span><br><span class="line"></span><br><span class="line">            if (response instanceof Integer) &#123;</span><br><span class="line">                return (Integer) response;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                throw new InternalError();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            log.error(&quot;fail&quot;, e);</span><br><span class="line">            throw new InternalError();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private CalculateRpcRequest generateRequest(int a, int b) &#123;</span><br><span class="line">        return new CalculateRpcRequest(a,b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在idea首先运行Provider，然后再运行Consumer。</p>
+<p>Provider端日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[INFO ] 2021-01-09 21:00:43 rpc method waiting for call!</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 request is com.will.rpc.CalculateRpcRequest@50134894</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 add service called!</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 rpc method call finished!</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 rpc method waiting for call!</span><br></pre></td></tr></table></figure>
+
+<p>Consumer端日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[INFO ] 2021-01-09 21:00:53 now call rpc method!</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 send request to service provider! then wait for result!</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 get result from service provider! response:8</span><br><span class="line">[INFO ] 2021-01-09 21:00:53 get sum:8</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>本文主要参考：<a href="https://zhuanlan.zhihu.com/p/36528189" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/36528189</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>RPC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hive使用</title>
+    <url>/2020/08/12/hive/hive-dw/</url>
+    <content><![CDATA[<p>hive在数仓中<a id="more"></a></p>
+]]></content>
+      <categories>
+        <category>Hive</category>
+      </categories>
+      <tags>
+        <tag>hive</tag>
+        <tag>使用</tag>
+        <tag>常用功能</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Git的使用</title>
     <url>/2020/07/26/other/git/</url>
     <content><![CDATA[<h3 id="Git是做什么的"><a href="#Git是做什么的" class="headerlink" title="Git是做什么的"></a>Git是做什么的</h3><p>Git（读音为/gɪt/）是一个开源的分布式版本控制系统，可以有效、高速地处理从很小到非常大的项目版本管理。Git 是 Linus Torvalds为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件[百度百科]。不得不感慨一下，Linus这位大佬是真的厉害，从0-1创造了没有的东西，还不止一个！据传言，这个软件是在两周完成，一个月投入使用的。。。</p>
