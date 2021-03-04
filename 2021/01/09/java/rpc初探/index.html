@@ -29,7 +29,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/zcenao21/photos-blog/blob/main/rpc-start/rpc.png?raw=true">
 <meta property="article:published_time" content="2021-01-09T13:03:50.000Z">
-<meta property="article:modified_time" content="2021-01-10T01:18:15.171Z">
+<meta property="article:modified_time" content="2021-01-10T01:29:21.562Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="RPC">
@@ -224,7 +224,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-10 09:18:15" itemprop="dateModified" datetime="2021-01-10T09:18:15+08:00">2021-01-10</time>
+                <time title="Modified: 2021-01-10 09:29:21" itemprop="dateModified" datetime="2021-01-10T09:29:21+08:00">2021-01-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,8 +264,7 @@
 <li>调用者反序列化得到结果</li>
 </ul>
 <p><img src="https://github.com/zcenao21/photos-blog/blob/main/rpc-start/rpc.png?raw=true" alt="rpc"></p>
-<h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><hr>
-<p>为了更好理解RPC，参考知乎作者分享（见文末）的内容，自己敲了一遍（已上传<a href="https://github.com/zcenao21/rpc-learn" target="_blank" rel="noopener">github</a>）</p>
+<h1 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h1><p>为了更好理解RPC，参考知乎作者分享（见文末）的内容，自己敲了一遍（已上传<a href="https://github.com/zcenao21/rpc-learn" target="_blank" rel="noopener">github</a>）</p>
 <p>首先是远程服务部分：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">public class ProviderApp &#123;</span><br><span class="line">    private Calculator calculator &#x3D; new CalculatorImpl();</span><br><span class="line">    static final int PORT&#x3D;9090;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">        new ProviderApp().run();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void run() throws IOException &#123;</span><br><span class="line">        ServerSocket listener &#x3D; new ServerSocket(PORT);</span><br><span class="line">        try &#123;</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                log.info(&quot;rpc method waiting for call!&quot;);</span><br><span class="line">                Socket socket &#x3D; listener.accept();</span><br><span class="line">                try &#123;</span><br><span class="line">                    &#x2F;&#x2F; 将请求反序列化</span><br><span class="line">                    ObjectInputStream objectInputStream &#x3D; new ObjectInputStream(socket.getInputStream());</span><br><span class="line">                    Object object &#x3D; objectInputStream.readObject();</span><br><span class="line"></span><br><span class="line">                    log.info(&quot;request is &#123;&#125;&quot;, object);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 调用服务</span><br><span class="line">                    int result &#x3D; 0;</span><br><span class="line">                    if (object instanceof CalculateRpcRequest) &#123;</span><br><span class="line">                        CalculateRpcRequest calculateRpcRequest &#x3D; (CalculateRpcRequest) object;</span><br><span class="line">                        if (&quot;add&quot;.equals(calculateRpcRequest.getMethod())) &#123;</span><br><span class="line">                            log.info(&quot;add service called!&quot;);</span><br><span class="line">                            result &#x3D; calculator.add(calculateRpcRequest.getA(), calculateRpcRequest.getB());</span><br><span class="line">                        &#125; else &#123;</span><br><span class="line">                            throw new UnsupportedOperationException();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 返回结果</span><br><span class="line">                    ObjectOutputStream objectOutputStream &#x3D; new ObjectOutputStream(socket.getOutputStream());</span><br><span class="line">                    objectOutputStream.writeObject(new Integer(result));</span><br><span class="line">                    log.info(&quot;rpc method call finished!&quot;);</span><br><span class="line">                &#125; catch (Exception e) &#123;</span><br><span class="line">                    log.error(&quot;fail&quot;, e);</span><br><span class="line">                &#125; finally &#123;</span><br><span class="line">                    socket.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            listener.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -320,7 +319,10 @@
     <a href="/2020/08/12/hive/hive-dw/" rel="prev" title="hive使用">
       <i class="fa fa-chevron-left"></i> hive使用
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/04/other/airflow%E5%AE%89%E8%A3%85/" rel="next" title="Airflow安装使用">
+      Airflow安装使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -385,7 +387,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC"><span class="nav-number">1.</span> <span class="nav-text">RPC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单实现"><span class="nav-number">1.0.1.</span> <span class="nav-text">简单实现</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RPC"><span class="nav-number">1.</span> <span class="nav-text">RPC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简单实现"><span class="nav-number">2.</span> <span class="nav-text">简单实现</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -399,7 +401,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -412,7 +414,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

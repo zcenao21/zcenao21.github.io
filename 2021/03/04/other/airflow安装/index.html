@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
+  </script>
+
+  <meta name="description" content="airflow是一个优秀的开源调度软件，可视化做的很棒，操作方便。airflow本身是python编写，需要安装python环境。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Airflow安装使用">
+<meta property="og:url" content="http://yoursite.com/2021/03/04/other/airflow%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="Will&#39;s BigData Field">
+<meta property="og:description" content="airflow是一个优秀的开源调度软件，可视化做的很棒，操作方便。airflow本身是python编写，需要安装python环境。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-04T12:16:00.000Z">
+<meta property="article:modified_time" content="2021-03-04T13:15:46.000Z">
+<meta property="article:author" content="Will">
+<meta property="article:tag" content="airflow">
+<meta property="article:tag" content="调度">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/03/04/other/airflow%E5%AE%89%E8%A3%85/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Airflow安装使用 | Will's BigData Field</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Will's BigData Field</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">hello world!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-chess">
+
+    <a href="/Chess/index.html" rel="section"><i class="fa fa-fw fa-user"></i>Chess</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/04/other/airflow%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Will">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Will's BigData Field">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Airflow安装使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-04 20:16:00 / Modified: 21:15:46" itemprop="dateCreated datePublished" datetime="2021-03-04T20:16:00+08:00">2021-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>airflow是一个优秀的开源调度软件，可视化做的很棒，操作方便。airflow本身是python编写，需要安装python环境。<a id="more"></a> 安装环境为CentOS7.3，work权限（非root）。具体安装的软件如下：</p>
+<p><strong>Python 3.7.1</strong></p>
+<p><strong>MySQL 5.7.33</strong></p>
+<p><strong>Caddy 0.10.11</strong> </p>
+<p><strong>airflow 1.10.5</strong></p>
+<h2 id="Mysql安装"><a href="#Mysql安装" class="headerlink" title="Mysql安装"></a>Mysql安装</h2><h3 id="下载配置"><a href="#下载配置" class="headerlink" title="下载配置"></a>下载配置</h3><p>mysql下载完成后上传到当前普通用户目录下解压，依次执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zxvf mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz         #解压文件包</span><br><span class="line">$ mv mysql-5.7.29-linux-glibc2.12-x86_64 &#x2F;home&#x2F;apps&#x2F;mysql      #移动到指定目录并重命名</span><br></pre></td></tr></table></figure>
+
+<p>编辑my.cnf配置文件，放在当前mysql安装目录下，依次执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd mysql	         #进入安装目录</span><br><span class="line">$ vim my.cnf	      #编辑配置文件</span><br></pre></td></tr></table></figure>
+
+<p>编辑my.cnf文件，我这里mysql的路径是/home/apps/mysql，需根据自己的路径进行修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port&#x3D;3306					#服务端口</span><br><span class="line">socket&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;mysql.sock		#指定套接字文件</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port&#x3D;3306					#服务端口</span><br><span class="line">basedir&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql			#mysql安装路径</span><br><span class="line">datadir&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;data                   #数据目录</span><br><span class="line">pid-file&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;mysql.pid		#指定pid文件</span><br><span class="line">socket&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;mysql.sock		#指定套接字文件</span><br><span class="line">log_error&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;error.log            #指定错误日志</span><br><span class="line">server-id&#x3D;100                                   #Mysql主从唯一标识</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="安装启动mysql"><a href="#安装启动mysql" class="headerlink" title="安装启动mysql"></a>安装启动mysql</h3><p>安装：依次执行以下命令，指定配置文件安装并初始化mysql，没有报错即安装成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd bin</span><br><span class="line">$ .&#x2F;mysqld --defaults-file&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;my.cnf --initialize --user&#x3D;apps --basedir&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql --datadir&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;data		#安装并初始化mysql</span><br></pre></td></tr></table></figure>
+
+<p>启动：依次执行以下命令，没有报错并能成功监听3306端口即表示启动成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;mysqld_safe --defaults-file&#x3D;&#x2F;home&#x2F;apps&#x2F;mysql&#x2F;my.cnf --user&#x3D;apps &amp;      #启动mysql</span><br><span class="line">$ netstat -tln | grep 3306		                              #查看是否成功监听3306端口</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="登入mysql"><a href="#登入mysql" class="headerlink" title="登入mysql"></a>登入mysql</h3><p>获取初始密码，初始密码在error.log日志文件内，执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd ..</span><br><span class="line">$ less error.log | grep root@localhost		#查找root用户的初始登录密码</span><br></pre></td></tr></table></figure>
+
+<p>登录mysql，直接输入登录命令 bin/mysql -u root -p 有可能会报mysql没有找到/tmp/mysqk.sock文件<br>有两种解决方法<br>如果本机上没有其他数据库，可以通过软连接方式将寻找sock文件的路径指向我们mysql安装目录下的sock文件<br>也可以直接指定mysql.sock文件启动，执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;mysql -u root -p -S &#x2F;home&#x2F;apps&#x2F;mysql&#x2F;mysql.sock 	#指定sock文件登录</span><br></pre></td></tr></table></figure>
+
+<p>成功登入mysql后，修改登录密码，执行以下sql语句</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SET PASSWORD FOR &#39;root&#39;@&#39;localhost&#39; &#x3D; PASSWORD(&#39;123456&#39;);	--设置登录密码为123456</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="Python安装"><a href="#Python安装" class="headerlink" title="Python安装"></a>Python安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;www.python.org&#x2F;ftp&#x2F;python&#x2F;3.7.1&#x2F;Python-3.7.1.tgz &#x2F;&#x2F; 下载</span><br><span class="line">tar -zxvf *.tgz &#x2F;&#x2F; 解压</span><br><span class="line">到解压目录中</span><br><span class="line">mkdir &#x2F;home&#x2F;work&#x2F;soft&#x2F;python37 &#x2F;&#x2F;创建目录，作为工作目录</span><br><span class="line">.&#x2F;configure --prefix&#x3D;&#x2F;home&#x2F;work&#x2F;soft&#x2F;python37</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Airflow安装"><a href="#Airflow安装" class="headerlink" title="Airflow安装"></a>Airflow安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install apache-airflow&#x3D;&#x3D;1.10.5</span><br></pre></td></tr></table></figure>
+
+<p>这个过程中可能会出现依赖冲突等各种问题，逐一解决。</p>
+<p>安装完成后</p>
+<p>先export AIRFLOW_HOME=xxx，export AIRFLOW_GPL_UNIDECODE=yes</p>
+<p>再到 /home/work/soft/python37/bin目录下，执行./airflow，是为了在AIRFLOW_HOME下生成airflow.cfg文件</p>
+<h3 id="配置airflow"><a href="#配置airflow" class="headerlink" title="配置airflow"></a>配置airflow</h3><p>配置AIRFLOW_HOME目录下的airflow.cfg文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[core]</span><br><span class="line">dags_folder &#x3D; &#x2F;home&#x2F;work&#x2F;airflow&#x2F;dags # 配置dag文件夹</span><br><span class="line">executor &#x3D; CeleryExecutor  # celeryExecutor方便分布式部署</span><br><span class="line">sql_alchemy_conn &#x3D;  mysql:&#x2F;&#x2F;airflow:airflow@localhost&#x2F;airflow  # 配置mysql</span><br><span class="line">sql_engine_encoding &#x3D; utf-8</span><br><span class="line">task_runner &#x3D; BashTaskRunner</span><br><span class="line"></span><br><span class="line">[celery]</span><br><span class="line">broker_url &#x3D; sqla+mysql:&#x2F;&#x2F;airflow:airflow@localhost&#x2F;airflow</span><br><span class="line">result_backend &#x3D; db+mysql:&#x2F;&#x2F;airflow:airflow@localhost&#x2F;airflow</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="airflow添加用户登录"><a href="#airflow添加用户登录" class="headerlink" title="airflow添加用户登录"></a>airflow添加用户登录</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">在 airflow.cfg 文件中 [webserver] 下添加如下配置</span><br><span class="line">[webserver]</span><br><span class="line">authenticate &#x3D; True</span><br><span class="line">auth_backend &#x3D; airflow.contrib.auth.backends.password_auth</span><br><span class="line"></span><br><span class="line">然后执行：</span><br><span class="line"></span><br><span class="line">import airflow</span><br><span class="line">from airflow import models, settings</span><br><span class="line">from airflow.contrib.auth.backends.password_auth import PasswordUser</span><br><span class="line">user &#x3D; PasswordUser(models.User())</span><br><span class="line">user.username &#x3D; &#39;in_airflow&#39;  # 用户名</span><br><span class="line">user.password &#x3D; &#39;mifi_in&#39;   # 用户密码</span><br><span class="line">session &#x3D; settings.Session()</span><br><span class="line">session.add(user)</span><br><span class="line">session.commit()</span><br><span class="line">session.close()</span><br><span class="line">exit()</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="替换UTC时间"><a href="#替换UTC时间" class="headerlink" title="替换UTC时间"></a>替换UTC时间</h3><p>airflow右上角显示的默认为UTC时间，需要更改源码</p>
+<p>1.在airflow家目录下修改airflow.cfg，设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">default_timezone &#x3D; Asia&#x2F;Shanghai</span><br></pre></td></tr></table></figure>
+
+<p>2.进入airflow包的安装位置,也就是site-packages的位置,以下修改文件均为相对位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;root&#x2F;.virtualenvs&#x2F;af&#x2F;lib&#x2F;python3.4&#x2F;site-packages&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>3.修改airflow/utils/timezone.py</p>
+<p>在 utc = pendulum.timezone(‘UTC’) 这行(第27行)代码下添加,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from airflow import configuration as conf</span><br><span class="line">try:</span><br><span class="line">	tz &#x3D; conf.get(&quot;core&quot;, &quot;default_timezone&quot;)</span><br><span class="line">	if tz &#x3D;&#x3D; &quot;system&quot;:</span><br><span class="line">		utc &#x3D; pendulum.local_timezone()</span><br><span class="line">	else:</span><br><span class="line">		utc &#x3D; pendulum.timezone(tz)</span><br><span class="line">except Exception:</span><br><span class="line">	pass</span><br></pre></td></tr></table></figure>
+
+<p>修改utcnow()函数 (在第69行)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">原代码 d &#x3D; dt.datetime.utcnow() </span><br><span class="line">修改为 d &#x3D; dt.datetime.now()</span><br></pre></td></tr></table></figure>
+
+<p>4.修改airflow/utils/sqlalchemy.py<br>在utc = pendulum.timezone(‘UTC’) 这行(第37行)代码下添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from airflow import configuration as conf</span><br><span class="line">try:</span><br><span class="line">	tz &#x3D; conf.get(&quot;core&quot;, &quot;default_timezone&quot;)</span><br><span class="line">	if tz &#x3D;&#x3D; &quot;system&quot;:</span><br><span class="line">		utc &#x3D; pendulum.local_timezone()</span><br><span class="line">	else:</span><br><span class="line">		utc &#x3D; pendulum.timezone(tz)</span><br><span class="line">except Exception:</span><br><span class="line">	pass</span><br></pre></td></tr></table></figure>
+
+<p>注释cursor.execute(“SET time_zone = ‘+00:00’”) (第124行)</p>
+<p>5.修改airflow/www/templates/admin/master.html(第31行)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">把代码 var UTCseconds &#x3D; (x.getTime() + x.getTimezoneOffset()*60*1000); </span><br><span class="line">改为 var UTCseconds &#x3D; x.getTime();</span><br><span class="line"></span><br><span class="line">把代码 &quot;timeFormat&quot;:&quot;H:i:s %UTC%&quot;,</span><br><span class="line">改为  &quot;timeFormat&quot;:&quot;H:i:s&quot;,</span><br></pre></td></tr></table></figure>
+
+<p>最后重启airflow-webserver即可</p>
+<h3 id="初始化数据库"><a href="#初始化数据库" class="headerlink" title="初始化数据库"></a>初始化数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">airflow resetdb</span><br><span class="line">airflow initdb</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动airflow"><a href="#启动airflow" class="headerlink" title="启动airflow"></a>启动airflow</h3><p>使用脚本检查，如果没有相应服务则启动。总共四个服务，webserver，scheduler，servelog，worker</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">source ~&#x2F;.bashrc</span><br><span class="line">time&#x3D;&#96;date &quot;+%Y-%m-%d-%H-%M-%S&quot;&#96;</span><br><span class="line">echo &quot;start check webserver&quot; $time</span><br><span class="line">ps -fe|grep &quot;airflow webserver\\|airflow-webserver&quot; |grep -v grep</span><br><span class="line">#不存在</span><br><span class="line">if [ $? -ne 0 ]</span><br><span class="line">then</span><br><span class="line">    echo $time &quot;不存在&quot;</span><br><span class="line">    cd &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow</span><br><span class="line">    rm -rf &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow&#x2F;airflow-webserver.*</span><br><span class="line">    nohup airflow webserver &gt; &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow&#x2F;logs&#x2F;airflow-webserver_$&#123;time&#125;.log &amp;</span><br><span class="line">    ps -fe|grep &quot;airflow webserver\\|airflow-webserver&quot; |grep -v grep</span><br><span class="line">#存在</span><br><span class="line">else</span><br><span class="line">    echo $time &quot;存在&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">source ~&#x2F;.bashrc</span><br><span class="line">time&#x3D;&#96;date &quot;+%Y-%m-%d-%H-%M-%S&quot;&#96;</span><br><span class="line">echo &quot;start check scheduler&quot; $time</span><br><span class="line">ps -fe|grep &quot;airflow scheduler&quot; |grep -v grep</span><br><span class="line">#不存在</span><br><span class="line">if [ $? -ne 0 ]</span><br><span class="line">then</span><br><span class="line">    echo $time &quot;不存在&quot;</span><br><span class="line">    cd &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow</span><br><span class="line">    pwd</span><br><span class="line">    nohup &#x2F;home&#x2F;work&#x2F;soft&#x2F;python37&#x2F;bin&#x2F;airflow scheduler &gt; &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow&#x2F;logs&#x2F;airflow-scheduler_$&#123;time&#125;.log &amp;</span><br><span class="line">    ps -fe|grep &quot;airflow scheduler&quot; |grep -v grep</span><br><span class="line">#存在</span><br><span class="line">else</span><br><span class="line">    echo $time &quot;存在&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">source ~&#x2F;.bashrc</span><br><span class="line">time&#x3D;&#96;date &quot;+%Y-%m-%d-%H-%M-%S&quot;&#96;</span><br><span class="line">echo &quot;start check airflow servelog&quot; $time</span><br><span class="line">ps -fe|grep &quot;airflow serve_logs&quot; |grep -v grep |grep -v root</span><br><span class="line">#不存在</span><br><span class="line">if [ $? -ne 0 ]</span><br><span class="line">then</span><br><span class="line">    echo $time &quot;不存在&quot;</span><br><span class="line">    cd &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow</span><br><span class="line">    nohup airflow serve_logs&gt; &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow&#x2F;logs&#x2F;airflow-servelog_$&#123;time&#125;.log &amp;</span><br><span class="line">    ps -fe|grep &quot;airflow serve_logs&quot; |grep -v grep |grep -v root</span><br><span class="line">#存在</span><br><span class="line">else</span><br><span class="line">    echo $time &quot;存在&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;sh</span><br><span class="line">source ~&#x2F;.bashrc</span><br><span class="line">time&#x3D;&#96;date &quot;+%Y-%m-%d-%H-%M-%S&quot;&#96;</span><br><span class="line">echo &quot;start check airflow worker&quot; $time</span><br><span class="line">ps -fe|grep &quot;celeryd: xxxx:MainProcess&quot; |grep -v grep |grep -v root</span><br><span class="line">#不存在</span><br><span class="line">if [ $? -ne 0 ]</span><br><span class="line">then</span><br><span class="line">    echo $time &quot;不存在&quot;</span><br><span class="line">    cd &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow</span><br><span class="line">    nohup airflow worker &gt; &#x2F;home&#x2F;work&#x2F;soft&#x2F;airflow&#x2F;logs&#x2F;airflow-worker_$&#123;time&#125;.log &amp;</span><br><span class="line">    ps -fe|grep &quot;celeryd: xx:MainProcess&quot; |grep -v grep |grep -v root</span><br><span class="line">    #存在</span><br><span class="line">else</span><br><span class="line">    echo $time &quot;存在&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="caddy安装"><a href="#caddy安装" class="headerlink" title="caddy安装"></a>caddy安装</h2><p>caddy在这里是为了自动部署代码，可以直接关联到git。每次git代码修改，都会自动部署到airflow上</p>
+<p>下载linux版本，解压，然后配置 Caddyfile</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">0.0.0.0:6666 &#123;</span><br><span class="line">    root &#x2F;home&#x2F;work&#x2F;bin&#x2F;xx_scripts</span><br><span class="line">    log &#x2F;home&#x2F;work&#x2F;soft&#x2F;caddy&#x2F;access.log</span><br><span class="line">    git &#123;</span><br><span class="line">        repo git@git.xxx-scripts.git</span><br><span class="line">        path &#x2F;home&#x2F;work&#x2F;bin&#x2F;xx_scripts</span><br><span class="line">        key &#x2F;home&#x2F;work&#x2F;.ssh&#x2F;id_rsa</span><br><span class="line">        hook &#x2F;deploy</span><br><span class="line">        hook_type generic</span><br><span class="line">        then rm -v &#x2F;home&#x2F;work&#x2F;airflow&#x2F;dags</span><br><span class="line">        then rm -v &#x2F;home&#x2F;work&#x2F;airflow&#x2F;sqls</span><br><span class="line">        then rm -v &#x2F;home&#x2F;work&#x2F;airflow&#x2F;tests</span><br><span class="line">        then ln -sv &#x2F;home&#x2F;work&#x2F;bin&#x2F;xx_scripts&#x2F;dags &#x2F;home&#x2F;work&#x2F;airflow&#x2F;dags</span><br><span class="line">        then ln -sv &#x2F;home&#x2F;work&#x2F;bin&#x2F;xx_scripts&#x2F;sqls &#x2F;home&#x2F;work&#x2F;airflow&#x2F;sqls</span><br><span class="line">        then ln -sv &#x2F;home&#x2F;work&#x2F;bin&#x2F;xx_scripts&#x2F;tests &#x2F;home&#x2F;work&#x2F;airflow&#x2F;tests</span><br><span class="line">        interval 3600</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启动caddy</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup .&#x2F;caddy -config Caddyfile &amp;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/airflow/" rel="tag"># airflow</a>
+              <a href="/tags/%E8%B0%83%E5%BA%A6/" rel="tag"># 调度</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/09/java/rpc%E5%88%9D%E6%8E%A2/" rel="prev" title="RPC初探">
+      <i class="fa fa-chevron-left"></i> RPC初探
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC80NzIyNi8yMzcyNg=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mysql安装"><span class="nav-number">1.</span> <span class="nav-text">Mysql安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载配置"><span class="nav-number">1.1.</span> <span class="nav-text">下载配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装启动mysql"><span class="nav-number">1.2.</span> <span class="nav-text">安装启动mysql</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#登入mysql"><span class="nav-number">1.3.</span> <span class="nav-text">登入mysql</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python安装"><span class="nav-number">2.</span> <span class="nav-text">Python安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Airflow安装"><span class="nav-number">3.</span> <span class="nav-text">Airflow安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置airflow"><span class="nav-number">3.1.</span> <span class="nav-text">配置airflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#airflow添加用户登录"><span class="nav-number">3.2.</span> <span class="nav-text">airflow添加用户登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#替换UTC时间"><span class="nav-number">3.3.</span> <span class="nav-text">替换UTC时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化数据库"><span class="nav-number">3.4.</span> <span class="nav-text">初始化数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动airflow"><span class="nav-number">3.5.</span> <span class="nav-text">启动airflow</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#caddy安装"><span class="nav-number">4.</span> <span class="nav-text">caddy安装</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Will</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Will</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.2
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
