@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>算法常用模板</title>
+    <url>/2021/04/13/other/%E7%AE%97%E6%B3%95%E5%B8%B8%E7%94%A8%E6%A8%A1%E6%9D%BF/</url>
+    <content><![CDATA[<p>常用的算法模板，比如快排</p>
+<a id="more"></a>
+
+<h3 id="快排升序"><a href="#快排升序" class="headerlink" title="快排升序"></a>快排升序</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void fastSort(int[] nums, int start, int end)&#123;</span><br><span class="line">    if(start&gt;&#x3D;end) return;</span><br><span class="line">    int mid &#x3D; start;</span><br><span class="line">    for(int i&#x3D;start+1;i&lt;&#x3D;end;i++)&#123;</span><br><span class="line">        if(nums[mid]&gt;nums[i]))&#123;</span><br><span class="line">            int temp &#x3D; nums[i];</span><br><span class="line">            for(int j&#x3D;i;j&gt;mid;j--)&#123;</span><br><span class="line">                nums[j] &#x3D; nums[j-1];</span><br><span class="line">            &#125;</span><br><span class="line">            nums[mid]&#x3D;temp;</span><br><span class="line">            mid &#x3D; mid+1;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fastSort(nums, start, mid-1);</span><br><span class="line">    fastSort(nums, mid+1, end);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>other</category>
+      </categories>
+      <tags>
+        <tag>算法模板</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ReentrantLock</title>
     <url>/2021/03/27/java/Java%E5%B9%B6%E5%8F%91%EF%BC%8DReentrantLock/</url>
     <content><![CDATA[<h1 id="Synchronized"><a href="#Synchronized" class="headerlink" title="Synchronized"></a>Synchronized</h1><p>synchronized是java语言底层实现，我们不需要考虑因为它产生的异常，但是也存在不够灵活，比较重等缺点。<a id="more"></a></p>
@@ -56,25 +73,106 @@
       </tags>
   </entry>
   <entry>
-    <title>map reduce源码阅读</title>
-    <url>/2021/03/05/hadoop/hadoop-map-reduce/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>map reduce的思想可以说是大数据的思想基石，虽然现在各种大数据技术百花齐放，但都吸收借鉴了map reduce过程。所以，了解map reduce的实现是很有必要的。<a id="more"></a>我们带着如下的问题出发。</p>
+    <title>Hadoop总结</title>
+    <url>/2021/03/05/hadoop/hadoop/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Hadoop框架包含计算和存储两部分，MapReduce实现计算部分，存储则是HDFS。大数据在map reduce思想基石上，形成了一整套Hadoop生态系统。了解map reduce还是相当重要的。<a id="more"></a></p>
+<h1 id="Hadoop发展史"><a href="#Hadoop发展史" class="headerlink" title="Hadoop发展史"></a>Hadoop发展史</h1><p>为什么取名Hadoop，Hadoop其实是一个造出来的词，来源于Doug Cutting儿子毛绒玩具象。我们就看看Hadoop的发展历程。</p>
 <ul>
-<li>什么是map reduce</li>
-<li>如何写一个map reduce程序并提交运行</li>
-<li>map reduce怎么实现</li>
-</ul>
-<h1 id="Map-Reduce"><a href="#Map-Reduce" class="headerlink" title="Map/Reduce"></a>Map/Reduce</h1><p>Map/Reduce是大数据技术绕不开的一个话题。广义上讲，Map/Reduce表示大数据处理的一种基本思想；狭义上说，可以指代Hadoop中的计算引擎MapReduce。所以说到MapReduce，就必须要先说说Hadoop。为什么取名Hadoop，Hadoop其实是一个造出来的词，来源于Doug Cutting儿子毛绒玩具象。我们就看看Hadoop的发展历程。</p>
-<ul>
-<li><p>2003-2004 Google公布GFS和MapReduce思想的两篇论文，受此启发，Doug Cutting等人用2年时间实现了DFS和MapReduce机制。</p>
-</li>
-<li><p>2005　Hadoop作为Lucene的子项目Nutch的一部分正式引入Apache基金会。</p>
-</li>
-<li><p>2006.2 被分离.出来，成为一套完整独立的软件，起名为Hadoop</p>
-</li>
+<li>2003-2004 Google公布GFS和MapReduce思想的两篇论文，受此启发，Doug Cutting等人用2年时间实现了DFS和MapReduce机制。</li>
+<li>2005　Hadoop作为Lucene的子项目Nutch的一部分正式引入Apache基金会。</li>
+<li>2006.2 被分离.出来，成为一套完整独立的软件，起名为Hadoop</li>
+<li>2012.5 发布２.0版本，抽象出单独的资源管理模块Yarn进行资源管理。</li>
 </ul>
 <p>所以从根源上说，MapReduce思想来源于Google的论文，Doug Cutting等人做了开源的工程实现。</p>
-<p>我们先从一个小例子理解MapReduce思想。假如你有一个小文件，想统计文件中每个单词出现的个数，单词以空格分开。这种情况下，你只需要按行读取，按空格分隔开，将单词作为一个map的key，单词第一次出现map的value为１，之后这个key每出现一次，value加一。</p>
+<h1 id="Hadoop架构"><a href="#Hadoop架构" class="headerlink" title="Hadoop架构"></a>Hadoop架构</h1><p><img src="https://raw.githubusercontent.com/zcenao21/photos-blog/main/hadoop/hadoop-structure.png" alt="hadoop-structure"></p>
+<h3 id="NameNode"><a href="#NameNode" class="headerlink" title="NameNode"></a>NameNode</h3><p>NameNode管理文件系统的命名空间，维护文件系统树和整棵树内的所有文件和目录。这些信息是以两个文件形式永久保存在本地磁盘上，分别是命名空间镜像文件(fsimage)和编辑日志文件(edit logs)。</p>
+<p>NameNode存储信息列表：</p>
+<ul>
+<li>文件系统的命名空间，文件名称，文件目录结构，文件的属性(权限/创建时间/副本数)</li>
+<li>文件对应哪些数据块，数据块存储在哪些datanode节点上</li>
+</ul>
+<p>NameNode在启动时，会先将fsimage加载进内存，然后与edit logs合并更新到最新状态。在hadoop1.x版本中，启动之后产生的新的edit logs由Secondary NameNode定期和fsimage合并并更新到NameNode当中。在hadoop2.x之后，增加了NameNode HA（高可用）功能，合并的工作由Secondary NameNode转移到了Standy NameNode上。另外，Secondary NameNode可以在NameNode出现故障时快速切换。</p>
+<h3 id="DataNode"><a href="#DataNode" class="headerlink" title="DataNode"></a>DataNode</h3><p>DataNode是实际的数据存储模块。NameNode仅用于存放元数据信息，实际的数据信息都放在DataNode上。DataNode存储数据块和数据块校验和，和客户端进行数据通信，DataNode之间也进行数据传输。</p>
+<p>DataNode和NameNode之间通过心跳机制联系。每隔３秒DataNode发送一次心跳，心跳结果返回NameNode的命令如块的复制/块的删除等。</p>
+<p>如果十分钟未收到DataNode的心跳，则认为DataNode丢失，它上面的block会拷贝到其他DataNode上。</p>
+<p>#　Hadoop配置</p>
+<h3 id="配置文件及其作用"><a href="#配置文件及其作用" class="headerlink" title="配置文件及其作用"></a>配置文件及其作用</h3><p><img src="https://github.com/zcenao21/photos-blog/raw/main/hadoop/file-func.jpg" alt="img"></p>
+<p><strong>core-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fs.defaultFS</td>
+<td>配置namenode的dfs协议的文件系统通信地址</td>
+</tr>
+<tr>
+<td>hadoop.tmp.dir</td>
+<td>指定hadoop临时目录</td>
+</tr>
+</tbody></table>
+<p><strong>hdfs-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>配置项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dfs.namenode.name.dir</td>
+<td>namenode数据的存放地点</td>
+</tr>
+<tr>
+<td>dfs.datanode.data.dir</td>
+<td>datanode数据的存放地点</td>
+</tr>
+<tr>
+<td>dfs.replication</td>
+<td>hdfs副本数量设置</td>
+</tr>
+</tbody></table>
+<p><strong>yarn-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>配置项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>yarn.resourcemanager.address</td>
+<td>ResourceManager 对客户端暴露的地址</td>
+</tr>
+<tr>
+<td>yarn.resourcemanager.scheduler.address</td>
+<td>ResourceManager 对ApplicationMaster暴露的访问地址</td>
+</tr>
+<tr>
+<td>yarn.resourcemanager.resource-tracker.address</td>
+<td>ResourceManager 对NodeManager暴露的地址</td>
+</tr>
+<tr>
+<td>yarn.resourcemanager.admin.address</td>
+<td>ResourceManager 对管理员暴露的访问地址</td>
+</tr>
+</tbody></table>
+<p><strong>mapred-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>配置项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mapreduce.framework.name</td>
+<td>指定mr框架为yarn的方式</td>
+</tr>
+</tbody></table>
 ]]></content>
       <categories>
         <category>hadoop</category>

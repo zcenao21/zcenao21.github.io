@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
+  </script>
+
+  <meta name="description" content="序言Hadoop框架包含计算和存储两部分，MapReduce实现计算部分，存储则是HDFS。大数据在map reduce思想基石上，形成了一整套Hadoop生态系统。了解map reduce还是相当重要的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop总结">
+<meta property="og:url" content="http://yoursite.com/2021/03/05/hadoop/hadoop/index.html">
+<meta property="og:site_name" content="Will&#39;s BigData Field">
+<meta property="og:description" content="序言Hadoop框架包含计算和存储两部分，MapReduce实现计算部分，存储则是HDFS。大数据在map reduce思想基石上，形成了一整套Hadoop生态系统。了解map reduce还是相当重要的。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/zcenao21/photos-blog/main/hadoop/hadoop-structure.png">
+<meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/hadoop/file-func.jpg">
+<meta property="article:published_time" content="2021-03-04T23:57:40.451Z">
+<meta property="article:modified_time" content="2021-04-01T13:53:38.011Z">
+<meta property="article:author" content="Will">
+<meta property="article:tag" content="map">
+<meta property="article:tag" content="reduce">
+<meta property="article:tag" content="hadoop源码">
+<meta property="article:tag" content="shuffle">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zcenao21/photos-blog/main/hadoop/hadoop-structure.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/03/05/hadoop/hadoop/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Hadoop总结 | Will's BigData Field</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Will's BigData Field</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">hello world!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-chess">
+
+    <a href="/Chess/index.html" rel="section"><i class="fa fa-fw fa-user"></i>Chess</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/05/hadoop/hadoop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Will">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Will's BigData Field">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hadoop总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-05 07:57:40" itemprop="dateCreated datePublished" datetime="2021-03-05T07:57:40+08:00">2021-03-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-01 21:53:38" itemprop="dateModified" datetime="2021-04-01T21:53:38+08:00">2021-04-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hadoop/" itemprop="url" rel="index"><span itemprop="name">hadoop</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Hadoop框架包含计算和存储两部分，MapReduce实现计算部分，存储则是HDFS。大数据在map reduce思想基石上，形成了一整套Hadoop生态系统。了解map reduce还是相当重要的。<a id="more"></a></p>
+<h1 id="Hadoop发展史"><a href="#Hadoop发展史" class="headerlink" title="Hadoop发展史"></a>Hadoop发展史</h1><p>为什么取名Hadoop，Hadoop其实是一个造出来的词，来源于Doug Cutting儿子毛绒玩具象。我们就看看Hadoop的发展历程。</p>
+<ul>
+<li>2003-2004 Google公布GFS和MapReduce思想的两篇论文，受此启发，Doug Cutting等人用2年时间实现了DFS和MapReduce机制。</li>
+<li>2005　Hadoop作为Lucene的子项目Nutch的一部分正式引入Apache基金会。</li>
+<li>2006.2 被分离.出来，成为一套完整独立的软件，起名为Hadoop</li>
+<li>2012.5 发布２.0版本，抽象出单独的资源管理模块Yarn进行资源管理。</li>
+</ul>
+<p>所以从根源上说，MapReduce思想来源于Google的论文，Doug Cutting等人做了开源的工程实现。</p>
+<h1 id="Hadoop架构"><a href="#Hadoop架构" class="headerlink" title="Hadoop架构"></a>Hadoop架构</h1><p><img src="https://raw.githubusercontent.com/zcenao21/photos-blog/main/hadoop/hadoop-structure.png" alt="hadoop-structure"></p>
+<h3 id="NameNode"><a href="#NameNode" class="headerlink" title="NameNode"></a>NameNode</h3><p>NameNode管理文件系统的命名空间，维护文件系统树和整棵树内的所有文件和目录。这些信息是以两个文件形式永久保存在本地磁盘上，分别是命名空间镜像文件(fsimage)和编辑日志文件(edit logs)。</p>
+<p>NameNode存储信息列表：</p>
+<ul>
+<li>文件系统的命名空间，文件名称，文件目录结构，文件的属性(权限/创建时间/副本数)</li>
+<li>文件对应哪些数据块，数据块存储在哪些datanode节点上</li>
+</ul>
+<p>NameNode在启动时，会先将fsimage加载进内存，然后与edit logs合并更新到最新状态。在hadoop1.x版本中，启动之后产生的新的edit logs由Secondary NameNode定期和fsimage合并并更新到NameNode当中。在hadoop2.x之后，增加了NameNode HA（高可用）功能，合并的工作由Secondary NameNode转移到了Standy NameNode上。另外，Secondary NameNode可以在NameNode出现故障时快速切换。</p>
+<h3 id="DataNode"><a href="#DataNode" class="headerlink" title="DataNode"></a>DataNode</h3><p>DataNode是实际的数据存储模块。NameNode仅用于存放元数据信息，实际的数据信息都放在DataNode上。DataNode存储数据块和数据块校验和，和客户端进行数据通信，DataNode之间也进行数据传输。</p>
+<p>DataNode和NameNode之间通过心跳机制联系。每隔３秒DataNode发送一次心跳，心跳结果返回NameNode的命令如块的复制/块的删除等。</p>
+<p>如果十分钟未收到DataNode的心跳，则认为DataNode丢失，它上面的block会拷贝到其他DataNode上。</p>
+<p>#　Hadoop配置</p>
+<h3 id="配置文件及其作用"><a href="#配置文件及其作用" class="headerlink" title="配置文件及其作用"></a>配置文件及其作用</h3><p><img src="https://github.com/zcenao21/photos-blog/raw/main/hadoop/file-func.jpg" alt="img"></p>
+<p><strong>core-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>fs.defaultFS</td>
+<td>配置namenode的dfs协议的文件系统通信地址</td>
+</tr>
+<tr>
+<td>hadoop.tmp.dir</td>
+<td>指定hadoop临时目录</td>
+</tr>
+</tbody></table>
+<p><strong>hdfs-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>配置项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dfs.namenode.name.dir</td>
+<td>namenode数据的存放地点</td>
+</tr>
+<tr>
+<td>dfs.datanode.data.dir</td>
+<td>datanode数据的存放地点</td>
+</tr>
+<tr>
+<td>dfs.replication</td>
+<td>hdfs副本数量设置</td>
+</tr>
+</tbody></table>
+<p><strong>yarn-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>配置项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>yarn.resourcemanager.address</td>
+<td>ResourceManager 对客户端暴露的地址</td>
+</tr>
+<tr>
+<td>yarn.resourcemanager.scheduler.address</td>
+<td>ResourceManager 对ApplicationMaster暴露的访问地址</td>
+</tr>
+<tr>
+<td>yarn.resourcemanager.resource-tracker.address</td>
+<td>ResourceManager 对NodeManager暴露的地址</td>
+</tr>
+<tr>
+<td>yarn.resourcemanager.admin.address</td>
+<td>ResourceManager 对管理员暴露的访问地址</td>
+</tr>
+</tbody></table>
+<p><strong>mapred-site.xml</strong></p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>配置项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mapreduce.framework.name</td>
+<td>指定mr框架为yarn的方式</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/map/" rel="tag"># map</a>
+              <a href="/tags/reduce/" rel="tag"># reduce</a>
+              <a href="/tags/hadoop%E6%BA%90%E7%A0%81/" rel="tag"># hadoop源码</a>
+              <a href="/tags/shuffle/" rel="tag"># shuffle</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/04/other/airflow%E5%AE%89%E8%A3%85/" rel="prev" title="Airflow安装使用">
+      <i class="fa fa-chevron-left"></i> Airflow安装使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/27/java/Java%E5%B9%B6%E5%8F%91%EF%BC%8DReentrantLock/" rel="next" title="ReentrantLock">
+      ReentrantLock <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC80NzIyNi8yMzcyNg=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#序言"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hadoop发展史"><span class="nav-number">2.</span> <span class="nav-text">Hadoop发展史</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hadoop架构"><span class="nav-number">3.</span> <span class="nav-text">Hadoop架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NameNode"><span class="nav-number">3.0.1.</span> <span class="nav-text">NameNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DataNode"><span class="nav-number">3.0.2.</span> <span class="nav-text">DataNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件及其作用"><span class="nav-number">3.0.3.</span> <span class="nav-text">配置文件及其作用</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Will</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Will</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.2
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
