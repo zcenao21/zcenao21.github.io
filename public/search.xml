@@ -38,7 +38,8 @@
 
 
 
-<h3 id="浏览器配置代理规则"><a href="#浏览器配置代理规则" class="headerlink" title="浏览器配置代理规则"></a>浏览器配置代理规则</h3><p>首先安装<a href="chrome-extension://padekgcemlokbadohgkifijomclgjgif/options.html#!/about">SwitchyOmega</a>软件</p>
+<h3 id="客户端安装软件-mac"><a href="#客户端安装软件-mac" class="headerlink" title="客户端安装软件-mac"></a>客户端安装软件-mac</h3><p>可以直接安装代理软件**sock</p>
+<h3 id="浏览器配置代理规则"><a href="#浏览器配置代理规则" class="headerlink" title="浏览器配置代理规则"></a>浏览器配置代理规则</h3><p>首先安装<a href="chrome-extension://padekgcemlokbadohgkifijomclgjgif/options.html#!/about">SwitchyOmega</a>软件。如果不能直接访问google扩展，可以先到github下载最新的chrome插件，然后安装。Mac直接拖拽安装如果产生错误，可以解压后放到一个文件夹，然后到chrome扩展下打开开发者模式，然后加载文件夹内容即可。</p>
 <p>新建情景模式，代理协议选择SOCKS5, 代理服务器为本机，转发到本机配置的1080端口</p>
 <p><img src="https://github.com/zcenao21/photos-blog/raw/main/other/vpn.png" alt="vpn.png"></p>
 <p>保存后选择情景模式为vpn即可。</p>
