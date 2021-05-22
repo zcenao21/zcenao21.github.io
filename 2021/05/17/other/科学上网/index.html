@@ -29,7 +29,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/other/vpn.png">
 <meta property="article:published_time" content="2021-05-17T00:19:21.000Z">
-<meta property="article:modified_time" content="2021-05-17T15:19:40.907Z">
+<meta property="article:modified_time" content="2021-05-22T15:13:15.523Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="科学上网">
 <meta property="article:tag" content="Vultr">
@@ -217,10 +217,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-05-17 08:19:21 / Modified: 23:19:40" itemprop="dateCreated datePublished" datetime="2021-05-17T08:19:21+08:00">2021-05-17</time>
+              <time title="Created: 2021-05-17 08:19:21" itemprop="dateCreated datePublished" datetime="2021-05-17T08:19:21+08:00">2021-05-17</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-22 23:13:15" itemprop="dateModified" datetime="2021-05-22T23:13:15+08:00">2021-05-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -254,7 +260,9 @@
 <p>方法1很不稳定，所以选择方法2</p>
 <a id="more"></a>
 
-<h3 id="购买Vultr服务器"><a href="#购买Vultr服务器" class="headerlink" title="购买Vultr服务器"></a>购买Vultr服务器</h3><p>自己上网使用的话，不需要太多流量内存，所以1月5$足够，1核/1G内存/25G硬盘存储。</p>
+
+
+<h1 id="尝试１：端口经常被墙…"><a href="#尝试１：端口经常被墙…" class="headerlink" title="尝试１：端口经常被墙…"></a>尝试１：端口经常被墙…</h1><h3 id="购买Vultr服务器"><a href="#购买Vultr服务器" class="headerlink" title="购买Vultr服务器"></a>购买Vultr服务器</h3><p>自己上网使用的话，不需要太多流量内存，所以1月5$足够，1核/1G内存/25G硬盘存储。</p>
 <p>要开服务器首先需要充值，最低10美元，支持支付宝。</p>
 <p>充值后选择服务器。</p>
 <p>Choose Server =&gt; Cloud Compute</p>
@@ -299,13 +307,28 @@
 
 
 
+<h1 id="尝试２-待观察"><a href="#尝试２-待观察" class="headerlink" title="尝试２:待观察"></a>尝试２:待观察</h1><p>尝试１经常端口被墙，只能不断换端口，总换也不是事，可能最后IP都被封了。所以经网上搜索及打听知道v2ray比较好，可以实现伪装，也就不容易被墙</p>
+<h3 id="安装服务端软件"><a href="#安装服务端软件" class="headerlink" title="安装服务端软件"></a>安装服务端软件</h3><p>已经有大神帮写好了一键安装服务端v2ray以及nginx的教程，所以直接拿来用即可。</p>
+<p>前提条件：</p>
+<p>1.已经有一个域名</p>
+<p>2.已经将域名配置到购买的服务器IP</p>
+<p>然后执行下面的脚本，按照提示配置即可安装成功</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash &lt;(curl -sL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;hijkpw&#x2F;scripts&#x2F;master&#x2F;centos_install_v2ray2.sh)</span><br></pre></td></tr></table></figure>
 
 
+
+<h3 id="ubuntu客户端软件安装"><a href="#ubuntu客户端软件安装" class="headerlink" title="ubuntu客户端软件安装"></a>ubuntu客户端软件安装</h3><p>在系统自带软件管理器中安装Qv2ray，但是这个软件不带v2ray-core,还需要到github下载对应的核心文件，放到Qv2ray配置的路径中</p>
+<p>之后在服务端运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;centos_install_v2ray2.sh info</span><br></pre></td></tr></table></figure>
+
+<p>可以得到vmess开头的一串链接，复制到Qv2ray的配置中配置即可，点击就能运行。</p>
+<p>最后在浏览器配置代理，和尝试1相同步骤即可！</p>
 <blockquote>
 <p>参考</p>
 <p><a href="https://segmentfault.com/a/1190000009922582" target="_blank" rel="noopener">https://segmentfault.com/a/1190000009922582</a></p>
 <p><a href="https://meiwencun.com/shadowsocksr_ssr_an_zhuang_387/" target="_blank" rel="noopener">https://meiwencun.com/shadowsocksr_ssr_an_zhuang_387/</a></p>
 <p><a href="https://www.nb-fk.com/1047.html" target="_blank" rel="noopener">https://www.nb-fk.com/1047.html</a></p>
+<p><a href="https://www.p-roy.com/index.php/arc/497/cid/1.html" target="_blank" rel="noopener">https://www.p-roy.com/index.php/arc/497/cid/1.html</a></p>
 </blockquote>
 
     </div>
@@ -395,7 +418,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#购买Vultr服务器"><span class="nav-number">1.</span> <span class="nav-text">购买Vultr服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器端安装软件"><span class="nav-number">2.</span> <span class="nav-text">服务器端安装软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端安装软件-ubuntu"><span class="nav-number">3.</span> <span class="nav-text">客户端安装软件-ubuntu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端安装软件-mac"><span class="nav-number">4.</span> <span class="nav-text">客户端安装软件-mac</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#浏览器配置代理规则"><span class="nav-number">5.</span> <span class="nav-text">浏览器配置代理规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题解决"><span class="nav-number">6.</span> <span class="nav-text">问题解决</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#尝试１：端口经常被墙…"><span class="nav-number">1.</span> <span class="nav-text">尝试１：端口经常被墙…</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#购买Vultr服务器"><span class="nav-number">1.0.1.</span> <span class="nav-text">购买Vultr服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器端安装软件"><span class="nav-number">1.0.2.</span> <span class="nav-text">服务器端安装软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端安装软件-ubuntu"><span class="nav-number">1.0.3.</span> <span class="nav-text">客户端安装软件-ubuntu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端安装软件-mac"><span class="nav-number">1.0.4.</span> <span class="nav-text">客户端安装软件-mac</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#浏览器配置代理规则"><span class="nav-number">1.0.5.</span> <span class="nav-text">浏览器配置代理规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题解决"><span class="nav-number">1.0.6.</span> <span class="nav-text">问题解决</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#尝试２-待观察"><span class="nav-number">2.</span> <span class="nav-text">尝试２:待观察</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装服务端软件"><span class="nav-number">2.0.1.</span> <span class="nav-text">安装服务端软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu客户端软件安装"><span class="nav-number">2.0.2.</span> <span class="nav-text">ubuntu客户端软件安装</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
