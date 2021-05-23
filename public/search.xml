@@ -53,9 +53,13 @@
 <p>出现如上错误，通过关闭服务器防火墙可以解决</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 查看防火墙状态</span><br><span class="line">systemctl status firewalld</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 若上一个命令得到状态为Active，则通过下面的命令关闭</span><br><span class="line">systemctl stop firewalld</span><br></pre></td></tr></table></figure>
 
-
-
-<h1 id="尝试２-待观察"><a href="#尝试２-待观察" class="headerlink" title="尝试２:待观察"></a>尝试２:待观察</h1><p>尝试１经常端口被墙，只能不断换端口，总换也不是事，可能最后IP都被封了。所以经网上搜索及打听知道v2ray比较好，可以实现伪装，也就不容易被墙</p>
+<blockquote>
+<p>参考</p>
+<p><a href="https://segmentfault.com/a/1190000009922582" target="_blank" rel="noopener">https://segmentfault.com/a/1190000009922582</a></p>
+<p><a href="https://meiwencun.com/shadowsocksr_ssr_an_zhuang_387/" target="_blank" rel="noopener">https://meiwencun.com/shadowsocksr_ssr_an_zhuang_387/</a></p>
+<p><a href="https://www.nb-fk.com/1047.html" target="_blank" rel="noopener">https://www.nb-fk.com/1047.html</a></p>
+</blockquote>
+<h1 id="尝试２-一天后域名被墙…"><a href="#尝试２-一天后域名被墙…" class="headerlink" title="尝试２:一天后域名被墙…"></a>尝试２:一天后域名被墙…</h1><p>尝试１经常端口被墙，只能不断换端口，总换也不是事，可能最后IP都被封了。所以经网上搜索及打听知道v2ray比较好，可以实现伪装，也就不容易被墙</p>
 <h3 id="安装服务端软件"><a href="#安装服务端软件" class="headerlink" title="安装服务端软件"></a>安装服务端软件</h3><p>已经有大神帮写好了一键安装服务端v2ray以及nginx的教程，所以直接拿来用即可。</p>
 <p>前提条件：</p>
 <p>1.已经有一个域名</p>
@@ -72,11 +76,12 @@
 <p>可以得到vmess开头的一串链接，复制到Qv2ray的配置中配置即可，点击就能运行。</p>
 <p>最后在浏览器配置代理，和尝试1相同步骤即可！</p>
 <blockquote>
-<p>参考</p>
-<p><a href="https://segmentfault.com/a/1190000009922582" target="_blank" rel="noopener">https://segmentfault.com/a/1190000009922582</a></p>
-<p><a href="https://meiwencun.com/shadowsocksr_ssr_an_zhuang_387/" target="_blank" rel="noopener">https://meiwencun.com/shadowsocksr_ssr_an_zhuang_387/</a></p>
-<p><a href="https://www.nb-fk.com/1047.html" target="_blank" rel="noopener">https://www.nb-fk.com/1047.html</a></p>
 <p><a href="https://www.p-roy.com/index.php/arc/497/cid/1.html" target="_blank" rel="noopener">https://www.p-roy.com/index.php/arc/497/cid/1.html</a></p>
+</blockquote>
+<h1 id="尝试３-20210523晚21-00－"><a href="#尝试３-20210523晚21-00－" class="headerlink" title="尝试３ 20210523晚21:00－"></a>尝试３ 20210523晚21:00－</h1><p>使用搬瓦工官方机场　Just My Socks</p>
+<p>待观察</p>
+<blockquote>
+<p>参考：<a href="https://www.itblogcn.com/article/1012.html" target="_blank" rel="noopener">https://www.itblogcn.com/article/1012.html</a></p>
 </blockquote>
 ]]></content>
       <categories>
