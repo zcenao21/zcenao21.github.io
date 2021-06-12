@@ -152,10 +152,11 @@
 <p>首先启动时设置远程监听</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;spark-submit --class org.apache.spark.examples.SparkPi --master spark:&#x2F;&#x2F;localhost:7077 --conf spark.driver.extraJavaOptions&#x3D;&quot;-agentlib:jdwp&#x3D;transport&#x3D;dt_socket,server&#x3D;y,suspend&#x3D;y,address&#x3D;7777&quot; ..&#x2F;examples&#x2F;target&#x2F;original-spark-examples_2.12-3.2.0-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
 
-<blockquote>
 <p>如果要查看详细Debug信息，可以在jar包(../examples/target/original-spark-examples_2.12-3.2.0-SNAPSHOT.jar)前设置参数：–verbose=true</p>
-<p>./spark-submit –class org.apache.spark.examples.SparkPi –master spark://localhost:7077 –conf spark.driver.extraJavaOptions=”-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=7777”  –verbose=true ../examples/target/original-spark-examples_2.12-3.2.0-SNAPSHOT.jar</p>
-</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;spark-submit --class org.apache.spark.examples.SparkPi --master spark:&#x2F;&#x2F;localhost:7077 --conf spark.driver.extraJavaOptions&#x3D;&quot;-agentlib:jdwp&#x3D;transport&#x3D;dt_socket,server&#x3D;y,suspend&#x3D;y,address&#x3D;7777&quot;  --verbose&#x3D;true ..&#x2F;examples&#x2F;target&#x2F;original-spark-examples_2.12-3.2.0-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+
+
+
 <p>然后在IDEA中设置调试参数</p>
 <p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-submit-debug.png" alt="spark-submit-debug.png"></p>
 <p>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7777</p>
