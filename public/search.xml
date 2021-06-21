@@ -745,6 +745,21 @@
       </tags>
   </entry>
   <entry>
+    <title>Linux常用命令</title>
+    <url>/2020/06/21/linux/linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h3 id="vim"><a href="#vim" class="headerlink" title="vim"></a>vim</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 光标移动</span><br><span class="line">ctrl+o: 上次所在位置</span><br><span class="line">ctrl+I: 下一次所在位置</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>shell</tag>
+        <tag>命令</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>文件及用户权限</title>
     <url>/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</url>
     <content><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>计算机最重要的两大部分：存储和计算。存储分永久性存储（例如文件）和短暂的存储（例如内存）。永久性存储我们接触最多的就是文件了。<a id="more"></a>大多数人都用过word，肯定都有过word没保存，工作白干了这种尴尬的事情，这就是临时的修改没有保存到文件中的缘故。文件作为重要信息载体，安全性、共享性都非常重要。我们是否可以通过linux的文件系统做到以下事情？</p>
@@ -1279,7 +1294,7 @@
 <p>在大数据开发中，linux系统必然会涉及，是必备的基础技能。下面将分为以下一系列文章进行介绍：</p>
 <ul>
 <li><a href="/2020/02/12/linux/linux-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="基础知识">基础知识</a></li>
-<li>常用命令</li>
+<li><a href="/2020/06/21/linux/linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" title="常用命令">常用命令</a></li>
 <li><a href="/2020/03/10/linux/linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/" title="文件及用户权限">文件及用户权限</a></li>
 <li>shell脚本</li>
 </ul>
