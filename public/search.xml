@@ -1387,7 +1387,7 @@
 <p>3.对现有RDD进行转换</p>
 <p>各种Transformation算子的操作结果</p>
 <h3 id="Action算子和Transformation算子"><a href="#Action算子和Transformation算子" class="headerlink" title="Action算子和Transformation算子"></a>Action算子和Transformation算子</h3><p>针对RDD的处理有丰富的操作，包括Action算子和Transformation算子。Action操作返回对象非RDD，Transformation操作返回仍然是RDD。Action算子是触发行动的算子，<strong>Action算子数量等于Spark Job的数量</strong>；Transformation算子会对RDD进行变换，根据父RDD和子RDD的依赖关系不同，Transformation又分为宽依赖和窄依赖。宽依赖的示意图如下：</p>
-<p><img src="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png" alt="image.png"></p>
+<p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/wide-dependency.png" alt="wide-dependency.png"></p>
 <p>窄依赖的严格定义：<strong>each partition of the parrent RDD is used by at most one partition of the child RDD（译：每个父RDD的分区最多被一个子RDD分区使用）</strong>。</p>
 <p>这是区分宽窄依赖最严格的定义，还有一个并不是非常严格的说法，但是便于理解：</p>
 <p>需要进行shuffle的为宽依赖，不需要的为窄依赖。</p>

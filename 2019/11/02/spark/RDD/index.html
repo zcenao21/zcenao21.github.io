@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="Will&#39;s BigData Field">
 <meta property="og:description" content="RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png">
+<meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/spark/wide-dependency.png">
 <meta property="article:published_time" content="2019-11-02T14:43:50.000Z">
-<meta property="article:modified_time" content="2021-06-30T23:54:58.389Z">
+<meta property="article:modified_time" content="2021-06-30T23:58:21.910Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="Spark">
 <meta property="article:tag" content="High Performance Spark">
 <meta property="article:tag" content="RDD">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png">
+<meta name="twitter:image" content="https://github.com/zcenao21/photos-blog/raw/main/spark/wide-dependency.png">
 
 <link rel="canonical" href="http://yoursite.com/2019/11/02/spark/RDD/">
 
@@ -225,7 +225,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-01 07:54:58" itemprop="dateModified" datetime="2021-07-01T07:54:58+08:00">2021-07-01</time>
+                <time title="Modified: 2021-07-01 07:58:21" itemprop="dateModified" datetime="2021-07-01T07:58:21+08:00">2021-07-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -282,7 +282,7 @@
 <p>3.对现有RDD进行转换</p>
 <p>各种Transformation算子的操作结果</p>
 <h3 id="Action算子和Transformation算子"><a href="#Action算子和Transformation算子" class="headerlink" title="Action算子和Transformation算子"></a>Action算子和Transformation算子</h3><p>针对RDD的处理有丰富的操作，包括Action算子和Transformation算子。Action操作返回对象非RDD，Transformation操作返回仍然是RDD。Action算子是触发行动的算子，<strong>Action算子数量等于Spark Job的数量</strong>；Transformation算子会对RDD进行变换，根据父RDD和子RDD的依赖关系不同，Transformation又分为宽依赖和窄依赖。宽依赖的示意图如下：</p>
-<p><img src="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png" alt="image.png"></p>
+<p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/wide-dependency.png" alt="wide-dependency.png"></p>
 <p>窄依赖的严格定义：<strong>each partition of the parrent RDD is used by at most one partition of the child RDD（译：每个父RDD的分区最多被一个子RDD分区使用）</strong>。</p>
 <p>这是区分宽窄依赖最严格的定义，还有一个并不是非常严格的说法，但是便于理解：</p>
 <p>需要进行shuffle的为宽依赖，不需要的为窄依赖。</p>
