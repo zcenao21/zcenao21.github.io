@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>spark Job划分</title>
+    <url>/2021/07/01/spark/spark-Job%E5%88%92%E5%88%86/</url>
+    <content><![CDATA[<h1 id="Spark-Job阶段划分"><a href="#Spark-Job阶段划分" class="headerlink" title="Spark Job阶段划分"></a>Spark Job阶段划分</h1><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-job.jpg" alt="spark-job.jpg"></p>
+]]></content>
+      <categories>
+        <category>Spark</category>
+      </categories>
+      <tags>
+        <tag>Spark</tag>
+        <tag>Job</tag>
+        <tag>Stage</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spark Shuffle</title>
     <url>/2021/06/27/spark/Spark-Shuffle/</url>
     <content><![CDATA[<p>Shuffle是对数据进行重组的过程，发生在Map操作结束到Reduce操作发生之前。需要进行Shuffle操作是因为数据需要根据某些共同特征进行组合，才能在Reduce阶段顺利将数据聚合得到结果。</p>
@@ -1484,20 +1498,6 @@
         <tag>Spark</tag>
         <tag>High Performance Spark</tag>
         <tag>spark架构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>spark Job划分</title>
-    <url>/2019/11/02/spark/spark-Job%E5%88%92%E5%88%86/</url>
-    <content><![CDATA[<h1 id="Spark-Job阶段划分"><a href="#Spark-Job阶段划分" class="headerlink" title="Spark Job阶段划分"></a>Spark Job阶段划分</h1><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-job.jpg" alt="spark-job.jpg"></p>
-]]></content>
-      <categories>
-        <category>Spark</category>
-      </categories>
-      <tags>
-        <tag>Spark</tag>
-        <tag>Job</tag>
-        <tag>Stage</tag>
       </tags>
   </entry>
   <entry>
