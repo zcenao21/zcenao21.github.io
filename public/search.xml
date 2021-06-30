@@ -1445,7 +1445,6 @@
 <p>参考<br><a href="https://ihainan.gitbooks.io/spark-source-code/content/section1/rddPartitions.html" target="_blank" rel="noopener">https://ihainan.gitbooks.io/spark-source-code/content/section1/rddPartitions.html</a></p>
 <p><a href="https://github.com/wangzhiwubigdata/God-Of-BigData/blob/master/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0/Spark_RDD.md" target="_blank" rel="noopener">https://github.com/wangzhiwubigdata/God-Of-BigData/blob/master/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0/Spark_RDD.md</a></p>
 </blockquote>
-<h1 id="Spark-Job阶段划分"><a href="#Spark-Job阶段划分" class="headerlink" title="Spark Job阶段划分"></a>Spark Job阶段划分</h1><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-job.jpg" alt="spark-job.jpg"></p>
 ]]></content>
       <categories>
         <category>Spark</category>
