@@ -20,24 +20,25 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
   </script>
 
-  <meta name="description" content="前言 为什么会有spark 现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算">
+  <meta name="description" content="RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spark绪论">
-<meta property="og:url" content="http://yoursite.com/2019/10/24/spark/spark/index.html">
+<meta property="og:title" content="RDD">
+<meta property="og:url" content="http://yoursite.com/2019/11/02/spark/RDD/index.html">
 <meta property="og:site_name" content="Will&#39;s BigData Field">
-<meta property="og:description" content="前言 为什么会有spark 现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算">
+<meta property="og:description" content="RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://ericfu.me/images/2018/06/spark-banner.png">
-<meta property="article:published_time" content="2019-10-24T08:33:13.000Z">
-<meta property="article:modified_time" content="2020-02-19T18:00:56.045Z">
+<meta property="og:image" content="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png">
+<meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-job.jpg">
+<meta property="article:published_time" content="2019-11-02T14:43:50.000Z">
+<meta property="article:modified_time" content="2021-06-27T08:56:21.795Z">
 <meta property="article:author" content="Will">
 <meta property="article:tag" content="Spark">
 <meta property="article:tag" content="High Performance Spark">
-<meta property="article:tag" content="大数据工具">
+<meta property="article:tag" content="RDD">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ericfu.me/images/2018/06/spark-banner.png">
+<meta name="twitter:image" content="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png">
 
-<link rel="canonical" href="http://yoursite.com/2019/10/24/spark/spark/">
+<link rel="canonical" href="http://yoursite.com/2019/11/02/spark/RDD/">
 
 
 <script id="page-configurations">
@@ -49,7 +50,7 @@
   };
 </script>
 
-  <title>Spark绪论 | Will's BigData Field</title>
+  <title>RDD | Will's BigData Field</title>
   
 
 
@@ -195,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/24/spark/spark/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/02/spark/RDD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -208,7 +209,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Spark绪论
+          RDD
         </h1>
 
         <div class="post-meta">
@@ -218,14 +219,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-10-24 16:33:13" itemprop="dateCreated datePublished" datetime="2019-10-24T16:33:13+08:00">2019-10-24</time>
+              <time title="Created: 2019-11-02 22:43:50" itemprop="dateCreated datePublished" datetime="2019-11-02T22:43:50+08:00">2019-11-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-20 02:00:56" itemprop="dateModified" datetime="2020-02-20T02:00:56+08:00">2020-02-20</time>
+                <time title="Modified: 2021-06-27 16:56:21" itemprop="dateModified" datetime="2021-06-27T16:56:21+08:00">2021-06-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,45 +256,92 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><ul>
-<li><p>为什么会有spark</p>
-<p>现在的计算机性能越来越高，单台机器处理M级别的数据简直小菜一碟。但是如果数据量更大，达到G、T甚至P、E级别，这时单台机器的性能可能就有点不够了。也许你会反驳，目前世界上最快的超级计算<a id="more"></a> 机“Summit”浮点运算速度峰值可达20亿亿次/秒，这相当快了吧！确实很快，但是它的使用和维护费用都很高呀，一般人或者说公司根本负担不起。所以聪明的人类就发明了大数据工具。虽然单台机器的计算性能可能并不是很好，但是如果多台机器联合起来一起做计算，那么不就可以实现相对廉价的机器实现超大数据规模的计算吗？所以诞生了大数据工具Hadoop。Hadoop基于HDFS和Map-Reduce奠定了大数据领域的霸主地位。随后各种工具层出不穷。Spark针对Hadoop计算中慢的缺点，即每次计算结果都要读写到磁盘导致速度变慢的设计，作了如下改进：</p>
+        <p>RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。<a id="more"></a></p>
+<h3 id="RDD特性"><a href="#RDD特性" class="headerlink" title="RDD特性"></a>RDD特性</h3><p>RDD包含以下特性（前3个必须有，后两个可选）：</p>
 <ol>
-<li>计算中间结果保存在内存中。Hadoop每次的计算结果都会放回HDFS，这种设计严重影响了计算速度。spark基于内存的设计则改进了这一点。</li>
-<li>惰性计算。Spark使用有向无环图（DAG）调度机制，遇到action操作算子才进行实际计算，所有就有了优化空间。</li>
+<li><p>partitions()</p>
+<p>返回组成分布式数据集的分区对象数组。</p>
+</li>
+<li><p>itearator(p, parentIters)</p>
+<p>为每个父分区计算分区p的iteartors。</p>
+</li>
+<li><p>dependencies</p>
+<p>返回依赖对象序列。</p>
+</li>
+<li><p>partitioner()—可选</p>
+<p>若RDD有相关元素与分区信息，则返回Scala option type的分区对象。</p>
+</li>
+<li><p>prefferedLocations(p)—可选</p>
+<p>返回数据分区的存储位置信息。</p>
+</li>
 </ol>
+<h3 id="RDD创建方法"><a href="#RDD创建方法" class="headerlink" title="RDD创建方法"></a>RDD创建方法</h3><p>总共有三种方法</p>
+<p>1.来自一个内存中的对象集合： 适用于对少量的数据数据进行并行的CPU密集型计算</p>
+<p>比如：sc.parallize()</p>
+<p>2.使用外部存储器中的数据集</p>
+<p>如: sc.textfile</p>
+<p>3.对现有RDD进行转换</p>
+<p>各种Transformation算子的操作结果</p>
+<h3 id="Action算子和Transformation算子"><a href="#Action算子和Transformation算子" class="headerlink" title="Action算子和Transformation算子"></a>Action算子和Transformation算子</h3><p>针对RDD的处理有丰富的操作，包括Action算子和Transformation算子。Action操作返回对象非RDD，Transformation操作返回仍然是RDD。Action算子是触发行动的算子，<strong>Action算子数量等于Spark Job的数量</strong>；Transformation算子会对RDD进行变换，根据父RDD和子RDD的依赖关系不同，Transformation又分为宽依赖和窄依赖。宽依赖的示意图如下：</p>
+<p><img src="https://i.loli.net/2019/11/03/5EpJ6In4DhlVSxj.png" alt="image.png"></p>
+<p>窄依赖的严格定义：<strong>each partition of the parrent RDD is used by at most one partition of the child RDD（译：每个父RDD的分区最多被一个子RDD分区使用）</strong>。</p>
+<p>这是区分宽窄依赖最严格的定义，还有一个并不是非常严格的说法，但是便于理解：</p>
+<p>需要进行shuffle的为宽依赖，不需要的为窄依赖。</p>
+<p><strong>Spark Job中的Stage个数就等于宽依赖个数。</strong></p>
+<p>常用的Action算子:</p>
+<ul>
+<li>reduce</li>
+<li>collect</li>
+<li>count</li>
+<li>first</li>
+<li>take</li>
+<li>aggregate</li>
+<li>fold</li>
+<li>foreach</li>
+<li>saveAsTextFile</li>
+<li>countByKey等;</li>
+</ul>
+<p>常用的Transformation算子:</p>
+<ul>
+<li>map</li>
+<li>filter</li>
+<li>flatmap</li>
+<li>mapPartitions</li>
+<li>sample</li>
+<li>union</li>
+<li>intersection</li>
+<li>distinct</li>
+<li>groupByKey</li>
+<li>countByKey</li>
+<li>sortBy</li>
+<li>join</li>
+<li>coalesce</li>
+<li>repartition</li>
+<li>repartitionAndSortWithinPatitions</li>
+<li>mapValues</li>
+</ul>
+<h3 id="RDD分区"><a href="#RDD分区" class="headerlink" title="RDD分区"></a>RDD分区</h3><p>RDD内部使用分区表示并行计算的一个计算单元，因此分区和并发计算有关系。RDD的分区源码：<!--more--> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package org.apache.spark</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * An identifier for a partition in an RDD.</span><br><span class="line"> *&#x2F;</span><br><span class="line">trait Partition extends Serializable &#123;</span><br><span class="line">  &#x2F;**</span><br><span class="line">   * Get the partition&#39;s index within its parent RDD</span><br><span class="line">   *&#x2F;</span><br><span class="line">  def index: Int</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; A better default implementation of HashCode</span><br><span class="line">  override def hashCode(): Int &#x3D; index</span><br><span class="line"></span><br><span class="line">  override def equals(other: Any): Boolean &#x3D; super.equals(other)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在org.apache.spark.rdd.RDD中，定义了getPartitions方法，可以获取分区。</p>
+<p>分区个数如何决定呢？</p>
+<p>例如map操作得到的RDD分区由第一个父RDD分区决定</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">override def getPartitions: Array[Partition] &#x3D; firstParent[T].partitions</span><br></pre></td></tr></table></figure>
+
+<p>再比如parallize操作的分区个数由用户指定，默认为集群核心数目</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;** Distribute a local Scala collection to form an RDD.</span><br><span class="line">   *</span><br><span class="line">   * @note Parallelize acts lazily. If &#96;seq&#96; is a mutable collection and is altered after the call</span><br><span class="line">   * to parallelize and before the first action on the RDD, the resultant RDD will reflect the</span><br><span class="line">   * modified collection. Pass a copy of the argument to avoid this.</span><br><span class="line">   * @note avoid using &#96;parallelize(Seq())&#96; to create an empty &#96;RDD&#96;. Consider &#96;emptyRDD&#96; for an</span><br><span class="line">   * RDD with no partitions, or &#96;parallelize(Seq[T]())&#96; for an RDD of &#96;T&#96; with empty partitions.</span><br><span class="line">   * @param seq Scala collection to distribute</span><br><span class="line">   * @param numSlices number of partitions to divide the collection into</span><br><span class="line">   * @return RDD representing distributed collection</span><br><span class="line">   *&#x2F;</span><br><span class="line">  def parallelize[T: ClassTag](</span><br><span class="line">      seq: Seq[T],</span><br><span class="line">      numSlices: Int &#x3D; defaultParallelism): RDD[T] &#x3D; withScope &#123;</span><br><span class="line">    assertNotStopped()</span><br><span class="line">    new ParallelCollectionRDD[T](this, seq, numSlices, Map[Int, Seq[String]]())</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>defaultParallelism的设置，可以看LocalSchedulerBackend源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">override def defaultParallelism(): Int &#x3D;</span><br><span class="line">    scheduler.k.getInt(&quot;spark.default.parallelism&quot;, totalCores)</span><br></pre></td></tr></table></figure>
+
+
+
+
 <blockquote>
-<p>可参考对比：<a href="https://www.zhihu.com/question/26568496" target="_blank" rel="noopener">https://www.zhihu.com/question/26568496</a></p>
+<p>参考<br><a href="https://ihainan.gitbooks.io/spark-source-code/content/section1/rddPartitions.html" target="_blank" rel="noopener">https://ihainan.gitbooks.io/spark-source-code/content/section1/rddPartitions.html</a></p>
+<p><a href="https://github.com/wangzhiwubigdata/God-Of-BigData/blob/master/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0/Spark_RDD.md" target="_blank" rel="noopener">https://github.com/wangzhiwubigdata/God-Of-BigData/blob/master/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0/Spark_RDD.md</a></p>
 </blockquote>
-</li>
-<li><p>Spark是什么</p>
-<p>官方定义：<strong>Apache Spark™</strong> is a unified analytics engine for large-scale data processing。翻译过来就是：用于大规模数据处理的分析引擎。再直白一点就是说：spark是用于快速处理大量数据的工具。</p>
-<img src="https://ericfu.me/images/2018/06/spark-banner.png" width="700" hegiht="113" align=center />
-
-
-
-</li>
-</ul>
-<h1 id="和其他工具对比"><a href="#和其他工具对比" class="headerlink" title="和其他工具对比"></a>和其他工具对比</h1><blockquote>
-<p>引用自：<a href="https://www.boxuegu.com/news/458.html" target="_blank" rel="noopener">https://www.boxuegu.com/news/458.html</a></p>
-</blockquote>
-<ul>
-<li><p><strong>Hadoop框架</strong></p>
-<p>提起大数据，第一个想起的肯定是Hadoop，因为Hadoop是目前世界上应用最广泛的大数据工具，它凭借极高的容错率和极低的硬件价格，在大数据市场上风生水起。Hadoop还是第一个在开源社区上引发高度关注的批处理框架，他提出的Map和Reduce的计算模式简洁而优雅。迄今为止，Hadoop已经成为了一个广阔的生态圈，实现了大量算法和组件。由于Hadoop的计算任务需要在集群的多个节点上多次读写，因此在速度上会稍显劣势，但是其吞吐量也同样是其他框架所不能匹敌的。</p>
-</li>
-</ul>
-<ul>
-<li><strong>Storm框架</strong><br>与Hadoop的批处理模式不同，Storm采用的是流计算框架，由Twitter开源并且托管在GitHub上。与Hadoop类似的是，Storm也提出了两个计算角色，分别为Spout和Bolt。如果说Hadoop是水桶，只能一桶一桶的去井里扛，那么Storm就是水龙头，只要打开就可以源源不断的出水。Storm支持的语言也比较多，Java、Ruby、Python等语言都能很好的支持。由于Storm是流计算框架，因此使用的是内存，延迟上有极大的优势，但是Storm不会持久化数据。</li>
-</ul>
-<ul>
-<li><strong>Samza框架</strong><br>Smaza也是一种流计算框架，但他目前只支持JVM语言，灵活度上略显不足，并且Samza必须和Kafka共同使用。但是响应的，其也继承了Kafka的低延时、分区、避免回压等优势。对于已经有Hadoop+Kafka工作环境的团队来说，Samza是一个不错的选择，并且Samza在多个团队使用的时候能体现良好的性能。</li>
-</ul>
-<ul>
-<li><strong>Spark框架</strong><br>Spark属于前两种框架形式的集合体，是一种混合式的计算框架。它既有自带的实时流处理工具，也可以和Hadoop集成，代替其中的MapReduce，甚至Spark还可以单独拿出来部署集群，但是还得借助HDFS等分布式存储系统。Spark的强大之处在于其运算速度，与Storm类似，Spark也是基于内存的，并且在内存满负载的时候，硬盘也能运算，运算结果表示，Spark的速度大约为Hadoop的一百倍，并且其成本可能比Hadoop更低。但是Spark目前还没有像Hadoop哪有拥有上万级别的集群，因此现阶段的Spark和Hadoop搭配起来使用更加合适。</li>
-</ul>
-<ul>
-<li><strong>Flink框架</strong><br>Flink也是一种混合式的计算框架，但是在设计初始，Fink的侧重点在于处理流式数据，这与Spark的设计初衷恰恰相反，而在市场需求的驱使下，两者都在朝着更多的兼容性发展。Flink目前不是很成熟，更多情况下Flink还是起到一个借鉴的作用。</li>
-</ul>
+<h1 id="Spark-Job阶段划分"><a href="#Spark-Job阶段划分" class="headerlink" title="Spark Job阶段划分"></a>Spark Job阶段划分</h1><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-job.jpg" alt="spark-job.jpg"></p>
 
     </div>
 
@@ -305,7 +353,7 @@
           <div class="post-tags">
               <a href="/tags/Spark/" rel="tag"># Spark</a>
               <a href="/tags/High-Performance-Spark/" rel="tag"># High Performance Spark</a>
-              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B7%A5%E5%85%B7/" rel="tag"># 大数据工具</a>
+              <a href="/tags/RDD/" rel="tag"># RDD</a>
           </div>
 
         
@@ -313,10 +361,13 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2019/11/02/spark/spark%E6%9E%B6%E6%9E%84/" rel="next" title="spark架构">
-      spark架构 <i class="fa fa-chevron-right"></i>
+    <a href="/2019/11/02/spark/spark%E7%9B%AE%E5%BD%95/" rel="prev" title="spark---目录">
+      <i class="fa fa-chevron-left"></i> spark---目录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/09/linux/Linux%E7%9B%AE%E5%BD%95/" rel="next" title="linux---目录">
+      linux---目录 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -382,7 +433,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和其他工具对比"><span class="nav-number">2.</span> <span class="nav-text">和其他工具对比</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RDD特性"><span class="nav-number">1.</span> <span class="nav-text">RDD特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDD创建方法"><span class="nav-number">2.</span> <span class="nav-text">RDD创建方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action算子和Transformation算子"><span class="nav-number">3.</span> <span class="nav-text">Action算子和Transformation算子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDD分区"><span class="nav-number">4.</span> <span class="nav-text">RDD分区</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spark-Job阶段划分"><span class="nav-number"></span> <span class="nav-text">Spark Job阶段划分</span></a></div>
       </div>
       <!--/noindex-->
 
@@ -396,7 +447,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -409,7 +460,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">57</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
