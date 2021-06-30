@@ -455,7 +455,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-30 08:31:52" itemprop="dateModified" datetime="2021-06-30T08:31:52+08:00">2021-06-30</time>
+                <time title="Modified: 2021-07-01 07:53:52" itemprop="dateModified" datetime="2021-07-01T07:53:52+08:00">2021-07-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -478,61 +478,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Shuffle是对数据进行重组的过程，发生在Map操作结束到Reduce操作发生之前。需要进行Shuffle操作是因为数据需要根据某些共同特征进行组合，才能在Reduce阶段顺利将数据聚合得到结果。</p>
-<h2 id="MapReduce-Shuffle"><a href="#MapReduce-Shuffle" class="headerlink" title="MapReduce Shuffle"></a>MapReduce Shuffle</h2><p>既然说到Spark的Shuffle，就不得不提MapReduce的Shuffle过程。</p>
-<p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/mapreduce-shuffle.jpg" alt="mapreduce-shuffle.jpg"></p>
-<p><strong>map端</strong></p>
-<p>每个map任务都有一个环形内存缓冲区用于存储任务输出，默认大小为100M，可以通过mapreduce.task.io.sort.mb来调整。一旦到达阈值（默认80%），一个后台线程便开始把内容溢出(spill)到磁盘。在溢出写到磁盘的过程中，map输出继续写到缓冲区，但如果在此期间缓冲区被填满，map会阻塞直到写磁盘完成。</p>
-<p>写磁盘之前，线程首先根据数据最终要传的reducer把数据分成相应的分区。在每个分区，后台线程按键进行内存中排序，如果有一个combiner函数，它就在排序后的输出上运行。</p>
-<p>每次内存缓冲区到达溢出阈值，就会新建一个溢出文件，因此map任务写完其最后一个输出记录后会有几个溢出文件。在任务完成之前，溢出文件被合并成一个已分区且已排序的输出文件 </p>
-<p><strong>reduce端</strong></p>
-<p>在map输出的每个任务完成时，reduce任务就开始复制其输出。reduce任务有少量复制线程，默认为5。复制完所有输出，reduce任务进入排序阶段（更恰当的说法是合并阶段，因为排序是在map端进行的），这个阶段将合并map输出，维持其顺序排序。</p>
-<p>最后阶段，即reduce阶段，直接把数据输入reduce函数，从而省略了一次磁盘往返行程。</p>
-<h2 id="Spark-Shuffle"><a href="#Spark-Shuffle" class="headerlink" title="Spark Shuffle"></a>Spark Shuffle</h2><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-reducebykey.png" alt=""></p>
-<p>spark shuffle的示意图如上图，具体实现经历了HashShuffle到SortShuffle的转变过程。</p>
-<h3 id="1-HashShuffle"><a href="#1-HashShuffle" class="headerlink" title="1.HashShuffle"></a>1.HashShuffle</h3><p>每一个ShufflleMapTask会为每一个ReduceTask创建一个bucket缓存，并且会为每一个bucket创建一个文件。这样，最终生成的文件数量计算公式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">executor数量 * 每个executor的ShuffleMapTask数量 * ReduceTask数量</span><br></pre></td></tr></table></figure>
-
-<p>这样计算下来，小文件数量就过多了。</p>
-<h3 id="2-优化后的HashShuffle"><a href="#2-优化后的HashShuffle" class="headerlink" title="2.优化后的HashShuffle"></a>2.优化后的HashShuffle</h3><p>针对上述HashShuffle中为每个ShuffleMapTask生成ReduceTask个bucket缓存的问题进行改进，同一个Executor进程里所有Task都会把相同的key放入相同的bucket缓冲区中。所以最终生成文件数量计算公式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">本地worker的所有executor对应的cores的总数 * ResultTask数量</span><br></pre></td></tr></table></figure>
-
-<p>经过这种改进，小文件数量极大的减少了，但是仍然可能产生问题。当Reducer 端的并行任务或者是数据分片过多的话则 Core * Reducer Task 依旧过大，也会产生很多小文件。</p>
-<h3 id="3-Sort-Base-Shuffle"><a href="#3-Sort-Base-Shuffle" class="headerlink" title="3.Sort-Base Shuffle"></a>3.Sort-Base Shuffle</h3><p><strong>BaseShuffleHandle对应的SortShuffleWriter工作机制</strong><br>Sorted-Based Shuffle 的出现，最显著的优势就是把 Spark 从只能处理中小规模的数据平台，变成可以处理无限大规模的数据平台。Sorted-Based Shuffle 不会为每个Reducer 中的Task 生产一个单独的文件，相反Sorted-Based Shuffle 会把Mapper 中所有ShuffleMapTask 的输出数据Data 只写到一个文件中，因为每个ShuffleMapTask 中的数据会被分类，所以Sort-based Shuffle 使用了index 文件存储具体ShuffleMapTask 输出数据在同一个Data 文件中是如何分类的信息。所以说基于 Sort-based Shuffle 会在 Mapper 中的每一个 ShuffleMapTask 中产生两个文件 (<strong>并发度的个数 x 2</strong>)</p>
-<p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/shuffle-sort-based.png" alt="shuffle-sort-based.png"></p>
-<p>它会产生一个 Data 文件和一个 Index 文件，其中 Data 文件是存储当前 Task 的 Shuffle 输出的， 而 Index 文件则存储了 Data 文件中的数据通过 Partitioner 的分类信息，此时下一个阶段的 Stage 中的 Task 就是根据这个 Index 文件获取自己所需要抓取的上一个 Stage 中 ShuffleMapTask 所产生的数据。</p>
-<p>假设现在 Mapper 端有 1000 个数据分片，Reducer 端也有 1000 个数据分片，它的并发度是100，使用 Sorted-Based Shuffle 会产生多少个 Mapper端的小文件，答案是 100 x 2 = 200 个。它的 MapTask 会独自运行，每个 MapTask 在运行的时候写2个文件，运行成功后就不需要这个 MapTask 的文件句柄，无论是文件本身的句柄还是索引的句柄都不需要，所以如果它的并发度是 100 个 Core，每次运行 100 个任务的话，它最终只会占用 200 个文件句柄，这跟 HashShuffle 的机制不一样，HashShuffle 最差的情况是 Hashed 句柄存储在内存中的。</p>
-<p><strong>BypassMergeSortShuffleHandle对应的BypassMergeSortShuffleWriter工作机制</strong></p>
-<p>适用于：</p>
-<ol>
-<li>主要用于处理<strong>不需要排序和聚合的Shuffle操作</strong>，所以数据是直接写入文件，数据量较大的时候，网络I/O和内存负担较重。</li>
-<li>主要适合<strong>处理Reducer任务数量比较少</strong>的情况。</li>
-</ol>
-<p>触发条件：</p>
-<ol>
-<li>不需要预聚合（combine）类的shuffle算子。（如reduceByKey）</li>
-<li>shuffle map task数量小于spark.shuffle.sort.bypassMergeThreshold参数的值。（默认为200）</li>
-</ol>
-<p>BypassMergeSortShuffleWriter和Hash Shuffle中的HashShuffleWriter实现基本一致， 唯一的区别在于，map端的多个输出文件会被汇总为一个文件。 所有分区的数据会合并为同一个文件，会生成一个索引文件，是为了索引到每个分区的起始地址，可以随机 access 某个partition的所有数据。</p>
-<p><strong>SerializedShuffleHandle对应的UnsafeShuffleWriter工作机制（（钨丝计划）tungsten计划的shuffle，会使用off-heap的内存）</strong></p>
-<p>触发条件：</p>
-<ol>
-<li>map端没有聚合操作</li>
-<li>需要Serializer支持relocation</li>
-<li>分区数目必须小于 16777216</li>
-<li>序列化时，单条记录不能大于 128 MB</li>
-</ol>
-<p>序列化方式需要支持重定位，即使用KryoSerializer等一些序列化方式。这种方式下用到了Tungsten优化，排序的是二进制的数据，不会对数据进行反序列化操作，所以不支持aggregation。分区数目必须小于 16777216的原因是，partition number是使用24bit 表示的。</p>
-<p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/Serialized_Shuffle_in_Shuffle_Write.png" alt="Serialized_Shuffle_in_Shuffle_Write.png"></p>
-<p>shuffle的原理如上图。Tungsten-sort 实现了内存的自主管理，管理方式模拟了操作系统的方式，通过Page可以使得大量的record被顺序存储在内存，整个shuffle write 排序的过程只需要对指针进行运算(二进制排序)，并且无需反序列化，整个过程非常高效，对于减少GC,提高内存访问效率，提高CPU使用效率确实带来了明显的提升。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://zhuanlan.zhihu.com/p/67061627" target="_blank" rel="noopener">Spark Shuffle 详解</a></p>
-<p><a href="https://www.codenong.com/cs105893061/" target="_blank" rel="noopener">一文带你走进Spark中HashShuffle详解机制</a></p>
-<p><a href="https://www.codenong.com/cs105474773/" target="_blank" rel="noopener">Spark-Shuffle机制详解</a></p>
-<p><a href="https://www.cnblogs.com/jcchoiling/p/6440102.html" target="_blank" rel="noopener">第三章 : Spark 2.1.0 中 Sort-Based Shuffle 产生的内幕</a></p>
-<p><a href="https://toutiao.io/posts/eicdjo/preview" target="_blank" rel="noopener">彻底搞懂 Spark 的 shuffle 过程（shuffle write）</a></p>
-<p><a href="https://dataelement.top/2021/02/08/spark-shuffle-internal-part-iii/" target="_blank" rel="noopener">Spark Shuffle 内部机制（三）Spark Shuflle的前世今生</a></p>
-<p><a href="https://www.jianshu.com/p/d328c96aebfd" target="_blank" rel="noopener">Spark Tungsten-sort Based Shuffle 分析</a></p>
-
+          <p>Shuffle是对数据进行重组的过程，发生在Map操作结束到Reduce操作发生之前。需要进行Shuffle操作是因为数据需要根据某些共同特征进行组合，才能在Reduce阶段顺利将数据聚合得到结果。
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/27/spark/Spark-Shuffle/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

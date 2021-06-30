@@ -17,7 +17,7 @@
   <entry>
     <title>Spark Shuffle</title>
     <url>/2021/06/27/spark/Spark-Shuffle/</url>
-    <content><![CDATA[<p>Shuffle是对数据进行重组的过程，发生在Map操作结束到Reduce操作发生之前。需要进行Shuffle操作是因为数据需要根据某些共同特征进行组合，才能在Reduce阶段顺利将数据聚合得到结果。</p>
+    <content><![CDATA[<p>Shuffle是对数据进行重组的过程，发生在Map操作结束到Reduce操作发生之前。需要进行Shuffle操作是因为数据需要根据某些共同特征进行组合，才能在Reduce阶段顺利将数据聚合得到结果。<a id="more"></a></p>
 <h2 id="MapReduce-Shuffle"><a href="#MapReduce-Shuffle" class="headerlink" title="MapReduce Shuffle"></a>MapReduce Shuffle</h2><p>既然说到Spark的Shuffle，就不得不提MapReduce的Shuffle过程。</p>
 <p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/mapreduce-shuffle.jpg" alt="mapreduce-shuffle.jpg"></p>
 <p><strong>map端</strong></p>
