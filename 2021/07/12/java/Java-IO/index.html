@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
+  </script>
+
+  <meta name="description" content="Java I&#x2F;OJava I&#x2F;O通信方式有多种模型: 1.BIO 2.NIO 3.AIO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java I&#x2F;O通信">
+<meta property="og:url" content="http://yoursite.com/2021/07/12/java/Java-IO/index.html">
+<meta property="og:site_name" content="Will&#39;s BigData Field">
+<meta property="og:description" content="Java I&#x2F;OJava I&#x2F;O通信方式有多种模型: 1.BIO 2.NIO 3.AIO">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/BIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B.png">
+<meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/NIO%E6%A8%A1%E5%9E%8B.jpg">
+<meta property="og:image" content="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/aio-model.png">
+<meta property="article:published_time" content="2021-07-12T01:17:50.000Z">
+<meta property="article:modified_time" content="2021-07-21T00:50:54.558Z">
+<meta property="article:author" content="Will">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="I&#x2F;O">
+<meta property="article:tag" content="通信">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/BIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/07/12/java/Java-IO/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Java I/O通信 | Will's BigData Field</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Will's BigData Field</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">hello world!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-chess">
+
+    <a href="/Chess/index.html" rel="section"><i class="fa fa-fw fa-user"></i>Chess</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/12/java/Java-IO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Will">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Will's BigData Field">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java I/O通信
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-12 09:17:50" itemprop="dateCreated datePublished" datetime="2021-07-12T09:17:50+08:00">2021-07-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-21 08:50:54" itemprop="dateModified" datetime="2021-07-21T08:50:54+08:00">2021-07-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Java-I-O"><a href="#Java-I-O" class="headerlink" title="Java I/O"></a>Java I/O</h2><p>Java I/O通信方式有多种模型:</p>
+<p>1.BIO</p>
+<p>2.NIO</p>
+<p>3.AIO</p>
+<a id="more"></a>
+
+<p>下面通过简单实现来学习和验证。Socket通信处于传输层，它有一系列API封装，方便实现网络通信。首先用Socket来实现群发消息的功能。</p>
+<blockquote>
+<p>参考：<a href="https://www.cnblogs.com/lbhym/p/12681787.html" target="_blank" rel="noopener">https://www.cnblogs.com/lbhym/p/12681787.html</a></p>
+</blockquote>
+<h2 id="Socket实现的简单通信"><a href="#Socket实现的简单通信" class="headerlink" title="Socket实现的简单通信"></a>Socket实现的简单通信</h2><p>服务端和客户端一对一通信</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.BufferedWriter;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.io.OutputStreamWriter;</span><br><span class="line">import java.net.ServerSocket;</span><br><span class="line">import java.net.Socket;</span><br><span class="line"></span><br><span class="line">public class Server &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        final int DEFAULT_PORT &#x3D; 8888;</span><br><span class="line">        &#x2F;&#x2F;创建ServerSocket监听8888端口</span><br><span class="line">        try (ServerSocket serverSocket &#x3D; new ServerSocket(DEFAULT_PORT)) &#123;</span><br><span class="line">            System.out.println(&quot;ServerSocket Start,The Port is:&quot; + DEFAULT_PORT);</span><br><span class="line">            while (true) &#123;&#x2F;&#x2F;不停地监听该端口</span><br><span class="line">                &#x2F;&#x2F;阻塞式的监听，如果没有客户端请求就一直停留在这里</span><br><span class="line">                Socket socket &#x3D; serverSocket.accept();</span><br><span class="line">                System.out.println(&quot;Client[&quot; + socket.getPort() + &quot;]Online&quot;);</span><br><span class="line">                &#x2F;&#x2F;接收消息</span><br><span class="line">                BufferedReader reader &#x3D; new BufferedReader(</span><br><span class="line">                        new InputStreamReader(socket.getInputStream())</span><br><span class="line">                );</span><br><span class="line">                &#x2F;&#x2F;发送消息</span><br><span class="line">                BufferedWriter writer &#x3D; new BufferedWriter(</span><br><span class="line">                        new OutputStreamWriter(socket.getOutputStream())</span><br><span class="line">                );</span><br><span class="line"></span><br><span class="line">                String msg &#x3D; null;</span><br><span class="line">                while ((msg &#x3D; reader.readLine()) !&#x3D; null) &#123;</span><br><span class="line">                    System.out.println(&quot;Client[&quot; + socket.getPort() + &quot;]:&quot; + msg);</span><br><span class="line">                    &#x2F;&#x2F;写入服务端要发送的消息</span><br><span class="line">                    writer.write(&quot;Server:&quot; + msg + &quot;\n&quot;);</span><br><span class="line">                    writer.flush();</span><br><span class="line">                    &#x2F;&#x2F;如果客户端的消息是quit代表他退出了，并跳出循环，不用再接收他的消息了。如果客户端再次连接就会重新上线</span><br><span class="line">                    if (msg.equals(&quot;quit&quot;)) &#123;</span><br><span class="line">                        System.out.println(&quot;Client[&quot; + socket.getPort() + &quot;]:Offline&quot;);</span><br><span class="line">                        break;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.BufferedWriter;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.io.OutputStreamWriter;</span><br><span class="line">import java.net.Socket;</span><br><span class="line"></span><br><span class="line">public class Client &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;这是服务端的IP和端口</span><br><span class="line">        final String DEFAULT_SERVER_HOST &#x3D; &quot;127.0.0.1&quot;;</span><br><span class="line">        final int DEFAULT_SERVER_PORT &#x3D; 8888;</span><br><span class="line">        &#x2F;&#x2F;创建Socket</span><br><span class="line">        try (Socket socket &#x3D; new Socket(DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT)) &#123;</span><br><span class="line">            &#x2F;&#x2F;接收消息</span><br><span class="line">            BufferedReader reader &#x3D; new BufferedReader(</span><br><span class="line">                    new InputStreamReader(socket.getInputStream())</span><br><span class="line">            );</span><br><span class="line">            &#x2F;&#x2F;发送消息</span><br><span class="line">            BufferedWriter writer &#x3D; new BufferedWriter(</span><br><span class="line">                    new OutputStreamWriter(socket.getOutputStream())</span><br><span class="line">            );</span><br><span class="line">            &#x2F;&#x2F;获取用户输入的消息</span><br><span class="line">            BufferedReader userReader &#x3D; new BufferedReader(</span><br><span class="line">                    new InputStreamReader(System.in)</span><br><span class="line">            );</span><br><span class="line">            String msg &#x3D; null;</span><br><span class="line">            &#x2F;&#x2F;循环的话客户端就可以一直输入消息，不然执行完try catch会自动释放资源，也就是断开连接</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                String input &#x3D; userReader.readLine();</span><br><span class="line">                &#x2F;&#x2F;写入客户端要发送的消息。因为服务端用readLine获取消息，其以\n为终点，所以要在消息最后加上\n</span><br><span class="line">                writer.write(input + &quot;\n&quot;);</span><br><span class="line">                writer.flush();</span><br><span class="line">                msg &#x3D; reader.readLine();</span><br><span class="line">                System.out.println(msg);</span><br><span class="line">                &#x2F;&#x2F;如果客户端输入quit就可以跳出循环、断开连接了</span><br><span class="line">                if(input.equals(&quot;quit&quot;))&#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="BIO方式实现群聊"><a href="#BIO方式实现群聊" class="headerlink" title="BIO方式实现群聊"></a>BIO方式实现群聊</h2><p>BIO是Block IO，阻塞式IO。阻塞主要发生在：ServerSocket接收请求时（accept()方法）、InputStream、OutputStream（输入输出流的读和写）。</p>
+<p><img src="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/BIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B.png" alt="BIO编程模型.png"></p>
+<p>如上述模型，服务端每收到一个请求都会单独开一个线程进行处理。</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.BufferedWriter;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.io.OutputStreamWriter;</span><br><span class="line">import java.net.ServerSocket;</span><br><span class="line">import java.net.Socket;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.util.concurrent.ConcurrentHashMap;</span><br><span class="line">import java.util.concurrent.Executors;</span><br><span class="line">import java.util.concurrent.ThreadPoolExecutor;</span><br><span class="line"></span><br><span class="line">public class Server21 &#123;</span><br><span class="line">    static int PORT_SERVER &#x3D; 2121;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">        ServerSocket server &#x3D; new ServerSocket(PORT_SERVER);</span><br><span class="line">        ThreadPoolExecutor pool &#x3D; (ThreadPoolExecutor) Executors.newFixedThreadPool(10);</span><br><span class="line">        ConcurrentHashMap&lt;Integer, Socket&gt; map &#x3D; new ConcurrentHashMap();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 处理连接请求</span><br><span class="line">        new Thread(() -&gt; &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                while(true)&#123;</span><br><span class="line">                    Socket socket &#x3D; server.accept();</span><br><span class="line">                    System.out.println(&quot;[ Server ]:&quot;+&quot; Client &quot; + socket.getPort()+&quot; connected!&quot;);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 每个连接的处理</span><br><span class="line">                    pool.execute(() -&gt; &#123;</span><br><span class="line">                        try &#123;</span><br><span class="line">                            BufferedReader reader &#x3D; new BufferedReader(new InputStreamReader(socket.getInputStream()));</span><br><span class="line">                            String input &#x3D; null;</span><br><span class="line">                            while ((input&#x3D;reader.readLine())!&#x3D;null)&#123;</span><br><span class="line">                                System.out.println(&quot;[ Client &quot;+socket.getPort()+&quot; ]: &quot; +input);</span><br><span class="line">                                for(Map.Entry&lt;Integer, Socket&gt; entry:map.entrySet())&#123;</span><br><span class="line">                                    if(entry.getValue().isConnected())&#123;</span><br><span class="line">                                        BufferedWriter wri &#x3D; new BufferedWriter(new OutputStreamWriter(entry.getValue().getOutputStream()));</span><br><span class="line">                                        wri.write(&quot;server received info from client &quot;+socket.getPort()+&quot; --- &quot;+input+&quot;\n&quot;);</span><br><span class="line">                                        wri.flush();</span><br><span class="line">                                    &#125;else&#123;</span><br><span class="line">                                        map.remove(entry.getKey());</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; catch (IOException e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;finally &#123;</span><br><span class="line">                            try&#123;</span><br><span class="line">                                map.remove(socket.getPort());</span><br><span class="line">                                System.out.println(&quot;[ Server ]:&quot;+socket.getPort()+&quot; removed, &quot;+map.size()+&quot; client(s) left!&quot;);</span><br><span class="line">                            &#125;catch (Exception e)&#123;</span><br><span class="line">                                System.out.println(&quot;[ Server ]: remove client Failed&quot;);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">                    map.put(socket.getPort(), socket);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;catch (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.BufferedWriter;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.io.OutputStreamWriter;</span><br><span class="line">import java.net.Socket;</span><br><span class="line"></span><br><span class="line">public class Client21 &#123;</span><br><span class="line">    static int PORT_SERVER &#x3D; 2121;</span><br><span class="line">    static String HOST &#x3D; &quot;127.0.0.1&quot;;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line"></span><br><span class="line">        Socket socket &#x3D; new Socket(HOST, PORT_SERVER);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;处理发送消息操作</span><br><span class="line">        new Thread(() -&gt; &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                BufferedReader reader &#x3D; new BufferedReader(new InputStreamReader(System.in));</span><br><span class="line">                String inputStr &#x3D; null;</span><br><span class="line">                BufferedWriter writer &#x3D; new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));</span><br><span class="line">                while((inputStr&#x3D;reader.readLine())!&#x3D;null)&#123;</span><br><span class="line">                    System.out.println(&quot;[ Client &quot;+socket.getLocalPort()+&quot;]:&quot;+inputStr);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; 注意，这个的换行符特别重要，如果没有它服务端会一直等待</span><br><span class="line">                    writer.write(inputStr+&quot;\n&quot;);</span><br><span class="line">                    writer.flush();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125; catch (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;处理接受服务器信息操作</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            BufferedReader reader &#x3D; new BufferedReader(new InputStreamReader(socket.getInputStream()));</span><br><span class="line">            System.out.println(&quot;[ Server ]:&quot; + reader.readLine());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述实现中，服务端每接受到一个客户端连接请求，都会拿出一个线程单独处理。这个处理线程接收用户输入，接收到信息后还会遍历存储客户端的map映射。如果客户端下线，则会从维护的map映射中去掉这个客户端，如果没有下线，则将接受的信息发送到每个客户端。服务端每次都新建线程来处理效率低，这里使用了线程池，固定线程池大小为10。也就是如果第11个客户端要上线，必须得有前面的客户端下线才行，否则服务端无法分配处理线程，会等待。</p>
+<h2 id="NIO方式实现群聊"><a href="#NIO方式实现群聊" class="headerlink" title="NIO方式实现群聊"></a>NIO方式实现群聊</h2><blockquote>
+<p><a href="https://zhuanlan.zhihu.com/p/196759269" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/196759269</a></p>
+</blockquote>
+<p>NIO模型</p>
+<p><img src="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/NIO%E6%A8%A1%E5%9E%8B.jpg" alt="NIO模型.jpg"></p>
+<ol>
+<li>将 Channel 注册到 Selector 中。</li>
+<li>调用 Selector 的 <code>select()</code> 方法，这个方法会阻塞；</li>
+<li>到注册在 Selector 中的某个 Channel 有新的 TCP 连接或者可读写事件的话，这个 Channel 就会处于就绪状态，会被 Selector 轮询出来。</li>
+<li>然后通过 SelectionKey 可以获取就绪 Channel 的集合，进行后续的 I/O 操作。</li>
+</ol>
+<p>服务端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">import java.net.InetSocketAddress;</span><br><span class="line">import java.nio.ByteBuffer;</span><br><span class="line">import java.nio.channels.SelectionKey;</span><br><span class="line">import java.nio.channels.Selector;</span><br><span class="line">import java.nio.channels.ServerSocketChannel;</span><br><span class="line">import java.nio.channels.SocketChannel;</span><br><span class="line">import java.nio.charset.Charset;</span><br><span class="line">import java.util.Set;</span><br><span class="line"></span><br><span class="line">public class NIOServer &#123;</span><br><span class="line">    private int PORT &#x3D; 2121;</span><br><span class="line">    private int BUFFER_SIZE &#x3D; 1024;</span><br><span class="line">    private ByteBuffer bufferRead &#x3D; ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">    private ByteBuffer bufferWrite &#x3D; ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">    private Charset charset &#x3D; Charset.forName(&quot;UTF-8&quot;);</span><br><span class="line"></span><br><span class="line">    public void start()&#123;</span><br><span class="line">        try&#123;</span><br><span class="line">            ServerSocketChannel serverSocketChannel &#x3D; ServerSocketChannel.open();</span><br><span class="line">            serverSocketChannel.configureBlocking(false);</span><br><span class="line">            serverSocketChannel.socket().bind(new InetSocketAddress(PORT));</span><br><span class="line"></span><br><span class="line">            Selector selector &#x3D; Selector.open();</span><br><span class="line">            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line"></span><br><span class="line">            while(true)&#123;</span><br><span class="line">                if(selector.select()&gt;0)&#123;</span><br><span class="line">                    Set&lt;SelectionKey&gt; keys &#x3D; selector.selectedKeys();</span><br><span class="line">                    for(SelectionKey key: keys)&#123;</span><br><span class="line">                        &#x2F;&#x2F; 连接</span><br><span class="line">                        if(key.isAcceptable())&#123;</span><br><span class="line">                            ServerSocketChannel channel &#x3D;(ServerSocketChannel) key.channel();</span><br><span class="line">                            SocketChannel socketChannel &#x3D; channel.accept();</span><br><span class="line">                            socketChannel.configureBlocking(false);</span><br><span class="line">                            socketChannel.register(selector,SelectionKey.OP_READ);</span><br><span class="line">                            System.out.println(&quot;客户端 [ &quot;+socketChannel.socket().getPort()+&quot; ] 上线啦！&quot;);</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        &#x2F;&#x2F; 写请求</span><br><span class="line">                        if(key.isReadable())&#123;</span><br><span class="line">                            SocketChannel client &#x3D; (SocketChannel) key.channel();</span><br><span class="line">                            bufferRead.clear();</span><br><span class="line">                            while(client.read(bufferRead)&gt;0);</span><br><span class="line">                            bufferRead.flip();</span><br><span class="line">                            String msg &#x3D; charset.decode(bufferRead).toString();</span><br><span class="line"></span><br><span class="line">                            System.out.println(&quot;客户端 [ &quot;+client.socket().getPort()+&quot; ] :&quot;+msg);</span><br><span class="line">                            for(SelectionKey k: selector.keys())&#123;</span><br><span class="line">                                if(!(k.channel() instanceof ServerSocketChannel)&amp;&amp;!k.channel().equals(client)&amp;&amp;k.isValid())&#123;</span><br><span class="line">                                    SocketChannel c &#x3D; (SocketChannel)k.channel();</span><br><span class="line">                                    bufferWrite.clear();</span><br><span class="line">                                    bufferWrite.put(charset.encode(&quot;客户端 [ &quot;+client.socket().getPort()+&quot; ] :&quot;+msg));</span><br><span class="line">                                    bufferWrite.flip();</span><br><span class="line">                                    while(bufferWrite.hasRemaining())&#123;</span><br><span class="line">                                        c.write(bufferWrite);</span><br><span class="line">                                    &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    keys.clear();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;catch (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new NIOServer().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，在服务端接收到客户端信息之后，转发消息到其他客户端，需要使用selector.keys()这种方式。如果是selector.selectedKeys()则不能发送成功。</p>
+</blockquote>
+<p>客户端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line">import java.net.InetSocketAddress;</span><br><span class="line">import java.nio.ByteBuffer;</span><br><span class="line">import java.nio.channels.SelectionKey;</span><br><span class="line">import java.nio.channels.Selector;</span><br><span class="line">import java.nio.channels.SocketChannel;</span><br><span class="line">import java.nio.charset.Charset;</span><br><span class="line"></span><br><span class="line">public class NIOClient &#123;</span><br><span class="line">    private String host &#x3D; &quot;127.0.0.1&quot;;</span><br><span class="line">    private int PORT &#x3D; 2121;</span><br><span class="line">    private int BUFFER_SIZE &#x3D; 1024;</span><br><span class="line">    private ByteBuffer bufferRead &#x3D; ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">    private ByteBuffer bufferWrite &#x3D; ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">    private Charset charset &#x3D; Charset.forName(&quot;UTF-8&quot;);</span><br><span class="line">    SocketChannel client;</span><br><span class="line"></span><br><span class="line">    public void start()&#123;</span><br><span class="line">        try&#123;</span><br><span class="line">            client &#x3D; SocketChannel.open();</span><br><span class="line">            client.configureBlocking(false);</span><br><span class="line"></span><br><span class="line">            Selector selector &#x3D; Selector.open();</span><br><span class="line">            client.register(selector, SelectionKey.OP_CONNECT);</span><br><span class="line">            client.connect(new InetSocketAddress(host,PORT));</span><br><span class="line">            while(true)&#123;</span><br><span class="line">                if(selector.select()&gt;0)&#123;</span><br><span class="line">                    for(SelectionKey key: selector.selectedKeys())&#123;</span><br><span class="line">                        if(key.isConnectable())&#123;</span><br><span class="line">                            SocketChannel channel &#x3D; (SocketChannel)key.channel();</span><br><span class="line">                            if(channel.finishConnect())&#123;</span><br><span class="line">                                new Thread(new ClientHandler(this)).start();</span><br><span class="line">                                client.register(selector,SelectionKey.OP_READ);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        if(key.isReadable())&#123;</span><br><span class="line">                            SocketChannel channel &#x3D; (SocketChannel)key.channel();</span><br><span class="line">                            bufferRead.clear();</span><br><span class="line">                            channel.read(bufferRead);</span><br><span class="line">                            bufferRead.flip();</span><br><span class="line">                            System.out.println(charset.decode(bufferRead).toString());</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;catch (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void send(String msg) throws IOException &#123;</span><br><span class="line">        bufferWrite.clear();</span><br><span class="line">        bufferWrite.put(charset.encode(msg));</span><br><span class="line">        bufferWrite.flip();</span><br><span class="line">        while (bufferWrite.hasRemaining())&#123;</span><br><span class="line">            client.write(bufferWrite);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new NIOClient().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>处理客户端输入的类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line"></span><br><span class="line">public class ClientHandler implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">    private NIOClient client;</span><br><span class="line"></span><br><span class="line">    public ClientHandler(NIOClient client)&#123;</span><br><span class="line">        this.client&#x3D;client;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        BufferedReader reader &#x3D; new BufferedReader(new InputStreamReader(System.in));</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            try&#123;</span><br><span class="line">                String input &#x3D; reader.readLine();</span><br><span class="line">                client.send(input);</span><br><span class="line">            &#125;catch (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="AIO方式实现群聊"><a href="#AIO方式实现群聊" class="headerlink" title="AIO方式实现群聊"></a>AIO方式实现群聊</h2><h3 id="AIO通信模型"><a href="#AIO通信模型" class="headerlink" title="AIO通信模型"></a>AIO通信模型</h3><p><img src="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/aio-model.png" alt="aio-model.png"></p>
+<p>BIO和NIO的区别是阻塞和非阻塞，NIO和AIO的区别是同步和非同步。</p>
+<p><strong>同步</strong>：在没获取到结果前就不返回给调用方，如果调用方是阻塞的，那么调用方就会一直等着。如果调用方是非阻塞的，调用方就会先回去，等一会再来问问得到结果没。</p>
+<p><strong>异步</strong>：调用方一来，会直接返回，等执行完实际的逻辑后在通过回调函数把结果返回给调用方。它采用“订阅-通知”模式: 即应用程序向操作系统注册IO监听，然后继续做自己的事情。当操作系统发生IO事件，并且准备好数据后，在主动通知应用程序，触发相应的函数，所以需要系统层面的支持。</p>
+<p>微软的windows系统提供了一种异步IO技术: IOCP(I/O Completion Port，I/O完成端口);Linux下由于没有这种异步IO技术，所以使用的是epoll(一种多路复用IO技术的实现)对异步IO进行模拟。</p>
+<h3 id="AIO-API"><a href="#AIO-API" class="headerlink" title="AIO API"></a>AIO API</h3><p>在AIO编程模型中，常用的API，如connect、accept、read、write都是支持异步操作的。当调用这些方法时，可以携带一个CompletionHandler参数，它会提供一些回调函数。这些回调函数包括：</p>
+<p>1.当这些操作成功时你需要怎么做；</p>
+<p>2.如果这些操作失败了你要这么做。关于这个CompletionHandler参数，你只需要写一个类实现CompletionHandler口，并实现里面两个方法就行了。</p>
+<p><strong>accept</strong>：serverSocket.accept(attachment,handler)。handler就是实现了CompletionHandler接口并实现两个回调函数的类。attachment为handler里面可能需要用到的辅助数据，如果没有就填null。</p>
+<p><strong>read</strong>：socket.read(buffer,attachment,handler)。buffer是缓冲区，用以存放读取到的信息。后面两个参数和accept一样。</p>
+<p><strong>write</strong>：socket.write(buffer,attachment,handler)。和read参数一样。</p>
+<p><strong>connect</strong>：socket.connect(address,attachment,handler)。address为服务器的IP和端口，后面两个参数与前几个一样。</p>
+<h3 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h3><p>1.首先做准备工作。跟NIO一样，先要创建好通道，只不过AIO是异步通道。然后创建好AsyncChannelGroup，可以选择自定义线程池。最后把AsyncServerSocket和AsyncChannelGroup绑定在一起，这样处于同一个AsyncChannelGroup里的通道就可以共享系统资源。</p>
+<p>2.创建好handler类，并实现接口和里面两个回调方法。</p>
+<p>3.准备工作完成，当客户端1连接请求进来，客户端会马上回去，ServerSocket的异步方法会在连接成功后把客户端的SocketChannel存进在线用户列表，并利用客户端1的handler开始异步监听客户端1发送的消息。</p>
+<p>4.当客户端1发送消息时，如果上一步中的handler成功监听到，就会回调成功后的回调方法，这个方法里会把这个消息转发给其他客户端。转发完成后，接着利用handler监听客户端1发送的消息。</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>服务端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line">import java.net.InetSocketAddress;</span><br><span class="line">import java.nio.ByteBuffer;</span><br><span class="line">import java.nio.channels.AsynchronousChannelGroup;</span><br><span class="line">import java.nio.channels.AsynchronousServerSocketChannel;</span><br><span class="line">import java.nio.channels.AsynchronousSocketChannel;</span><br><span class="line">import java.nio.channels.CompletionHandler;</span><br><span class="line">import java.nio.charset.Charset;</span><br><span class="line">import java.util.concurrent.CopyOnWriteArrayList;</span><br><span class="line">import java.util.concurrent.ExecutorService;</span><br><span class="line">import java.util.concurrent.Executors;</span><br><span class="line"></span><br><span class="line">public class Server21 &#123;</span><br><span class="line">    private AsynchronousServerSocketChannel serverSocketChannel;</span><br><span class="line">    private CopyOnWriteArrayList&lt;ClientHandler&gt; handlers &#x3D; new CopyOnWriteArrayList&lt;&gt;();</span><br><span class="line">    private String SERVER_ADDRESS &#x3D; &quot;127.0.0.1&quot;;</span><br><span class="line">    private int PORT &#x3D; 2121;</span><br><span class="line">    private int BUFFER_SIZE &#x3D; 1024;</span><br><span class="line">    private Charset charset &#x3D; Charset.forName(&quot;UTF-8&quot;);</span><br><span class="line"></span><br><span class="line">    public void start() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            ExecutorService service &#x3D; Executors.newFixedThreadPool(10);</span><br><span class="line">            AsynchronousChannelGroup group &#x3D; AsynchronousChannelGroup.withThreadPool(service);</span><br><span class="line">            serverSocketChannel &#x3D; AsynchronousServerSocketChannel.open(group);</span><br><span class="line">            serverSocketChannel.bind(new InetSocketAddress(SERVER_ADDRESS, PORT));</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                serverSocketChannel.accept(null, new ServerHandler());</span><br><span class="line">                System.in.read();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                serverSocketChannel.close();</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new Server21().start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    class ServerHandler implements CompletionHandler&lt;AsynchronousSocketChannel, Object&gt; &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void completed(AsynchronousSocketChannel asynchronousSocketChannel, Object a) &#123;</span><br><span class="line">            if (serverSocketChannel.isOpen()) &#123;</span><br><span class="line">                serverSocketChannel.accept(null, this);</span><br><span class="line">            &#125;</span><br><span class="line">            if (asynchronousSocketChannel !&#x3D; null &amp;&amp; asynchronousSocketChannel.isOpen()) &#123;</span><br><span class="line">                ClientHandler handler &#x3D; new ClientHandler(asynchronousSocketChannel);</span><br><span class="line">                int port &#x3D; getPort(asynchronousSocketChannel);</span><br><span class="line">                System.out.println(&quot;Client &quot; + port + &quot; is online!&quot;);</span><br><span class="line">                ByteBuffer buffer &#x3D; ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">                handlers.add(handler);</span><br><span class="line">                asynchronousSocketChannel.read(buffer,buffer,handler);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void failed(Throwable throwable, Object a) &#123;</span><br><span class="line">            throwable.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    class ClientHandler implements CompletionHandler&lt;Integer, ByteBuffer&gt;&#123;</span><br><span class="line"></span><br><span class="line">        private AsynchronousSocketChannel clientChannel;</span><br><span class="line">        public ClientHandler(AsynchronousSocketChannel channel)&#123;</span><br><span class="line">            this.clientChannel &#x3D; channel;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void completed(Integer integer, ByteBuffer byteBuffer) &#123;</span><br><span class="line">            if(byteBuffer!&#x3D;null)&#123;</span><br><span class="line">                if(integer&gt;0)&#123;</span><br><span class="line">                    byteBuffer.flip();</span><br><span class="line">                    String msg &#x3D; String.valueOf(charset.decode(byteBuffer));</span><br><span class="line">                    System.out.println(getPort(clientChannel)+&quot; :&quot;+msg);</span><br><span class="line">                    sendToOtherClients(clientChannel, msg);</span><br><span class="line">                    ByteBuffer buffer &#x3D; ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">                    clientChannel.read(buffer,buffer,this);</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    System.out.println(getPort(clientChannel)+&quot; is offline, remove it now!&quot;);</span><br><span class="line">                    handlers.remove(clientChannel);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void failed(Throwable throwable, ByteBuffer byteBuffer) &#123;</span><br><span class="line">            throwable.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void sendToOtherClients(AsynchronousSocketChannel sendChannel, String s)&#123;</span><br><span class="line">        for(ClientHandler handler:handlers)&#123;</span><br><span class="line">            if(handler.clientChannel!&#x3D;sendChannel)&#123;</span><br><span class="line">                ByteBuffer buffer &#x3D; ByteBuffer.wrap((getPort(sendChannel)+&quot;:&quot;+s).getBytes());</span><br><span class="line">                handler.clientChannel.write(buffer);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private Integer getPort(AsynchronousSocketChannel channel) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            InetSocketAddress address &#x3D; (InetSocketAddress) channel.getRemoteAddress();</span><br><span class="line">            return address.getPort();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">import java.io.BufferedReader;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStreamReader;</span><br><span class="line">import java.net.InetSocketAddress;</span><br><span class="line">import java.nio.ByteBuffer;</span><br><span class="line">import java.nio.channels.AsynchronousSocketChannel;</span><br><span class="line">import java.nio.charset.Charset;</span><br><span class="line">import java.util.concurrent.ExecutionException;</span><br><span class="line">import java.util.concurrent.Future;</span><br><span class="line"></span><br><span class="line">public class Client21 &#123;</span><br><span class="line">    private String SERVER_ADDRESS &#x3D; &quot;127.0.0.1&quot;;</span><br><span class="line">    private int PORT &#x3D; 2121;</span><br><span class="line">    AsynchronousSocketChannel channel;</span><br><span class="line">    private int BUFFER_SIZE &#x3D; 1024;</span><br><span class="line"></span><br><span class="line">    Charset charset &#x3D; Charset.forName(&quot;UTF-8&quot;);</span><br><span class="line"></span><br><span class="line">    public void start()&#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            channel &#x3D; AsynchronousSocketChannel.open();</span><br><span class="line">            InetSocketAddress serverAddress &#x3D; new InetSocketAddress(SERVER_ADDRESS, PORT );</span><br><span class="line">            Future&lt;Void&gt; result &#x3D; channel.connect(serverAddress);</span><br><span class="line">            result.get();</span><br><span class="line">            new Thread(new InputHandler()).start();</span><br><span class="line">            ByteBuffer buffer&#x3D;ByteBuffer.allocate(BUFFER_SIZE);</span><br><span class="line">            while(true)&#123;</span><br><span class="line">                Future&lt;Integer&gt; future &#x3D; channel.read(buffer);</span><br><span class="line">                if(future.get()&gt;0)&#123;</span><br><span class="line">                    buffer.flip();</span><br><span class="line">                    String msg &#x3D; String.valueOf(charset.decode(buffer));</span><br><span class="line">                    System.out.println(msg);</span><br><span class="line">                    buffer.clear();</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    System.out.println(&quot;服务器断开连接&quot;);</span><br><span class="line">                    if(channel!&#x3D;null)&#123;</span><br><span class="line">                        channel.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.exit(-1);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (ExecutionException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new Client21().start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    class InputHandler implements Runnable&#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            BufferedReader reader &#x3D; new BufferedReader(new InputStreamReader(System.in));</span><br><span class="line">            while(true)&#123;</span><br><span class="line">                String input &#x3D; null;</span><br><span class="line">                try &#123;</span><br><span class="line">                    input &#x3D; reader.readLine();</span><br><span class="line">                    System.out.print(&quot;本客户端:[&quot;+input);</span><br><span class="line">                    ByteBuffer buffer &#x3D; charset.encode(input);</span><br><span class="line">                    if(!input.isEmpty())&#123;</span><br><span class="line">                        Future&lt;Integer&gt; future &#x3D; channel.write(buffer);</span><br><span class="line">                        try &#123;</span><br><span class="line">                            future.get();</span><br><span class="line">                        &#125; catch (Exception e) &#123;</span><br><span class="line">                            System.out.println(&quot;发送失败&quot;);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    System.out.println(&quot;] 发送成功！&quot;);</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/I-O/" rel="tag"># I/O</a>
+              <a href="/tags/%E9%80%9A%E4%BF%A1/" rel="tag"># 通信</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/01/spark/StandAlone/" rel="prev" title="Spark StandAlone">
+      <i class="fa fa-chevron-left"></i> Spark StandAlone
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC80NzIyNi8yMzcyNg=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-I-O"><span class="nav-number">1.</span> <span class="nav-text">Java I&#x2F;O</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Socket实现的简单通信"><span class="nav-number">2.</span> <span class="nav-text">Socket实现的简单通信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BIO方式实现群聊"><span class="nav-number">3.</span> <span class="nav-text">BIO方式实现群聊</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NIO方式实现群聊"><span class="nav-number">4.</span> <span class="nav-text">NIO方式实现群聊</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AIO方式实现群聊"><span class="nav-number">5.</span> <span class="nav-text">AIO方式实现群聊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AIO通信模型"><span class="nav-number">5.1.</span> <span class="nav-text">AIO通信模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AIO-API"><span class="nav-number">5.2.</span> <span class="nav-text">AIO API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作流程"><span class="nav-number">5.3.</span> <span class="nav-text">工作流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现"><span class="nav-number">5.4.</span> <span class="nav-text">代码实现</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Will</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Will</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.7.2
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
