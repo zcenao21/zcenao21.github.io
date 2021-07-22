@@ -3,7 +3,9 @@
   <entry>
     <title>Java I/O通信</title>
     <url>/2021/07/12/java/Java-IO/</url>
-    <content><![CDATA[<h2 id="Java-I-O"><a href="#Java-I-O" class="headerlink" title="Java I/O"></a>Java I/O</h2><p>Java I/O通信方式有多种模型:</p>
+    <content><![CDATA[<h2 id="Java-I-O"><a href="#Java-I-O" class="headerlink" title="Java I/O"></a>Java I/O</h2><p>Java I/O通信方式分为五种:</p>
+<p><img src="https://github.com/zcenao21/photos-blog/raw/main/rpc-start/IO%E6%A8%A1%E5%9E%8B.jpg" alt="IO模型.jpg"></p>
+<p>下面将介绍阻塞式IO/IO复用/异步IO三种。即：</p>
 <p>1.BIO</p>
 <p>2.NIO</p>
 <p>3.AIO</p>
@@ -81,7 +83,7 @@
 
 
 
-]]></content>
+<h2 id="Reactor模型"><a href="#Reactor模型" class="headerlink" title="Reactor模型"></a>Reactor模型</h2>]]></content>
       <categories>
         <category>Java</category>
       </categories>
