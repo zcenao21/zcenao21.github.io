@@ -97,7 +97,7 @@
     <title>Spark StandAlone</title>
     <url>/2021/07/01/spark/StandAlone/</url>
     <content><![CDATA[<h2 id="运行机制"><a href="#运行机制" class="headerlink" title="运行机制"></a>运行机制</h2><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-standalone-structure.png" alt="spark-standalone-structure.png"></p>
-<p>// 首先用户启动standalone模式，即启动Master和Worker。之后运行submit提交程序</p>
+<p>// 首先用户启动standalone模式，即启动Master和Worker。之后运行submit提交程序 <a id="more"></a></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;spark-submit --class org.apache.spark.examples.SparkPi --deploy-mode client --master spark:&#x2F;&#x2F;localhost:7077 --conf spark.driver.extraJavaOptions&#x3D;&quot;-agentlib:jdwp&#x3D;transport&#x3D;dt_socket,server&#x3D;y,suspend&#x3D;y,address&#x3D;7777&quot;  --verbose&#x3D;true ..&#x2F;examples&#x2F;target&#x2F;original-spark-examples_2.12-3.2.0-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
 
 
