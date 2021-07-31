@@ -97,37 +97,37 @@
     <title>Spark StandAlone</title>
     <url>/2021/07/01/spark/StandAlone/</url>
     <content><![CDATA[<h2 id="运行机制"><a href="#运行机制" class="headerlink" title="运行机制"></a>运行机制</h2><p><img src="https://github.com/zcenao21/photos-blog/raw/main/spark/spark-standalone-structure.png" alt="spark-standalone-structure.png"></p>
-<p>// 首先用户启动standalone模式，即启动Master和Worker。之后运行submit提交程序 <a id="more"></a></p>
+<p>首先用户启动standalone模式，即启动Master和Worker。之后运行submit提交程序 <a id="more"></a></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;spark-submit --class org.apache.spark.examples.SparkPi --deploy-mode client --master spark:&#x2F;&#x2F;localhost:7077 --conf spark.driver.extraJavaOptions&#x3D;&quot;-agentlib:jdwp&#x3D;transport&#x3D;dt_socket,server&#x3D;y,suspend&#x3D;y,address&#x3D;7777&quot;  --verbose&#x3D;true ..&#x2F;examples&#x2F;target&#x2F;original-spark-examples_2.12-3.2.0-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 接下来运行main程序</p>
+<p>接下来运行main程序</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SparkSubmit.main()</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 调用doSubmit()方法</p>
+<p>调用doSubmit()方法</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SparkSubmit.doSubmit(args: Array[String])</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 调用runMain方法</p>
+<p>调用runMain方法</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SparkSubmit.runMain(args: SparkSubmitArguments, uninitLog: Boolean)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 得到childMainClass，此处为用户指定的类，org.apache.spark.examples.SparkPi</p>
+<p>得到childMainClass，此处为用户指定的类，org.apache.spark.examples.SparkPi</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val (childArgs, childClasspath, sparkConf, childMainClass) &#x3D; prepareSubmitEnvironment(args)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 反射</p>
+<p>反射</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mainClass &#x3D; Utils.classForName(childMainClass)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 起Java应用，这里执行完成就开始执行用户程序了</p>
+<p>起Java应用，这里执行完成就开始执行用户程序了</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val app &#x3D; new JavaMainApplication(mainClass)</span><br><span class="line">app.start(childArgs.toArray, sparkConf)</span><br><span class="line">JavaMainApplication.mainMethod.invoke(null, args)</span><br></pre></td></tr></table></figure>
 
 
@@ -137,36 +137,94 @@
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import scala.math.random</span><br><span class="line"></span><br><span class="line">import org.apache.spark.sql.SparkSession</span><br><span class="line"></span><br><span class="line">&#x2F;** Computes an approximation to pi *&#x2F;</span><br><span class="line">    object SparkPi &#123;</span><br><span class="line">    def main(args: Array[String]): Unit &#x3D; &#123;</span><br><span class="line">        val spark &#x3D; SparkSession</span><br><span class="line">                .builder</span><br><span class="line">                .appName(&quot;Spark Pi&quot;)</span><br><span class="line">                .getOrCreate()</span><br><span class="line"></span><br><span class="line">        val slices &#x3D; if (args.length &gt; 0) args(0).toInt else 2</span><br><span class="line">        val n &#x3D; math.min(5000000L * slices, Int.MaxValue).toInt &#x2F;&#x2F; avoid overflow</span><br><span class="line">        val count &#x3D; spark.sparkContext.parallelize(1 until n, slices).map &#123; i &#x3D;&gt;</span><br><span class="line">            val x &#x3D; random * 2 - 1</span><br><span class="line">            val y &#x3D; random * 2 - 1</span><br><span class="line">            if (x * x + y * y &lt;&#x3D; 1) 1 else 0</span><br><span class="line">        &#125;.reduce(_ + _)</span><br><span class="line">        println(s&quot;Pi is roughly $&#123;4.0 * count &#x2F; (n - 1)&#125;&quot;)</span><br><span class="line">        spark.stop()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>// 先创建SparkSession</p>
+<p>先创建SparkSession</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val spark &#x3D; SparkSession</span><br><span class="line">            .builder</span><br><span class="line">            .appName(&quot;Spark Pi&quot;)</span><br><span class="line">            .getOrCreate()</span><br></pre></td></tr></table></figure>
 
-<p>其中, getOrCreate()这一步创建了SparkContext对象并封装在了SparkSession中</p>
-<p>// 接着通过parallize方法创建了ParallelCollectionRDD，接着通过map方法再得到MapPartitionsRDD</p>
+<p>其中, getOrCreate()这一步创建了SparkContext对象，将SparkContext对象封装在了SparkSession中。在创建SparkContext时，和master建立连接是在如下代码中实现：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val (sched, ts) &#x3D; SparkContext.createTaskScheduler(this, master, deployMode)</span><br><span class="line">val backend &#x3D; new StandaloneSchedulerBackend(scheduler, sc, masterUrls)</span><br></pre></td></tr></table></figure>
+
+<p>然后通过启动taskScheduler启动StandaloneSchedulerBackend</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">_taskScheduler.start()</span><br></pre></td></tr></table></figure>
+
+<p>在start()方法中，第一步先启动了StandaloneSchedulerBackend</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">backend.start()</span><br></pre></td></tr></table></figure>
+
+<p>StandaloneSchedulerBackend的start方法中，启动了StandaloneAppclient</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">client &#x3D; new StandaloneAppClient(sc.env.rpcEnv, masters, appDesc, this, conf)</span><br><span class="line">client.start()</span><br></pre></td></tr></table></figure>
+
+<p>StandaloneAppclient的start方法用来注册</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">endpoint.set(rpcEnv.setupEndpoint(&quot;AppClient&quot;, new ClientEndpoint(rpcEnv)))</span><br></pre></td></tr></table></figure>
+
+<p>此处rpcEnv是NettyRpcEnv，在NettyRpcEnv的setupEndpoint中，进一步调用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dispatcher.registerRpcEndpoint(name, endpoint)</span><br></pre></td></tr></table></figure>
+
+<p>然后调用register方法注册，将Inbox封装的信息传进去</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sharedLoop.register(name, endpoint)</span><br></pre></td></tr></table></figure>
+
+<p>MessageLoop的register方法定义：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def register(name: String, endpoint: RpcEndpoint): Unit &#x3D; &#123;</span><br><span class="line">    val inbox &#x3D; new Inbox(name, endpoint)</span><br><span class="line">    endpoints.put(name, inbox)</span><br><span class="line">    &#x2F;&#x2F; Mark active to handle the OnStart message.</span><br><span class="line">    setActive(inbox)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>下一步则是receiveLoop()方法从接收并处理</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val inbox &#x3D; active.take()</span><br><span class="line">inbox.process(dispatcher)</span><br></pre></td></tr></table></figure>
+
+<p>Inbox的process方法中，首先会取出message,</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">message &#x3D; messages.poll()</span><br></pre></td></tr></table></figure>
+
+<p>messages是一个LinkedList， 且在Inbox初始化的时候，会自动添加一个Onstart信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">inbox.synchronized &#123;</span><br><span class="line">    messages.add(OnStart)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以下方代码中，</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">message match &#123;</span><br><span class="line">   ...</span><br><span class="line">   case OnStart &#x3D;&gt;</span><br><span class="line">            endpoint.onStart()</span><br><span class="line">            if (!endpoint.isInstanceOf[ThreadSafeRpcEndpoint]) &#123;</span><br><span class="line">              inbox.synchronized &#123;</span><br><span class="line">                if (!stopped) &#123;</span><br><span class="line">                  enableConcurrent &#x3D; true</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会匹配上Onstart部分，于是就调用了StandaloneAppclient的Onstart方法。方法定义：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">override def onStart(): Unit &#x3D; &#123;</span><br><span class="line">      try &#123;</span><br><span class="line">        registerWithMaster(1)</span><br><span class="line">      &#125; catch &#123;</span><br><span class="line">        case e: Exception &#x3D;&gt;</span><br><span class="line">          logWarning(&quot;Failed to connect to master&quot;, e)</span><br><span class="line">          markDisconnected()</span><br><span class="line">          stop()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>registerWithMaster就是尝试连接Master了，registerWithMaster定义</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private def registerWithMaster(nthRetry: Int): Unit &#x3D; &#123;</span><br><span class="line">      registerMasterFutures.set(tryRegisterAllMasters())</span><br><span class="line">      registrationRetryTimer.set(registrationRetryThread.schedule(new Runnable &#123;</span><br><span class="line">        override def run(): Unit &#x3D; &#123;</span><br><span class="line">          if (registered.get) &#123;</span><br><span class="line">            registerMasterFutures.get.foreach(_.cancel(true))</span><br><span class="line">            registerMasterThreadPool.shutdownNow()</span><br><span class="line">          &#125; else if (nthRetry &gt;&#x3D; REGISTRATION_RETRIES) &#123;</span><br><span class="line">            markDead(&quot;All masters are unresponsive! Giving up.&quot;)</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            registerMasterFutures.get.foreach(_.cancel(true))</span><br><span class="line">            registerWithMaster(nthRetry + 1)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, REGISTRATION_TIMEOUT_SECONDS, TimeUnit.SECONDS))</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>tryRegisterAllMasters中进行注册，定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">private def tryRegisterAllMasters(): Array[JFuture[_]] &#x3D; &#123;</span><br><span class="line">      for (masterAddress &lt;- masterRpcAddresses) yield &#123;</span><br><span class="line">        registerMasterThreadPool.submit(new Runnable &#123;</span><br><span class="line">          override def run(): Unit &#x3D; try &#123;</span><br><span class="line">            if (registered.get) &#123;</span><br><span class="line">              return</span><br><span class="line">            &#125;</span><br><span class="line">            logInfo(&quot;Connecting to master &quot; + masterAddress.toSparkURL + &quot;...&quot;)</span><br><span class="line">            val masterRef &#x3D; rpcEnv.setupEndpointRef(masterAddress, Master.ENDPOINT_NAME)</span><br><span class="line">            masterRef.send(RegisterApplication(appDescription, self))</span><br><span class="line">          &#125; catch &#123;</span><br><span class="line">            case ie: InterruptedException &#x3D;&gt; &#x2F;&#x2F; Cancelled</span><br><span class="line">            case NonFatal(e) &#x3D;&gt; logWarning(s&quot;Failed to connect to master $masterAddress&quot;, e)</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>到masterRef.send(RegisterApplication(appDescription, self))这里就完成了注册消息发送到master的步骤。</p>
+<p>Master节点上收到driver发送的消息进行处理</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">override def receive: PartialFunction[Any, Unit] &#x3D; &#123;</span><br><span class="line">   ...</span><br><span class="line">   case RegisterApplication(description, driver) &#x3D;&gt;</span><br><span class="line">      &#x2F;&#x2F; TODO Prevent repeated registrations from some driver</span><br><span class="line">      if (state &#x3D;&#x3D; RecoveryState.STANDBY) &#123;</span><br><span class="line">        &#x2F;&#x2F; ignore, don&#39;t send response</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        logInfo(&quot;Registering app &quot; + description.name)</span><br><span class="line">        val app &#x3D; createApplication(description, driver)</span><br><span class="line">        registerApplication(app)</span><br><span class="line">        logInfo(&quot;Registered app &quot; + description.name + &quot; with ID &quot; + app.id)</span><br><span class="line">        persistenceEngine.addApplication(app)</span><br><span class="line">        driver.send(RegisteredApplication(app.id, self))</span><br><span class="line">        schedule()</span><br><span class="line">      &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>driver.send(RegisteredApplication(app.id, self))即表示发送注册成功信息。</p>
+<p>在driver端接收消息后，设置appId、注册的master信息和listener</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">override def receive: PartialFunction[Any, Unit] &#x3D; &#123;</span><br><span class="line">      case RegisteredApplication(appId_, masterRef) &#x3D;&gt;</span><br><span class="line">        &#x2F;&#x2F; FIXME How to handle the following cases?</span><br><span class="line">        &#x2F;&#x2F; 1. A master receives multiple registrations and sends back multiple</span><br><span class="line">        &#x2F;&#x2F; RegisteredApplications due to an unstable network.</span><br><span class="line">        &#x2F;&#x2F; 2. Receive multiple RegisteredApplication from different masters because the master is</span><br><span class="line">        &#x2F;&#x2F; changing.</span><br><span class="line">        appId.set(appId_)</span><br><span class="line">        registered.set(true)</span><br><span class="line">        master &#x3D; Some(masterRef)</span><br><span class="line">        listener.connected(appId.get)</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<p>接着通过parallize方法创建了ParallelCollectionRDD，接着通过map方法再得到MapPartitionsRDD</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val slices &#x3D; if (args.length &gt; 0) args(0).toInt else 2</span><br><span class="line">        val n &#x3D; math.min(5000000L * slices, Int.MaxValue).toInt &#x2F;&#x2F; avoid overflow</span><br><span class="line">        val count &#x3D; spark.sparkContext.parallelize(1 until n, slices).map &#123; i &#x3D;&gt;</span><br><span class="line">            val x &#x3D; random * 2 - 1</span><br><span class="line">            val y &#x3D; random * 2 - 1</span><br><span class="line">            if (x * x + y * y &lt;&#x3D; 1) 1 else 0</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// Reduce算子触发计算</p>
+<p>Reduce算子触发计算</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">reduce(_ + _)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// reduce算子中，通过SparkContext提交任务</p>
+<p>reduce算子中，通过SparkContext提交任务</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sc.runJob(this, reducePartition, mergeResult)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// SparkContext中，通过DAGScheduler调度任务</p>
+<p>SparkContext中，通过DAGScheduler调度任务</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, resultHandler, localProperties.get)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// DAGScheduler中提交任务并等待结果返回</p>
+<p>DAGScheduler中提交任务并等待结果返回</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val waiter &#x3D; submitJob(rdd, func, partitions, callSite, resultHandler, properties)</span><br><span class="line">ThreadUtils.awaitReady(waiter.completionFuture, Duration.Inf)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 封装并提交任务</p>
+<p>封装并提交任务</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val waiter &#x3D; new JobWaiter[U](this, jobId, partitions.size, resultHandler)</span><br><span class="line">eventProcessLoop.post(JobSubmitted(jobId, rdd, func2, partitions.toArray, callSite, waiter,Utils.cloneProperties(properties)))</span><br></pre></td></tr></table></figure>
 
 <p>这里用的阻塞队列的方式进行消息传递，LinkedBlockingDeque</p>
@@ -177,61 +235,61 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val eventQueue: BlockingQueue[E] &#x3D; new LinkedBlockingDeque[E]()</span><br></pre></td></tr></table></figure>
 
 <p>在SparkContext初始化时，会另起一个线程接收传递到eventQueue中的消息。所以任务就传递到了EventLoop中的消息处理部分。</p>
-<p>// 消息处理</p>
+<p>消息处理</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val event &#x3D; eventQueue.take()</span><br><span class="line">onReceive(event)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 接着调用在DAGScheduler中实现了OnReceive方法</p>
+<p>接着调用在DAGScheduler中实现了OnReceive方法</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">override def onReceive(event: DAGSchedulerEvent): Unit &#x3D; &#123;</span><br><span class="line">    val timerContext &#x3D; timer.time()</span><br><span class="line">    try &#123;</span><br><span class="line">      doOnReceive(event)</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">      timerContext.stop()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 判断事件类型，处理程序如下</p>
+<p>判断事件类型，处理程序如下</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">case JobSubmitted(jobId, rdd, func, partitions, callSite, listener, properties) &#x3D;&gt;dagScheduler.handleJobSubmitted(jobId, rdd, func, partitions, callSite, listener, properties)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 创建ResultStage并封装到Job中，然后提交</p>
+<p>创建ResultStage并封装到Job中，然后提交</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">finalStage &#x3D; createResultStage(finalRDD, func, partitions, jobId, callSite)</span><br><span class="line">val job &#x3D; new ActiveJob(jobId, finalStage, callSite, listener, properties)</span><br><span class="line">submitStage(finalStage)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 在DAGScheduler中提交Stage</p>
+<p>在DAGScheduler中提交Stage</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">submitMissingTasks(stage, jobId.get)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 将Stage翻译为Task执行</p>
+<p>将Stage翻译为Task执行</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">val tasks: Seq[Task[_]]&#x3D;</span><br><span class="line">partitionsToCompute.map &#123; id &#x3D;&gt;</span><br><span class="line">    val p: Int &#x3D; stage.partitions(id)</span><br><span class="line">    val part &#x3D; partitions(p)</span><br><span class="line">    val locs &#x3D; taskIdToLocations(id)</span><br><span class="line">    new ResultTask(stage.id, stage.latestInfo.attemptNumber,</span><br><span class="line">        taskBinary, part, locs, id, properties, serializedTaskMetrics,</span><br><span class="line">        Option(jobId), Option(sc.applicationId), sc.applicationAttemptId,</span><br><span class="line">        stage.rdd.isBarrier())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// taskScheduler进行Task调度</p>
+<p>taskScheduler进行Task调度</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">taskScheduler.submitTasks(new TaskSet(tasks.toArray,stage.id,stage.latestInfo.attemptNumber,jobId,properties,stage.resourceProfileId))</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 由于是StandAlone模式，在SparkContext初始化时，会指定taskScheduler为TaskSchedulerImpl</p>
+<p>由于是StandAlone模式，在SparkContext初始化时，会指定taskScheduler为TaskSchedulerImpl</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">case SPARK_REGEX(sparkUrl) &#x3D;&gt;</span><br><span class="line">        val scheduler &#x3D; new TaskSchedulerImpl(sc)</span><br><span class="line">        val masterUrls &#x3D; sparkUrl.split(&quot;,&quot;).map(&quot;spark:&#x2F;&#x2F;&quot; + _)</span><br><span class="line">        val backend &#x3D; new StandaloneSchedulerBackend(scheduler, sc, masterUrls)</span><br><span class="line">        scheduler.initialize(backend)</span><br><span class="line">        (backend, scheduler)</span><br></pre></td></tr></table></figure>
 
 <p>于是开始调用TaskSchedulerImpl的submitTasks</p>
-<p>// 通过调用CoarseGrainedSchedulerBackend的reviveOffers()方法进行通知</p>
+<p>通过调用CoarseGrainedSchedulerBackend的reviveOffers()方法进行通知</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">backend.reviveOffers()</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 向driverEndpoint发送消息</p>
+<p>向driverEndpoint发送消息</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">driverEndpoint.send(ReviveOffers)</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// driverEndpoint接受到信息后处理</p>
+<p>driverEndpoint接受到信息后处理</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">case ReviveOffers &#x3D;&gt;</span><br><span class="line">       makeOffers()</span><br></pre></td></tr></table></figure>
 
 
 
-<p>// 发起任务</p>
+<p>发起任务</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">launchTasks(taskDescs)</span><br><span class="line"></span><br><span class="line">executorData.executorEndpoint.send(LaunchTask(new SerializableBuffer(serializedTask)))</span><br></pre></td></tr></table></figure>
 
 ]]></content>
@@ -292,7 +350,7 @@
 </ol>
 <p>触发条件：</p>
 <ol>
-<li>不需要预聚合（combine）类的shuffle算子。（如reduceByKey）</li>
+<li>不需要预聚合（combine）类的shuffle算子。（如GroupByKey）</li>
 <li>shuffle map task数量小于spark.shuffle.sort.bypassMergeThreshold参数的值。（默认为200）</li>
 </ol>
 <p>BypassMergeSortShuffleWriter和Hash Shuffle中的HashShuffleWriter实现基本一致， 唯一的区别在于，map端的多个输出文件会被汇总为一个文件。 所有分区的数据会合并为同一个文件，会生成一个索引文件，是为了索引到每个分区的起始地址，可以随机 access 某个partition的所有数据。</p>
@@ -1602,24 +1660,17 @@
     <title>RDD</title>
     <url>/2019/11/02/spark/RDD/</url>
     <content><![CDATA[<p>RDD(Resilient Distributed Datasets，弹性分布式数据集)，是一个惰性计算、静态类型的分布式数据集合，是Spark实现并发计算的基础数据结构。<a id="more"></a></p>
-<h3 id="RDD特性"><a href="#RDD特性" class="headerlink" title="RDD特性"></a>RDD特性</h3><p>RDD包含以下特性（前3个必须有，后两个可选）：</p>
-<ol>
-<li><p>partitions()</p>
-<p>返回组成分布式数据集的分区对象数组。</p>
-</li>
-<li><p>itearator(p, parentIters)</p>
-<p>为每个父分区计算分区p的iteartors。</p>
-</li>
-<li><p>dependencies</p>
-<p>返回依赖对象序列。</p>
-</li>
-<li><p>partitioner()—可选</p>
-<p>若RDD有相关元素与分区信息，则返回Scala option type的分区对象。</p>
-</li>
-<li><p>prefferedLocations(p)—可选</p>
-<p>返回数据分区的存储位置信息。</p>
-</li>
-</ol>
+<h3 id="RDD特性"><a href="#RDD特性" class="headerlink" title="RDD特性"></a>RDD特性</h3><p>RDD包含以下特性：</p>
+<p><strong>1.a list of partitions（分区列表）</strong><br>Spark RDD是被分区的，每一个分区都会被一个计算任务（Task）处理，分区数决定并行计算数量，RDD的并行度默认从父RDD传给子RDD。</p>
+<p>可以在创建RDD时指定RDD分片个数，如果不指定分区数量：</p>
+<p>当RDD从集合创建时，则默认分区数量为该程序所分配到的资源的CPU核数（每个Core可以承载2～4个Partition）<br>如果是从HDFS文件创建，默认为文件的Block数</p>
+<p><strong>2.a function for computing each split（每一个分区都有一个计算函数）</strong><br>每个分区都会有计算函数，Spark的RDD的计算函数是以分片为基本单位的，每个RDD都会实现compute函数，对具体的分片进行计算，RDD中的分片是并行的，所以是分布式并行计算。有一点非常重要，就是由于RDD有前后依赖关系，遇到宽依赖关系，例如，遇到reduceBykey等宽依赖操作的算子，Spark将根据宽依赖划分Stage，Stage内部通过Pipeline操作，通过Block Manager获取相关的数据，因为具体的split要从外界读数据，也要把具体的计算结果写入外界，所以用了一个管理器，具体的split都会映射成BlockManager的Block，而具体split会被函数处理，函数处理的具体形式是以任务的形式进行的。</p>
+<p><strong>3.a list of dependencies on other RDDs（依赖于其他RDD的列表）</strong><br>RDD的依赖关系，由于RDD每次转换都会生成新的RDD，所以RDD会形成类似流水线的前后依赖关系，当然，宽依赖就不类似于流水线了，宽依赖后面的RDD具体的数据分片会依赖前面所有的RDD的所有的数据分片，这时数据分片就不进行内存中的Pipeline，这时一般是跨机器的。因为有前后的依赖关系，所以当有分区数据丢失的时候，Spark会通过依赖关系重新计算，算出丢失的数据，而不是对RDD所有的分区进行重新计算。RDD之间的依赖有两种：窄依赖（Narrow Dependency）、宽依赖（Wide Dependency）。</p>
+<p><strong>4.Optionally,a Partitioner for key-value RDDS（key-value数据类型的RDD分区器）</strong><br>控制分区策略和分区数。每个key-value形式的RDD都有Partitioner属性，它决定了RDD如何分区。当然，Partition的个数还决定每个Stage的Task个数。RDD的分片函数，想控制RDD的分片函数的时候可以分区（Partitioner）传入相关的参数，如HashPartitioner、RangePartitioner，它本身针对key-value的形式，如果不是key-value的形式，它就不会有具体的Partitioner。Partitioner本身决定了下一步会产生多少并行的分片，同时，它本身也决定了当前并行（parallelize）Shuffle输出的并行数据，从而使Spark具有能够控制数据在不同节点上分区的特性，用户可以自定义分区策略，如Hash分区等。Spark提供了“partitionBy”运算符，能通过集群对RDD进行数据再分配来创建一个新的RDD。</p>
+<p><strong>5.Optionally,a list of preferred locations to compute each split on（每个分区都有一个优先位置列表）</strong><br>它会存储每个Partition的优先位置，对于一个HDFS文件来说，就是每个Partition块的位置。观察运行spark集群的控制台会发现Spark的具体计算，具体分片前，它已经清楚地知道任务发生在什么节点上，也就是说，任务本身是计算层面的、代码层面的，代码发生运算之前已经知道它要运算的数据在什么地方，有具体节点的信息。这就符合大数据中数据不动代码动的特点。数据不动代码动的最高境界是数据就在当前节点的内存中。这时有可能是memory级别或Alluxio级别的，Spark本身在进行任务调度时候，会尽可能将任务分配到处理数据的数据块所在的具体位置。据Spark的RDD.Scala源码函数getPreferredLocations可知，每次计算都符合完美的数据本地性。</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/L13763338360/article/details/106473779" target="_blank" rel="noopener">https://blog.csdn.net/L13763338360/article/details/106473779</a> </p>
+</blockquote>
 <h3 id="RDD创建方法"><a href="#RDD创建方法" class="headerlink" title="RDD创建方法"></a>RDD创建方法</h3><p>总共有三种方法</p>
 <p>1.来自一个内存中的对象集合： 适用于对少量的数据数据进行并行的CPU密集型计算</p>
 <p>比如：sc.parallize()</p>
